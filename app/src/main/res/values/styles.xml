@@ -8,4 +8,9 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="poem">
+        <item name="android:textSize">@dimen/header_text_size</item>
+        <item name="android:textColor">@color/textView_primary_text_color</item>
+    </style>
+
 </resources>

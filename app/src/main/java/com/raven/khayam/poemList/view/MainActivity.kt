@@ -4,14 +4,15 @@ import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayout
 import com.raven.khayam.R
 import com.raven.khayam.di.DaggerViewModelComponent
 import com.raven.khayam.di.ViewModelFactory
 import com.raven.khayam.poemList.ViewModelPoemList
 import javax.inject.Inject
+import ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator
+
 
 class MainActivity : FragmentActivity() {
 
@@ -42,8 +43,11 @@ class MainActivity : FragmentActivity() {
 
     private fun initiate() {
         viewPager = findViewById(R.id.pagerPoem)
+        //val tabLayout = findViewById<TabLayout>(R.id.tabLayout)
         poemPagerAdapter = PoemFragStateAdapter(this, viewModel.poemList)
         viewPager.adapter = poemPagerAdapter
+        val indicator: ScrollingPagerIndicator = findViewById(R.id.indicator)
+        indicator.attachToPager(viewPager)
     }
 
     private fun setObservers() {

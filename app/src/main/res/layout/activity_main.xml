@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".poemList.view.MainActivity"
     android:fitsSystemWindows="true"
-    android:background="@drawable/paper" >
+    android:background="@drawable/paper">
 
 
     <FrameLayout
@@ -23,9 +23,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="20dp"
+            android:clickable="false"
             app:spi_dotColor="@color/textView_primary_text_color"
             app:spi_dotSelectedColor="@color/textView_primary_text_color"
-            android:layout_marginBottom="20dp"/>
+            app:spi_visibleDotCount="5" />
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

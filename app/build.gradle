@@ -58,4 +58,7 @@ dependencies {
     //ViewPagerAndIndicator
     implementation "androidx.viewpager2:viewpager2:$viewpager_version"
     implementation "ru.tinkoff.scrollingpagerindicator:scrollingpagerindicator:$indicator_version"
+
+    //Design
+    implementation "com.android.support:design:$design_version"
 }

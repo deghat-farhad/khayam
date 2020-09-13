@@ -23,7 +23,7 @@
             android:layout_marginRight="50dp"
             android:layout_height="2dp"
             android:layout_above="@+id/txtViwPoem"
-            android:background="@color/textView_primary_text_color"
+            android:background="@color/dark"
             android:layout_marginStart="200dp"
             android:layout_marginEnd="50dp"
             android:layout_marginBottom="10dp"/>
@@ -44,7 +44,7 @@
             android:layout_marginRight="200dp"
             android:layout_height="2dp"
             android:layout_below="@+id/txtViwPoem"
-            android:background="@color/textView_primary_text_color"
+            android:background="@color/dark"
             android:layout_marginStart="50dp"
             android:layout_marginEnd="200dp"
             android:layout_marginTop="10dp"/>

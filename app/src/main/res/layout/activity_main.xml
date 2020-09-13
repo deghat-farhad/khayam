@@ -8,15 +8,73 @@
     android:fitsSystemWindows="true"
     android:background="@drawable/paper">
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:layout_marginRight="9dp"
+            android:src="@drawable/ic_image"
+            android:tint="@color/lime"
+            app:backgroundTint="@color/mid"
+            app:fabSize="mini"
+            app:layout_constraintBottom_toTopOf="@+id/fabText"
+            app:layout_constraintRight_toRightOf="@+id/fabAdd"
+            android:layout_marginEnd="9dp" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:layout_marginRight="9dp"
+            android:src="@drawable/ic_text"
+            android:tint="@color/lime"
+            app:backgroundTint="@color/mid"
+            app:fabSize="mini"
+            app:layout_constraintBottom_toTopOf="@+id/fabCopy"
+            app:layout_constraintRight_toRightOf="@+id/fabAdd"
+            android:layout_marginEnd="9dp" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabCopy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="10dp"
+            android:layout_marginRight="9dp"
+            android:src="@drawable/ic_copy"
+            android:tint="@color/lime"
+            app:backgroundTint="@color/mid"
+            app:fabSize="mini"
+            app:layout_constraintBottom_toTopOf="@+id/fabAdd"
+            app:layout_constraintRight_toRightOf="@+id/fabAdd"
+            android:layout_marginEnd="9dp" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="18dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="18dp"
+            android:layout_marginBottom="18dp"
+            android:clickable="true"
+            android:src="@drawable/ic_add"
+            app:fabSize="normal"
+            android:tint="@color/mid"
+            app:backgroundTint="@color/dark"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/pagerPoem"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/pagerPoem"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator
             android:id="@+id/indicator"
@@ -25,8 +83,8 @@
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginBottom="20dp"
             android:clickable="false"
-            app:spi_dotColor="@color/textView_primary_text_color"
-            app:spi_dotSelectedColor="@color/textView_primary_text_color"
+            app:spi_dotColor="@color/dark"
+            app:spi_dotSelectedColor="@color/mid"
             app:spi_visibleDotCount="5" />
     </FrameLayout>
 

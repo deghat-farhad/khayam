@@ -124,7 +124,10 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun setObservers() {
-        viewModel.showPoems.observe(this, Observer { poemPagerAdapter.notifyDataSetChanged() })
+        viewModel.showPoems.observe(this, Observer {
+            poemPagerAdapter.notifyDataSetChanged()
+            poemViewPager.currentItem = it
+        })
         viewModel.poemImageFile.observe(this, Observer { viewModel.sharePoemImageUri(getUriOf(it)) })
         viewModel.shareIntentLive.observe(this, Observer {
             startActivity(

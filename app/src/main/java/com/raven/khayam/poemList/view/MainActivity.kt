@@ -1,7 +1,15 @@
 package com.raven.khayam.poemList.view
 
+import android.R.attr.path
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
+import android.widget.FrameLayout
+import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -11,8 +19,9 @@ import com.raven.khayam.R
 import com.raven.khayam.di.DaggerViewModelComponent
 import com.raven.khayam.di.ViewModelFactory
 import com.raven.khayam.poemList.ViewModelPoemList
-import javax.inject.Inject
 import ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator
+import java.io.File
+import javax.inject.Inject
 
 
 class MainActivity : FragmentActivity() {
@@ -22,12 +31,17 @@ class MainActivity : FragmentActivity() {
     private lateinit var viewModel: ViewModelPoemList
 
     private lateinit var poemPagerAdapter: PoemPagerAdapter
+    private lateinit var poemLayout: FrameLayout
+    private lateinit var poemViewPager: ViewPager2
 
     private var isRotate = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main)
 
         injectThisToDagger()
@@ -47,6 +61,8 @@ class MainActivity : FragmentActivity() {
         goFullScreen()
         initFab()
         initPoemViwPager()
+
+        poemLayout = findViewById(R.id.poemLayout)
     }
 
     private fun goFullScreen(){
@@ -80,18 +96,39 @@ class MainActivity : FragmentActivity() {
         ViewAnimation.init(fabCopy)
         ViewAnimation.init(fabImage)
         ViewAnimation.init(fabText)
+
+        fabImage.setOnClickListener {
+            viewModel.sharePoemImage(getBitmapOfPoem(), cacheDir)
+        }
     }
 
     private fun initPoemViwPager(){
-        val viewPager = findViewById<ViewPager2>(R.id.pagerPoem)
+        poemViewPager = findViewById<ViewPager2>(R.id.pagerPoem)
         poemPagerAdapter = PoemPagerAdapter(this, viewModel.poemList) { goFullScreen() }
         val indicator: ScrollingPagerIndicator = findViewById(R.id.indicator)
 
-        viewPager.adapter = poemPagerAdapter
-        indicator.attachToPager(viewPager)
+        poemViewPager.adapter = poemPagerAdapter
+        indicator.attachToPager(poemViewPager)
     }
 
     private fun setObservers() {
         viewModel.showPoems.observe(this, Observer { poemPagerAdapter.notifyDataSetChanged() })
+        viewModel.poemImageFile.observe(this, Observer { viewModel.sharePoemImageUri(getUriOf(it)) })
+        viewModel.shareIntentLive.observe(this, Observer {
+            startActivity(
+                Intent.createChooser(it, "choose an app")
+            )
+        })
     }
+
+    private fun getBitmapOfPoem(): Bitmap{
+        val bitmap =
+            Bitmap.createBitmap(poemViewPager.width, poemViewPager.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        poemViewPager.draw(canvas)
+        return bitmap
+    }
+
+    private fun getUriOf(file: File) =
+            FileProvider.getUriForFile(this, "com.raven.khayam.fileprovider", file)
 }

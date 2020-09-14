@@ -66,6 +66,23 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"/>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabRandom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="18dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="18dp"
+        android:layout_marginBottom="18dp"
+        android:clickable="true"
+        android:src="@drawable/ic_random"
+        app:fabSize="normal"
+        android:tint="@color/mid"
+        app:backgroundTint="@color/dark"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/fabMain"/>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

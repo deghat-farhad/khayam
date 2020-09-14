@@ -23,6 +23,7 @@ import com.raven.khayam.R
 import com.raven.khayam.di.DaggerViewModelComponent
 import com.raven.khayam.di.ViewModelFactory
 import com.raven.khayam.poemList.ViewModelPoemList
+import kotlinx.android.synthetic.main.activity_main.*
 import ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator
 import java.io.File
 import javax.inject.Inject
@@ -67,6 +68,7 @@ class MainActivity : FragmentActivity() {
         initPoemViwPager()
 
         poemLayout = findViewById(R.id.poemLayout)
+        findViewById<FloatingActionButton>(R.id.fabRandom).setOnClickListener { viewModel.randomPoem() }
     }
 
     private fun goFullScreen(){
@@ -137,6 +139,7 @@ class MainActivity : FragmentActivity() {
         viewModel.copied.observe(this, Observer {
             Toast.makeText(this, "poem copied to clipboard.", Toast.LENGTH_SHORT).show()
         })
+        viewModel.randomPoemIndex.observe(this, Observer { poemViewPager.currentItem = it })
     }
 
     private fun getBitmapOfPoem(): Bitmap{

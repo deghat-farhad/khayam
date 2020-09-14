@@ -18,6 +18,7 @@ import com.raven.khayam.model.PoemItem
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.random.Random
 
 
@@ -29,6 +30,7 @@ class ViewModelPoemList @Inject constructor(private val getPoems: GetPoems, priv
     val poemImageFile: MutableLiveData<File> by lazy { MutableLiveData<File>() }
     val shareIntentLive: MutableLiveData<Intent> by lazy { MutableLiveData<Intent>() }
     val copied: SingleLiveEvent<Unit> by lazy { SingleLiveEvent<Unit>() }
+    val randomPoemIndex: SingleLiveEvent<Int> by lazy { SingleLiveEvent<Int>() }
 
     fun viewIsReady(){
         loadPoems()
@@ -82,5 +84,9 @@ class ViewModelPoemList @Inject constructor(private val getPoems: GetPoems, priv
         val clip = ClipData.newPlainText("poem", poemList[currentItem].text)
         clipboard.setPrimaryClip(clip)
         copied.call()
+    }
+
+    fun randomPoem() {
+        randomPoemIndex.value = Random.nextInt(poemList.size)
     }
 }

@@ -1,10 +1,12 @@
 package com.raven.khayam.poemList
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context.CLIPBOARD_SERVICE
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.core.content.ContextCompat.startActivity
-import androidx.core.content.FileProvider
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.farhad.editableprofile.utils.SingleLiveEvent
@@ -25,6 +27,7 @@ class ViewModelPoemList @Inject constructor(private val getPoems: GetPoems, priv
     val showPoems : SingleLiveEvent<Unit> by lazy { SingleLiveEvent<Unit>() }
     val poemImageFile: MutableLiveData<File> by lazy { MutableLiveData<File>() }
     val shareIntentLive: MutableLiveData<Intent> by lazy { MutableLiveData<Intent>() }
+    val copied: SingleLiveEvent<Unit> by lazy { SingleLiveEvent<Unit>() }
 
     fun viewIsReady(){
         loadPoems()
@@ -63,5 +66,20 @@ class ViewModelPoemList @Inject constructor(private val getPoems: GetPoems, priv
             }
         }
         getPoems.execute(observer)
+    }
+
+    fun sharePoemText(currentItem: Int) {
+        val shareIntent = Intent()
+        shareIntent.action = Intent.ACTION_SEND
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        shareIntent.type = "text/plain"
+        shareIntent.putExtra(Intent.EXTRA_TEXT, poemList[currentItem].text)
+        shareIntentLive.value = shareIntent
+    }
+
+    fun copyPoem(currentItem: Int, clipboard: ClipboardManager){
+        val clip = ClipData.newPlainText("poem", poemList[currentItem].text)
+        clipboard.setPrimaryClip(clip)
+        copied.call()
     }
 }

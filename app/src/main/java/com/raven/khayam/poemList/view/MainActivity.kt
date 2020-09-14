@@ -1,6 +1,8 @@
 package com.raven.khayam.poemList.view
 
 import android.R.attr.path
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -9,6 +11,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
@@ -100,6 +104,14 @@ class MainActivity : FragmentActivity() {
         fabImage.setOnClickListener {
             viewModel.sharePoemImage(getBitmapOfPoem(), cacheDir)
         }
+
+        fabText.setOnClickListener {
+            viewModel.sharePoemText(poemViewPager.currentItem)
+        }
+
+        fabCopy.setOnClickListener {
+            viewModel.copyPoem(poemViewPager.currentItem, getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager)
+        }
     }
 
     private fun initPoemViwPager(){
@@ -118,6 +130,9 @@ class MainActivity : FragmentActivity() {
             startActivity(
                 Intent.createChooser(it, "choose an app")
             )
+        })
+        viewModel.copied.observe(this, Observer {
+            Toast.makeText(this, "poem copied to clipboard.", Toast.LENGTH_SHORT).show()
         })
     }
 

@@ -5,12 +5,13 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.raven.khayam.model.PoemItem
 
-class PoemFragStateAdapter(
+class PoemPagerAdapter(
     fragmentActivity: FragmentActivity,
-    private val poemList: List<PoemItem>
+    private val poemList: List<PoemItem>,
+    private val goFullScreen: () -> Unit
 ) : FragmentStateAdapter(fragmentActivity) {
     override fun createFragment(position: Int): Fragment {
-        return FragPoem.create(poemList[position])
+        return FragPoem.create(poemList[position], goFullScreen)
     }
 
     override fun getItemCount(): Int {

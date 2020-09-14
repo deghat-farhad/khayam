@@ -7,7 +7,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.tabs.TabLayout
 import com.raven.khayam.R
 import com.raven.khayam.di.DaggerViewModelComponent
 import com.raven.khayam.di.ViewModelFactory
@@ -22,8 +21,7 @@ class MainActivity : FragmentActivity() {
     lateinit var viewModelFactory: ViewModelFactory
     private lateinit var viewModel: ViewModelPoemList
 
-    private lateinit var viewPager: ViewPager2
-    private lateinit var poemPagerAdapter: PoemFragStateAdapter
+    private lateinit var poemPagerAdapter: PoemPagerAdapter
 
     private var isRotate = false
 
@@ -46,18 +44,27 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun initiate() {
+        goFullScreen()
+        initFab()
+        initPoemViwPager()
+    }
+
+    private fun goFullScreen(){
         window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE
                 or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_FULLSCREEN)
-        viewPager = findViewById(R.id.pagerPoem)
+    }
 
+    private fun initFab(){
         val fabCopy = findViewById<FloatingActionButton>(R.id.fabCopy)
         val fabImage = findViewById<FloatingActionButton>(R.id.fabImage)
         val fabText = findViewById<FloatingActionButton>(R.id.fabText)
-        findViewById<FloatingActionButton>(R.id.fabAdd).setOnClickListener { view ->
+        val fabMain = findViewById<FloatingActionButton>(R.id.fabMain)
+
+        fabMain.setOnClickListener { view ->
             isRotate = ViewAnimation.rotateFab(view, !isRotate);
             if(isRotate){
                 ViewAnimation.showIn(fabCopy, 120f)
@@ -73,10 +80,14 @@ class MainActivity : FragmentActivity() {
         ViewAnimation.init(fabCopy)
         ViewAnimation.init(fabImage)
         ViewAnimation.init(fabText)
+    }
 
-        poemPagerAdapter = PoemFragStateAdapter(this, viewModel.poemList)
-        viewPager.adapter = poemPagerAdapter
+    private fun initPoemViwPager(){
+        val viewPager = findViewById<ViewPager2>(R.id.pagerPoem)
+        poemPagerAdapter = PoemPagerAdapter(this, viewModel.poemList) { goFullScreen() }
         val indicator: ScrollingPagerIndicator = findViewById(R.id.indicator)
+
+        viewPager.adapter = poemPagerAdapter
         indicator.attachToPager(viewPager)
     }
 

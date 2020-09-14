@@ -19,7 +19,7 @@
             app:backgroundTint="@color/mid"
             app:fabSize="mini"
             app:layout_constraintBottom_toTopOf="@+id/fabText"
-            app:layout_constraintRight_toRightOf="@+id/fabAdd"
+            app:layout_constraintRight_toRightOf="@+id/fabMain"
             android:layout_marginEnd="9dp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -33,7 +33,7 @@
             app:backgroundTint="@color/mid"
             app:fabSize="mini"
             app:layout_constraintBottom_toTopOf="@+id/fabCopy"
-            app:layout_constraintRight_toRightOf="@+id/fabAdd"
+            app:layout_constraintRight_toRightOf="@+id/fabMain"
             android:layout_marginEnd="9dp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -46,12 +46,12 @@
             android:tint="@color/lime"
             app:backgroundTint="@color/mid"
             app:fabSize="mini"
-            app:layout_constraintBottom_toTopOf="@+id/fabAdd"
-            app:layout_constraintRight_toRightOf="@+id/fabAdd"
+            app:layout_constraintBottom_toTopOf="@+id/fabMain"
+            app:layout_constraintRight_toRightOf="@+id/fabMain"
             android:layout_marginEnd="9dp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabAdd"
+            android:id="@+id/fabMain"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="18dp"
@@ -69,7 +69,8 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/poemLayout">
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/pagerPoem"

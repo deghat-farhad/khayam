@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">khayam</string>
+    <string name="searchHint">به دنبال کدامین واژه می گردی؟</string>
 </resources>

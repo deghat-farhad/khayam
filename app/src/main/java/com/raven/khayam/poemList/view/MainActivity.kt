@@ -63,21 +63,11 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun initiate() {
-        goFullScreen()
         initFab()
         initPoemViwPager()
 
         poemLayout = findViewById(R.id.poemLayout)
         findViewById<FloatingActionButton>(R.id.fabRandom).setOnClickListener { viewModel.randomPoem() }
-    }
-
-    private fun goFullScreen(){
-        window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE
-                or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_FULLSCREEN)
     }
 
     private fun initFab(){
@@ -118,7 +108,7 @@ class MainActivity : FragmentActivity() {
 
     private fun initPoemViwPager(){
         poemViewPager = findViewById<ViewPager2>(R.id.pagerPoem)
-        poemPagerAdapter = PoemPagerAdapter(this, viewModel.poemList) { goFullScreen() }
+        poemPagerAdapter = PoemPagerAdapter(this, viewModel.poemList)
         val indicator: ScrollingPagerIndicator = findViewById(R.id.indicator)
 
         poemViewPager.adapter = poemPagerAdapter

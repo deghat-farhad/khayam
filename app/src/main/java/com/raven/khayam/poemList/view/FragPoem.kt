@@ -11,8 +11,7 @@ import com.raven.khayam.R
 import com.raven.khayam.model.PoemItem
 
 class FragPoem private constructor(
-    private val poemItem: PoemItem,
-    private val goFullScreen: () -> Unit
+    private val poemItem: PoemItem
 ) : Fragment() {
 
     override fun onCreateView(
@@ -27,12 +26,11 @@ class FragPoem private constructor(
 
     private fun initiate(fragment: View) {
         fragment.findViewById<TextView>(R.id.txtViwPoem).text = poemItem.text
-        fragment.findViewById<CardView>(R.id.cardViwPoem).setOnClickListener { goFullScreen() }
     }
 
     companion object {
-        fun create(poemItem: PoemItem, goFullScreen: () -> Unit): FragPoem {
-            return FragPoem(poemItem, goFullScreen)
+        fun create(poemItem: PoemItem): FragPoem {
+            return FragPoem(poemItem)
         }
     }
 }

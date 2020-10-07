@@ -7,11 +7,10 @@ import com.raven.khayam.model.PoemItem
 
 class PoemPagerAdapter(
     fragmentActivity: FragmentActivity,
-    private val poemList: List<PoemItem>,
-    private val goFullScreen: () -> Unit
+    private val poemList: List<PoemItem>
 ) : FragmentStateAdapter(fragmentActivity) {
     override fun createFragment(position: Int): Fragment {
-        return FragPoem.create(poemList[position], goFullScreen)
+        return FragPoem.create(poemList[position])
     }
 
     override fun getItemCount(): Int {

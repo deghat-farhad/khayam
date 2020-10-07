@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
+import androidx.core.animation.doOnEnd
 import com.raven.khayam.R
 import kotlinx.android.synthetic.main.view_search.view.*
 
@@ -30,9 +31,11 @@ class SearchView(context: Context, attrs: AttributeSet) : FrameLayout(context, a
             (open_search_button.top + open_search_button.bottom) / 2,
             0f, width.toFloat()
         )
+        circularReveal.doOnEnd {
+            search_input_text.requestFocus()
+            showKeyboard()
+        }
         circularReveal.duration = 200
-        search_input_text.requestFocus()
-        showKeyboard()
         circularReveal.start()
     }
 
@@ -44,9 +47,10 @@ class SearchView(context: Context, attrs: AttributeSet) : FrameLayout(context, a
             (open_search_button.top + open_search_button.bottom) / 2,
             width.toFloat(), 0f
         )
-
+        circularConceal.doOnEnd {
+            closeKeyboard()
+        }
         circularConceal.duration = 200
-        closeKeyboard()
         circularConceal.start()
         circularConceal.addListener(object : Animator.AnimatorListener {
             override fun onAnimationRepeat(animation: Animator?) = Unit

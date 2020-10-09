@@ -38,6 +38,7 @@ class MainActivity : FragmentActivity() {
     private lateinit var poemPagerAdapter: PoemPagerAdapter
     private lateinit var poemLayout: FrameLayout
     private lateinit var poemViewPager: ViewPager2
+    private lateinit var searchView: SearchView
 
     private var isRotate = false
 
@@ -46,7 +47,7 @@ class MainActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_main)
 
         injectThisToDagger()
@@ -68,6 +69,7 @@ class MainActivity : FragmentActivity() {
 
         poemLayout = findViewById(R.id.poemLayout)
         findViewById<FloatingActionButton>(R.id.fabRandom).setOnClickListener { viewModel.randomPoem() }
+        searchView = findViewById(R.id.searchView)
     }
 
     private fun initFab(){
@@ -142,4 +144,11 @@ class MainActivity : FragmentActivity() {
 
     private fun getUriOf(file: File) =
             FileProvider.getUriForFile(this, "com.raven.khayam.fileprovider", file)
+
+    override fun onBackPressed() {
+        if(searchView.isOpen)
+            searchView.closeSearch()
+        else
+            super.onBackPressed()
+    }
 }

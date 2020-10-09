@@ -14,6 +14,10 @@ import kotlinx.android.synthetic.main.view_search.view.*
 
 
 class SearchView(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
+
+    var isOpen = false
+    private set
+
     init {
         LayoutInflater.from(context).inflate(R.layout.view_search, this, true)
 
@@ -21,7 +25,8 @@ class SearchView(context: Context, attrs: AttributeSet) : FrameLayout(context, a
         close_search_button.setOnClickListener { closeSearch() }
     }
 
-    private fun openSearch() {
+    fun openSearch() {
+        isOpen = true
         open_search_button.setOnClickListener(null)
         search_input_text.setText("")
         search_open_view.visibility = View.VISIBLE
@@ -31,15 +36,14 @@ class SearchView(context: Context, attrs: AttributeSet) : FrameLayout(context, a
             (open_search_button.top + open_search_button.bottom) / 2,
             0f, width.toFloat()
         )
-        circularReveal.doOnEnd {
-            search_input_text.requestFocus()
-            showKeyboard()
-        }
+        search_input_text.requestFocus()
+        showKeyboard()
         circularReveal.duration = 200
         circularReveal.start()
     }
 
-    private fun closeSearch() {
+    fun closeSearch() {
+        isOpen = false
         open_search_button.setOnClickListener { openSearch() }
         val circularConceal = ViewAnimationUtils.createCircularReveal(
             search_open_view,
@@ -47,9 +51,7 @@ class SearchView(context: Context, attrs: AttributeSet) : FrameLayout(context, a
             (open_search_button.top + open_search_button.bottom) / 2,
             width.toFloat(), 0f
         )
-        circularConceal.doOnEnd {
-            closeKeyboard()
-        }
+        closeKeyboard()
         circularConceal.duration = 200
         circularConceal.start()
         circularConceal.addListener(object : Animator.AnimatorListener {

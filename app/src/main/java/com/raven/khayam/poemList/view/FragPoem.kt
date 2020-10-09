@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.raven.khayam.R
@@ -32,6 +33,13 @@ class FragPoem private constructor(
             String.format("  %s", poemItem.hemistich3)
         fragment.findViewById<TextView>(R.id.txtViwHemistich4).text =
             String.format("  %s", poemItem.hemistich4)
+
+        fragment.findViewById<TextView>(R.id.txtViwId).text = poemItem.id.toString()
+        fragment.findViewById<ImageView>(R.id.imgViwIsSuspicious).visibility =
+            if (poemItem.isSuspicious)
+                View.VISIBLE
+            else
+                View.INVISIBLE
     }
 
     companion object {

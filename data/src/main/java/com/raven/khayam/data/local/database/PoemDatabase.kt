@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.raven.khayam.data.entity.CategoryEntity
 import com.raven.khayam.data.entity.PoemEntity
 
-@Database(entities = [PoemEntity::class, CategoryEntity::class], version = 1, exportSchema = false)
+@Database(entities = [PoemEntity::class, CategoryEntity::class], version = 2, exportSchema = false)
 abstract class PoemDatabase : RoomDatabase() {
     abstract val poemDatabaseDao: PoemDatabaseDao
 

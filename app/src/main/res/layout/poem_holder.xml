@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardViwPoem"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:cardBackgroundColor="#00000000"
@@ -9,45 +10,77 @@
     app:cardElevation="0dp"
     app:cardPreventCornerOverlap="false"
     app:cardUseCompatPadding="false"
-    app:contentPadding="0dp"
-    android:id="@+id/cardViwPoem">
+    app:contentPadding="0dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible">
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:paddingHorizontal="20dp">
 
-        <View
-            android:layout_width="300dp"
-            android:layout_marginLeft="200dp"
-            android:layout_marginRight="50dp"
-            android:layout_height="2dp"
-            android:layout_above="@+id/txtViwPoem"
-            android:background="@color/dark"
-            android:layout_marginStart="200dp"
-            android:layout_marginEnd="50dp"
-            android:layout_marginBottom="10dp"/>
-
-        <TextView
-            android:id="@+id/txtViwPoem"
-            style="@style/poem"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:id="@+id/distich1"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:fontFamily="@font/shekari"
-            android:gravity="center"
-            android:textSize="40sp"
-            tools:text="منشسیمنایشسشسمیت\nبسی«»آإمنسیاشبنمتساش\nیبنمتساشیبمناشسنمیتابمنش\nستیابمنسشیابیبسشنا" />
-        <View
-            android:layout_width="300dp"
-            android:layout_marginLeft="50dp"
-            android:layout_marginRight="200dp"
-            android:layout_height="2dp"
-            android:layout_below="@+id/txtViwPoem"
-            android:background="@color/dark"
-            android:layout_marginStart="50dp"
-            android:layout_marginEnd="200dp"
-            android:layout_marginTop="10dp"/>
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:gravity="end"
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/txtViwHemistich1"
+                style="@style/poem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/shekari"
+                android:singleLine="true"
+                android:textSize="40sp"
+                tools:text="گسشیبسیبل سیتبلا سیتلب سیبل" />
+
+            <TextView
+                android:id="@+id/txtViwHemistich2"
+                style="@style/poem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-10dp"
+                android:fontFamily="@font/shekari"
+                android:singleLine="true"
+                android:textSize="40sp"
+                tools:text="ستیا بیبسشنا" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/distich1"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="20dp"
+            android:gravity="end"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txtViwHemistich3"
+                style="@style/poem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/shekari"
+                android:singleLine="true"
+                android:textSize="40sp"
+                tools:text="ستیابمنسشیابیبسشنا" />
+
+            <TextView
+                android:id="@+id/txtViwHemistich4"
+                style="@style/poem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-10dp"
+                android:fontFamily="@font/shekari"
+                android:singleLine="true"
+                android:textSize="40sp"
+                tools:text="ستیابمنابیبسشنا" />
+        </LinearLayout>
     </RelativeLayout>
 </androidx.cardview.widget.CardView>

@@ -1,8 +1,11 @@
 package com.raven.khayam.model
 
-data class PoemItem (
+data class PoemItem(
     val id: Int,
-    val text: String,
+    val hemistich1: String,
+    val hemistich2: String,
+    val hemistich3: String,
+    val hemistich4: String,
     val isSuspicious: Boolean,
     val category: Int
 )

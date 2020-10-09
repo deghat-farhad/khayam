@@ -15,7 +15,10 @@ import androidx.room.PrimaryKey
 )
 data class PoemEntity(
     @PrimaryKey val id: Int,
-    val text: String,
+    val hemistich1: String,
+    val hemistich2: String,
+    val hemistich3: String,
+    val hemistich4: String,
     val isSuspicious: Boolean,
     val category: Int
 )

@@ -34,12 +34,11 @@ class FragPoem private constructor(
         fragment.findViewById<TextView>(R.id.txtViwHemistich4).text =
             String.format("  %s", poemItem.hemistich4)
 
-        fragment.findViewById<TextView>(R.id.txtViwId).text = poemItem.id.toString()
-        fragment.findViewById<ImageView>(R.id.imgViwIsSuspicious).visibility =
-            if (poemItem.isSuspicious)
-                View.VISIBLE
+        fragment.findViewById<TextView>(R.id.txtViwId).text =
+        if (poemItem.isSuspicious)
+            String.format("%s !", poemItem.id)
             else
-                View.INVISIBLE
+            poemItem.id.toString()
     }
 
     companion object {

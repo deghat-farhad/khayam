@@ -39,12 +39,6 @@
                 android:singleLine="true"
                 android:textSize="30sp"
                 tools:text="۱۳۶" />
-
-            <ImageView
-                android:id="@+id/imgViwIsSuspicious"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:src="@drawable/ic_suspicious" />
         </LinearLayout>
 
         <View

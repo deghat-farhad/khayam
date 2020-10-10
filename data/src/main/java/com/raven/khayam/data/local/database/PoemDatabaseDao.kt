@@ -9,4 +9,7 @@ import io.reactivex.Observable
 interface PoemDatabaseDao {
     @Query("SELECT * FROM PoemEntity ORDER BY id")
     fun getPoems(): Observable<List<PoemEntity>>
+
+    @Query("SELECT * FROM PoemEntity WHERE hemistich1 LIKE '%' || :searchPhrase || '%' OR hemistich2 LIKE '%' || :searchPhrase || '%' OR hemistich3 LIKE '%' || :searchPhrase || '%' OR hemistich4 LIKE '%' || :searchPhrase || '%' OR id = :searchPhrase ORDER BY id")
+    fun findPoems(searchPhrase: String): Observable<List<PoemEntity>>
 }

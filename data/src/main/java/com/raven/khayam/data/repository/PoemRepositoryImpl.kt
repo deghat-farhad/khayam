@@ -14,4 +14,8 @@ class PoemRepositoryImpl(
     override fun getPoems(): Observable<List<Poem>> {
         return local.getPoems().map { poemMapper.mapToDomain(it) }
     }
+
+    override fun findPoems(searchPhrase: String): Observable<List<Poem>> {
+        return local.findPoems(searchPhrase).map {poemMapper.mapToDomain(it)}
+    }
 }

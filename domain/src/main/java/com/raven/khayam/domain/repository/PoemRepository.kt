@@ -5,4 +5,5 @@ import io.reactivex.Observable
 
 interface PoemRepository {
     fun getPoems(): Observable<List<Poem>>
+    fun findPoems(searchPhrase: String): Observable<List<Poem>>
 }

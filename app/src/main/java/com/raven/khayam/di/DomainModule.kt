@@ -20,7 +20,7 @@ class DomainModule {
     fun mainThreadScheduler(): Scheduler = AndroidSchedulers.mainThread()
 
     @Provides
-    fun getHome(
+    fun getPoems(
         poemRepository: PoemRepository,
         @Named("ioScheduler") ioScheduler: Scheduler,
         @Named("mainThreadScheduler") mainThreadScheduler: Scheduler

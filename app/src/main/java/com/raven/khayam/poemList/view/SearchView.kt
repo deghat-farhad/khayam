@@ -45,6 +45,7 @@ class SearchView(context: Context, attrs: AttributeSet) : FrameLayout(context, a
             searchPhrase = search_input_text.text.toString()
             listener?.onSearchListener(searchPhrase)
         }
+        closeKeyboard()
     }
 
     fun openSearch() {

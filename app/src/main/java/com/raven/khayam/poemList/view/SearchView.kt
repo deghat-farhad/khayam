@@ -65,6 +65,7 @@ class SearchView(context: Context, attrs: AttributeSet) : FrameLayout(context, a
     }
 
     fun closeSearch() {
+        listener?.onSearchCloseListener()
         isOpen = false
         open_search_button.setOnClickListener { openSearch() }
         val circularConceal = ViewAnimationUtils.createCircularReveal(
@@ -107,5 +108,6 @@ class SearchView(context: Context, attrs: AttributeSet) : FrameLayout(context, a
 
     interface Listener {
         fun onSearchListener(searchPhrase: String)
+        fun onSearchCloseListener()
     }
 }

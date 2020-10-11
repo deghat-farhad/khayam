@@ -70,6 +70,10 @@ class MainActivity : FragmentActivity() {
             override fun onSearchListener(searchPhrase: String) {
                 viewModel.findPoem(searchPhrase)
             }
+
+            override fun onSearchCloseListener() {
+                viewModel.searchClosed()
+            }
         }
     }
 
@@ -123,8 +127,8 @@ class MainActivity : FragmentActivity() {
 
     private fun setObservers() {
         viewModel.showPoems.observe(this, Observer {
-            poemPagerAdapter.notifyDataSetChanged()
             poemViewPager.adapter = poemPagerAdapter
+            poemPagerAdapter.notifyDataSetChanged()
         })
         viewModel.poemImageFile.observe(
             this,

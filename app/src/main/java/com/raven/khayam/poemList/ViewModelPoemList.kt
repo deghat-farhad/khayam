@@ -67,14 +67,10 @@ class ViewModelPoemList @Inject constructor(
         val observer = object : DefaultObserver<List<Poem>>() {
             override fun onNext(t: List<Poem>) {
                 super.onNext(t)
+                poemList.clear()
                 poemList.addAll(poemItemMapper.mapToPresentation(t))
                 if (t.isNotEmpty())
                     showPoems.call()
-            }
-
-            override fun onComplete() {
-                super.onComplete()
-                randomPoem()
             }
         }
         getPoems.execute(observer)
@@ -111,6 +107,9 @@ class ViewModelPoemList @Inject constructor(
 
     fun randomPoem() {
         randomPoemIndex.value = Random.nextInt(poemList.size)
+    }
+    fun searchClosed(){
+        loadPoems()
     }
 
     private fun assemblePoem(poemItem: PoemItem): String {

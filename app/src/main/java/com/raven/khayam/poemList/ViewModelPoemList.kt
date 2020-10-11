@@ -10,6 +10,8 @@ import androidx.lifecycle.ViewModel
 import com.farhad.editableprofile.utils.SingleLiveEvent
 import com.raven.khayam.domain.model.Poem
 import com.raven.khayam.domain.usecase.base.DefaultObserver
+import com.raven.khayam.domain.usecase.findPoems.FindPoems
+import com.raven.khayam.domain.usecase.findPoems.FindPoemsParams
 import com.raven.khayam.domain.usecase.getPoems.GetPoems
 import com.raven.khayam.mapper.PoemItemMapper
 import com.raven.khayam.model.PoemItem
@@ -21,12 +23,13 @@ import kotlin.random.Random
 
 class ViewModelPoemList @Inject constructor(
     private val getPoems: GetPoems,
+    private val findPoems: FindPoems,
     private val poemItemMapper: PoemItemMapper
 ) : ViewModel() {
 
-    val poemList = arrayListOf<PoemItem>()
+    val poemList = mutableListOf<PoemItem>()
 
-    val showPoems: SingleLiveEvent<Int> by lazy { SingleLiveEvent<Int>() }
+    val showPoems: SingleLiveEvent<Unit> by lazy { SingleLiveEvent<Unit>() }
     val poemImageFile: MutableLiveData<File> by lazy { MutableLiveData<File>() }
     val shareIntentLive: MutableLiveData<Intent> by lazy { MutableLiveData<Intent>() }
     val copied: SingleLiveEvent<Unit> by lazy { SingleLiveEvent<Unit>() }
@@ -65,10 +68,30 @@ class ViewModelPoemList @Inject constructor(
             override fun onNext(t: List<Poem>) {
                 super.onNext(t)
                 poemList.addAll(poemItemMapper.mapToPresentation(t))
-                showPoems.value = Random.nextInt(t.size)
+                if (t.isNotEmpty())
+                    showPoems.call()
+            }
+
+            override fun onComplete() {
+                super.onComplete()
+                randomPoem()
             }
         }
         getPoems.execute(observer)
+    }
+
+    fun findPoem(searchPhrase: String) {
+        val observer = object : DefaultObserver<List<Poem>>() {
+            override fun onNext(t: List<Poem>) {
+                super.onNext(t)
+                poemList.clear()
+                poemList.addAll(poemItemMapper.mapToPresentation(t))
+                if (t.isNotEmpty())
+                    showPoems.call()
+            }
+        }
+        val params = FindPoemsParams(searchPhrase)
+        findPoems.execute(observer, params)
     }
 
     fun sharePoemText(currentItem: Int) {

@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.raven.khayam.model.PoemItem
 
+
 class PoemPagerAdapter(
     fragmentActivity: FragmentActivity,
     private val poemList: List<PoemItem>

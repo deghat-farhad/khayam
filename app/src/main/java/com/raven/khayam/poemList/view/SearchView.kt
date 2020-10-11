@@ -6,9 +6,10 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewAnimationUtils
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
-import androidx.core.animation.doOnEnd
+import android.widget.TextView.OnEditorActionListener
 import com.raven.khayam.R
 import kotlinx.android.synthetic.main.view_search.view.*
 
@@ -16,13 +17,34 @@ import kotlinx.android.synthetic.main.view_search.view.*
 class SearchView(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
 
     var isOpen = false
-    private set
+        private set
+
+    var listener: Listener? = null
+
+    private var searchPhrase = ""
 
     init {
         LayoutInflater.from(context).inflate(R.layout.view_search, this, true)
 
         open_search_button.setOnClickListener { openSearch() }
         close_search_button.setOnClickListener { closeSearch() }
+
+        execute_search_button.setOnClickListener { performSearch() }
+
+        search_input_text.setOnEditorActionListener(OnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                performSearch()
+                return@OnEditorActionListener true
+            }
+            false
+        })
+    }
+
+    private fun performSearch() {
+        if (searchPhrase != search_input_text.text.toString()) {
+            searchPhrase = search_input_text.text.toString()
+            listener?.onSearchListener(searchPhrase)
+        }
     }
 
     fun openSearch() {
@@ -81,5 +103,9 @@ class SearchView(context: Context, attrs: AttributeSet) : FrameLayout(context, a
             val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(v.windowToken, 0)
         }
+    }
+
+    interface Listener {
+        fun onSearchListener(searchPhrase: String)
     }
 }

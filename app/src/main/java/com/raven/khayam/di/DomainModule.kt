@@ -1,6 +1,7 @@
 package com.raven.khayam.di
 
 import com.raven.khayam.domain.repository.PoemRepository
+import com.raven.khayam.domain.usecase.findPoems.FindPoems
 import com.raven.khayam.domain.usecase.getPoems.GetPoems
 import dagger.Module
 import dagger.Provides
@@ -25,4 +26,11 @@ class DomainModule {
         @Named("ioScheduler") ioScheduler: Scheduler,
         @Named("mainThreadScheduler") mainThreadScheduler: Scheduler
     ) = GetPoems(ioScheduler, mainThreadScheduler, poemRepository)
+
+    @Provides
+    fun findPoems(
+        poemRepository: PoemRepository,
+        @Named("ioScheduler") ioScheduler: Scheduler,
+        @Named("mainThreadScheduler") mainThreadScheduler: Scheduler
+    ) = FindPoems(ioScheduler, mainThreadScheduler, poemRepository)
 }

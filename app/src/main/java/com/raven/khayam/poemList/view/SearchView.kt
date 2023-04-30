@@ -10,11 +10,13 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.TextView.OnEditorActionListener
-import com.raven.khayam.R
-import kotlinx.android.synthetic.main.view_search.view.*
+import com.raven.khayam.databinding.ViewSearchBinding
 
 
 class SearchView(context: Context, attrs: AttributeSet) : FrameLayout(context, attrs) {
+
+    private var _binding: ViewSearchBinding? = null
+    private val binding get() = _binding!!
 
     var isOpen = false
         private set
@@ -24,14 +26,15 @@ class SearchView(context: Context, attrs: AttributeSet) : FrameLayout(context, a
     private var searchPhrase = ""
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.view_search, this, true)
+        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        _binding = ViewSearchBinding.inflate(inflater, this, true)
 
-        open_search_button.setOnClickListener { openSearch() }
-        close_search_button.setOnClickListener { closeSearch() }
+        binding.openSearchButton.setOnClickListener { openSearch() }
+        binding.closeSearchButton.setOnClickListener { closeSearch() }
 
-        execute_search_button.setOnClickListener { performSearch() }
+        binding.executeSearchButton.setOnClickListener { performSearch() }
 
-        search_input_text.setOnEditorActionListener(OnEditorActionListener { _, actionId, _ ->
+        binding.searchInputText.setOnEditorActionListener(OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 performSearch()
                 return@OnEditorActionListener true
@@ -41,8 +44,8 @@ class SearchView(context: Context, attrs: AttributeSet) : FrameLayout(context, a
     }
 
     private fun performSearch() {
-        if (searchPhrase != search_input_text.text.toString()) {
-            searchPhrase = search_input_text.text.toString()
+        if (searchPhrase != binding.searchInputText.text.toString()) {
+            searchPhrase = binding.searchInputText.text.toString()
             listener?.onSearchListener(searchPhrase)
         }
         closeKeyboard()
@@ -50,16 +53,16 @@ class SearchView(context: Context, attrs: AttributeSet) : FrameLayout(context, a
 
     fun openSearch() {
         isOpen = true
-        open_search_button.setOnClickListener(null)
-        search_input_text.setText("")
-        search_open_view.visibility = View.VISIBLE
+        binding.openSearchButton.setOnClickListener(null)
+        binding.searchInputText.setText("")
+        binding.searchOpenView.visibility = View.VISIBLE
         val circularReveal = ViewAnimationUtils.createCircularReveal(
-            search_open_view,
-            (open_search_button.right + open_search_button.left) / 2,
-            (open_search_button.top + open_search_button.bottom) / 2,
+            binding.searchOpenView,
+            (binding.openSearchButton.right + binding.openSearchButton.left) / 2,
+            (binding.openSearchButton.top + binding.openSearchButton.bottom) / 2,
             0f, width.toFloat()
         )
-        search_input_text.requestFocus()
+        binding.searchInputText.requestFocus()
         showKeyboard()
         circularReveal.duration = 200
         circularReveal.start()
@@ -68,11 +71,11 @@ class SearchView(context: Context, attrs: AttributeSet) : FrameLayout(context, a
     fun closeSearch() {
         listener?.onSearchCloseListener()
         isOpen = false
-        open_search_button.setOnClickListener { openSearch() }
+        binding.openSearchButton.setOnClickListener { openSearch() }
         val circularConceal = ViewAnimationUtils.createCircularReveal(
-            search_open_view,
-            (open_search_button.right + open_search_button.left) / 2,
-            (open_search_button.top + open_search_button.bottom) / 2,
+            binding.searchOpenView,
+            (binding.openSearchButton.right + binding.openSearchButton.left) / 2,
+            (binding.openSearchButton.top + binding.openSearchButton.bottom) / 2,
             width.toFloat(), 0f
         )
         closeKeyboard()
@@ -83,8 +86,8 @@ class SearchView(context: Context, attrs: AttributeSet) : FrameLayout(context, a
             override fun onAnimationCancel(animation: Animator) = Unit
             override fun onAnimationStart(animation: Animator) = Unit
             override fun onAnimationEnd(animation: Animator) {
-                search_open_view.visibility = View.INVISIBLE
-                search_input_text.setText("")
+                binding.searchOpenView.visibility = View.INVISIBLE
+                binding.searchInputText.setText("")
                 circularConceal.removeAllListeners()
             }
         })

@@ -5,16 +5,17 @@ import android.content.ClipboardManager
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.farhad.editableprofile.utils.SingleLiveEvent
-import com.raven.khayam.domain.model.Poem
-import com.raven.khayam.domain.usecase.base.DefaultObserver
+import androidx.lifecycle.viewModelScope
 import com.raven.khayam.domain.usecase.findPoems.FindPoems
 import com.raven.khayam.domain.usecase.findPoems.FindPoemsParams
 import com.raven.khayam.domain.usecase.getPoems.GetPoems
 import com.raven.khayam.mapper.PoemItemMapper
 import com.raven.khayam.model.PoemItem
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
@@ -27,19 +28,17 @@ class ViewModelPoemList @Inject constructor(
     private val poemItemMapper: PoemItemMapper
 ) : ViewModel() {
 
-    val poemList = mutableListOf<PoemItem>()
+    private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
+    val uiState: StateFlow<UiState> = _uiState
 
-    val showPoems: SingleLiveEvent<Unit> by lazy { SingleLiveEvent<Unit>() }
-    val poemImageFile: MutableLiveData<File> by lazy { MutableLiveData<File>() }
-    val shareIntentLive: MutableLiveData<Intent> by lazy { MutableLiveData<Intent>() }
-    val copied: SingleLiveEvent<Unit> by lazy { SingleLiveEvent<Unit>() }
-    val randomPoemIndex: SingleLiveEvent<Int> by lazy { SingleLiveEvent<Int>() }
+
+    private val poemList: MutableList<PoemItem> = mutableListOf()
 
     fun viewIsReady() {
         loadPoems()
     }
 
-    fun sharePoemImage(bitmap: Bitmap, cacheDir: File) {
+    fun sharePoemImage(bitmap: Bitmap, cacheDir: File, currentItemIndex: Int) {
 
         val cachePath = File(cacheDir, "images")
         cachePath.mkdirs()
@@ -51,43 +50,35 @@ class ViewModelPoemList @Inject constructor(
         stream.close()
 
         val imagePath = File(cacheDir, "images")
-        poemImageFile.value = File(imagePath, "image.jpg")
+        updateUiState(imageToShare = File(imagePath, "image.jpg"), currentItemIndex = currentItemIndex)
     }
 
-    fun sharePoemImageUri(poemUri: Uri) {
+    fun sharePoemImageUri(poemUri: Uri, currentItemIndex: Int) {
         val shareIntent = Intent()
         shareIntent.action = Intent.ACTION_SEND
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         shareIntent.setDataAndType(poemUri, "image/*")
         shareIntent.putExtra(Intent.EXTRA_STREAM, poemUri)
-        shareIntentLive.value = shareIntent
+        updateUiState(shareIntent = shareIntent, currentItemIndex = currentItemIndex)
+    }
+
+    private fun emitPoems(poems: List<PoemItem>) {
+        poemList.clear()
+        poemList.addAll(poems)
+        updateUiState(poems = poemList, currentItemIndex = 0)
     }
 
     private fun loadPoems() {
-        val observer = object : DefaultObserver<List<Poem>>() {
-            override fun onNext(t: List<Poem>) {
-                super.onNext(t)
-                poemList.clear()
-                poemList.addAll(poemItemMapper.mapToPresentation(t))
-                if (t.isNotEmpty())
-                    showPoems.call()
-            }
-        }
-        getPoems.execute(observer)
+        getPoems().onEach {poems ->
+            emitPoems(poemItemMapper.mapToPresentation(poems))
+        }.launchIn(viewModelScope)
     }
 
     fun findPoem(searchPhrase: String) {
-        val observer = object : DefaultObserver<List<Poem>>() {
-            override fun onNext(t: List<Poem>) {
-                super.onNext(t)
-                poemList.clear()
-                poemList.addAll(poemItemMapper.mapToPresentation(t))
-                if (t.isNotEmpty())
-                    showPoems.call()
-            }
-        }
         val params = FindPoemsParams(searchPhrase)
-        findPoems.execute(observer, params)
+        findPoems(params).onEach {poems ->
+            emitPoems(poemItemMapper.mapToPresentation(poems))
+        }.launchIn(viewModelScope)
     }
 
     fun sharePoemText(currentItem: Int) {
@@ -96,20 +87,53 @@ class ViewModelPoemList @Inject constructor(
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         shareIntent.type = "text/plain"
         shareIntent.putExtra(Intent.EXTRA_TEXT, assemblePoem(poemList[currentItem]))
-        shareIntentLive.value = shareIntent
+        updateUiState(shareIntent = shareIntent, currentItemIndex = currentItem)
     }
 
     fun copyPoem(currentItem: Int, clipboard: ClipboardManager) {
-        val clip = ClipData.newPlainText("poem", assemblePoem(poemList[currentItem]))
+        val poemText = assemblePoem(poemList[currentItem])
+        val clip = ClipData.newPlainText("poem", poemText)
         clipboard.setPrimaryClip(clip)
-        copied.call()
+        updateUiState(copiedPoem = poemText, currentItemIndex = currentItem)
     }
 
     fun randomPoem() {
-        randomPoemIndex.value = Random.nextInt(poemList.size)
+        updateUiState(currentItemIndex = Random.nextInt(poemList.size))
     }
     fun searchClosed(){
         loadPoems()
+    }
+
+    private fun updateUiState(
+        poems: List<PoemItem>? = null,
+        imageToShare: File? = null,
+        shareIntent: Intent? = null,
+        copiedPoem: String? = null,
+        currentItemIndex: Int
+    ) {
+        when (val state = _uiState.value) {
+            is UiState.Loaded -> {
+                _uiState.value = state.copy(
+                    poems = poems ?: state.poems,
+                    imageToShare = imageToShare,
+                    shareIntent = shareIntent,
+                    copiedPoem = copiedPoem,
+                    currentItemIndex = currentItemIndex
+                )
+            }
+            UiState.Loading -> {
+                if (poems == null) {
+                    throw IllegalArgumentException("poems and currentItemIndex cannot be null when UiState is Loading")
+                }
+                _uiState.value = UiState.Loaded(
+                    poems = poems,
+                    imageToShare = imageToShare,
+                    shareIntent = shareIntent,
+                    copiedPoem = copiedPoem,
+                    currentItemIndex = currentItemIndex
+                )
+            }
+        }
     }
 
     private fun assemblePoem(poemItem: PoemItem): String {
@@ -120,5 +144,16 @@ class ViewModelPoemList @Inject constructor(
             poemItem.hemistich3,
             poemItem.hemistich4
         )
+    }
+
+    sealed class UiState{
+        object Loading: UiState()
+        data class Loaded(
+            val poems: List<PoemItem>,
+            val imageToShare: File?,
+            val shareIntent: Intent?,
+            val copiedPoem: String?,
+            val currentItemIndex: Int = 0
+            ): UiState()
     }
 }

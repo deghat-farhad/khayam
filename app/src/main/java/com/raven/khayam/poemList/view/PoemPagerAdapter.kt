@@ -8,7 +8,7 @@ import com.raven.khayam.model.PoemItem
 
 class PoemPagerAdapter(
     fragmentActivity: FragmentActivity,
-    private val poemList: List<PoemItem>
+    val poemList: List<PoemItem>
 ) : FragmentStateAdapter(fragmentActivity) {
     override fun createFragment(position: Int): Fragment {
         return FragPoem.create(poemList[position])

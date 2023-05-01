@@ -11,14 +11,17 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.raven.khayam.R
 import com.raven.khayam.di.DaggerViewModelComponent
 import com.raven.khayam.di.ViewModelFactory
+import com.raven.khayam.model.PoemItem
 import com.raven.khayam.poemList.ViewModelPoemList
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator
 import java.io.File
 import javax.inject.Inject
@@ -61,7 +64,6 @@ class MainActivity : FragmentActivity() {
 
     private fun initiate() {
         initFab()
-        initPoemViwPager()
 
         poemLayout = findViewById(R.id.poemLayout)
         findViewById<FloatingActionButton>(R.id.fabRandom).setOnClickListener { viewModel.randomPoem() }
@@ -101,7 +103,7 @@ class MainActivity : FragmentActivity() {
         ViewAnimation.init(fabText)
 
         fabImage.setOnClickListener {
-            viewModel.sharePoemImage(getBitmapOfPoem(), cacheDir)
+            viewModel.sharePoemImage(getBitmapOfPoem(), cacheDir, poemViewPager.currentItem)
         }
 
         fabText.setOnClickListener {
@@ -116,9 +118,9 @@ class MainActivity : FragmentActivity() {
         }
     }
 
-    private fun initPoemViwPager() {
+    private fun initPoemViwPager(poems: List<PoemItem>) {
         poemViewPager = findViewById<ViewPager2>(R.id.pagerPoem)
-        poemPagerAdapter = PoemPagerAdapter(this, viewModel.poemList)
+        poemPagerAdapter = PoemPagerAdapter(this, poems)
         val indicator: ScrollingPagerIndicator = findViewById(R.id.indicator)
 
         poemViewPager.adapter = poemPagerAdapter
@@ -126,22 +128,28 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun setObservers() {
-        viewModel.showPoems.observe(this, Observer {
-            poemViewPager.adapter = poemPagerAdapter
-            poemPagerAdapter.notifyDataSetChanged()
-        })
-        viewModel.poemImageFile.observe(
-            this,
-            Observer { viewModel.sharePoemImageUri(getUriOf(it)) })
-        viewModel.shareIntentLive.observe(this, Observer {
-            startActivity(
-                Intent.createChooser(it, "choose an app")
-            )
-        })
-        viewModel.copied.observe(this, Observer {
-            Toast.makeText(this, "poem copied to clipboard.", Toast.LENGTH_SHORT).show()
-        })
-        viewModel.randomPoemIndex.observe(this, Observer { poemViewPager.currentItem = it })
+        viewModel.uiState.onEach { uiState ->
+            when (uiState) {
+                is ViewModelPoemList.UiState.Loaded -> {
+                    if(!::poemViewPager.isInitialized || poemPagerAdapter.poemList !=  uiState.poems)
+                        initPoemViwPager(uiState.poems)
+                    uiState.shareIntent?.let { intent ->
+                        startActivity(
+                            Intent.createChooser(intent, "choose an app")
+                        )
+                    }
+                    uiState.imageToShare?.let { file ->
+                        viewModel.sharePoemImageUri(getUriOf(file), poemViewPager.currentItem)
+                    }
+                    uiState.copiedPoem?.let {
+                        Toast.makeText(this, "poem copied to clipboard.", Toast.LENGTH_SHORT).show()
+                    }
+                    if(::poemViewPager.isInitialized && poemViewPager.currentItem != uiState.currentItemIndex)
+                        poemViewPager.currentItem = uiState.currentItemIndex
+                }
+                ViewModelPoemList.UiState.Loading -> {}
+            }
+        }.launchIn(lifecycleScope)
     }
 
     private fun getBitmapOfPoem(): Bitmap {

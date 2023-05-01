@@ -1,9 +1,9 @@
 package com.raven.khayam.domain.repository
 
 import com.raven.khayam.domain.model.Poem
-import io.reactivex.Observable
+import kotlinx.coroutines.flow.Flow
 
 interface PoemRepository {
-    fun getPoems(): Observable<List<Poem>>
-    fun findPoems(searchPhrase: String): Observable<List<Poem>>
+    fun getPoems(): Flow<List<Poem>>
+    fun findPoems(searchPhrase: String): Flow<List<Poem>>
 }

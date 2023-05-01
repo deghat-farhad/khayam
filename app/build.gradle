@@ -56,10 +56,6 @@ dependencies {
     implementation "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
-    //reactiveX
-    implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
-    implementation "io.reactivex.rxjava2:rxandroid:$rxandroid_version"
-
     //lifecycle
     implementation "android.arch.lifecycle:runtime:$lifecycle_version"
     implementation "android.arch.lifecycle:extensions:$lifecycle_version"
@@ -76,4 +72,6 @@ dependencies {
     implementation "com.android.support:design:$design_version"
 
     implementation 'androidx.multidex:multidex:2.0.1'
+
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
 }

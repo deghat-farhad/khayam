@@ -1,7 +1,6 @@
 package com.raven.khayam
 
 object Versions {
-    const val roomVersion = "2.5.1"
     const val rxkotlinVersion = "2.4.0"
     const val rxAndroidVersion = "2.1.1"
     const val rxJavaApiVersion = "2.2.8"
@@ -40,6 +39,13 @@ object Libs {
         const val viewpager2 = "androidx.viewpager2:viewpager2:$viewpagerVersion"
         const val multidex = "androidx.multidex:multidex:$multidexVersion"
         const val lifecycleViewmodelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleViewmodelKtxVersion"
+
+        object Room {
+            const val roomVersion = "2.5.1"
+            const val RoomRuntime = "androidx.room:room-runtime:$roomVersion"
+            const val RoomKtx = "androidx.room:room-ktx:$roomVersion"
+            const val RoomCompiler = "androidx.room:room-compiler:$roomVersion"
+        }
     }
 
     object Dagger {

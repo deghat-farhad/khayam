@@ -11,11 +11,13 @@ object Libs {
     private const val materialVersion = "1.8.0"
     private const val scrollingPagerIndicatorVersion = "1.2.1"
     private const val designVersion = "28.0.0"
+    private const val kotlinxCoroutinesCoreVersion = "1.6.4"
 
     const val androidGradlePlugin = "com.android.tools.build:gradle:$androidGradlePluginVersion"
     const val material = "com.google.android.material:material:$materialVersion"
     const val scrollingPagerIndicator = "ru.tinkoff.scrollingpagerindicator:scrollingpagerindicator:$scrollingPagerIndicatorVersion"
     const val design = "com.android.support:design:$designVersion"
+    const val kotlinxCoroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxCoroutinesCoreVersion"
 
     object Kotlin {
         private const val kotlinVersion = "1.8.21"

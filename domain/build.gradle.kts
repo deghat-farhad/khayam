@@ -3,9 +3,11 @@ plugins {
     kotlin("kapt")
 }
 
-dependencies {
-    implementation(Libs.Kotlin.stdlib)
+java {
+    sourceCompatibility = ConfigurationData.javaVersion
+    targetCompatibility = ConfigurationData.javaVersion
+}
 
-    //coroutines
+dependencies {
     implementation(Libs.kotlinxCoroutinesCore)
 }

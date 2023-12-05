@@ -9,9 +9,9 @@ import android.os.Bundle
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -31,7 +31,7 @@ class MainActivity : FragmentActivity() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
-    private lateinit var viewModel: ViewModelPoemList
+    val viewModel: ViewModelPoemList by viewModels { viewModelFactory }
 
     private lateinit var poemPagerAdapter: PoemPagerAdapter
     private lateinit var poemLayout: FrameLayout
@@ -50,8 +50,6 @@ class MainActivity : FragmentActivity() {
         setContentView(R.layout.activity_main)
 
         injectThisToDagger()
-        viewModel =
-            ViewModelProviders.of(this, viewModelFactory).get(ViewModelPoemList::class.java)
 
         initiate()
         setObservers()

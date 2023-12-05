@@ -6,7 +6,6 @@ plugins {
 
 android {
     compileSdk = ConfigurationData.compileSdk
-    buildToolsVersion = ConfigurationData.buildToolsVersion
     namespace = ConfigurationData.applicationId
 
     defaultConfig {
@@ -52,7 +51,8 @@ dependencies {
     implementation(Libs.AndroidX.multidex)
     implementation(Libs.AndroidX.lifecycleViewmodelKtx)
 
-    implementation(Libs.LifeCycle.extensions)
+    implementation(Libs.fragmentKtx)
     implementation(Libs.material)
     implementation(Libs.scrollingPagerIndicator)
+
 }

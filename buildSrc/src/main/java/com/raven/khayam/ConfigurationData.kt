@@ -1,5 +1,3 @@
-package com.raven.khayam
-
 import org.gradle.api.JavaVersion
 
 object ConfigurationData {

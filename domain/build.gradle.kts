@@ -1,5 +1,3 @@
-import com.raven.khayam.Libs
-
 plugins {
     id("kotlin")
     kotlin("kapt")

@@ -1,6 +1,3 @@
-import com.raven.khayam.ConfigurationData
-import com.raven.khayam.Libs
-
 plugins {
     id("com.android.application")
     kotlin("android")

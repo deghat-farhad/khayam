@@ -1,5 +1,3 @@
-package com.raven.khayam
-
 object Versions {
     const val rxkotlinVersion = "2.4.0"
     const val rxAndroidVersion = "2.1.1"
@@ -7,7 +5,7 @@ object Versions {
 }
 
 object Libs {
-    private const val androidGradlePluginVersion = "7.2.1"
+    private const val androidGradlePluginVersion = "8.0.0"
     private const val materialVersion = "1.8.0"
     private const val scrollingPagerIndicatorVersion = "1.2.1"
     private const val designVersion = "28.0.0"

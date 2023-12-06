@@ -1,3 +1,7 @@
+object Versions {
+    val kspVersion = "1.9.21-1.0.15"
+}
+
 object Libs {
     private const val androidGradlePluginVersion = "8.2.0"
     private const val materialVersion = "1.10.0"

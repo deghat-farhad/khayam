@@ -1,7 +1,7 @@
 plugins {
+    id("com.google.devtools.ksp")
     id("com.android.application")
     kotlin("android")
-    kotlin("kapt")
 }
 
 android {
@@ -46,7 +46,7 @@ dependencies {
     implementation(project(":domain"))
 
     implementation(Libs.Dagger.dagger)
-    kapt(Libs.Dagger.daggerCompiler)
+    ksp(Libs.Dagger.daggerCompiler)
 
     implementation(Libs.AndroidX.multidex)
     implementation(Libs.AndroidX.lifecycleViewmodelKtx)

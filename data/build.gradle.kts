@@ -1,11 +1,10 @@
 plugins {
+    id("com.google.devtools.ksp")
     id("com.android.library")
     kotlin("android")
-    kotlin("kapt")
 }
 
 android {
-
     compileSdk = ConfigurationData.compileSdk
     buildToolsVersion = ConfigurationData.buildToolsVersion
     namespace = "${ConfigurationData.applicationId}.data"
@@ -44,8 +43,8 @@ dependencies {
     implementation (project(":domain"))
 
     implementation (Libs.AndroidX.Room.RoomKtx)
-    kapt (Libs.AndroidX.Room.RoomCompiler)
+    ksp (Libs.AndroidX.Room.RoomCompiler)
 
     implementation (Libs.Dagger.dagger)
-    kapt (Libs.Dagger.daggerCompiler)
+    ksp (Libs.Dagger.daggerCompiler)
 }

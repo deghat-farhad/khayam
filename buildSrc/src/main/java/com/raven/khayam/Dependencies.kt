@@ -40,12 +40,14 @@ object Libs {
         private const val fragmentKtxVersion = "1.6.2"
         private const val navigationComposeVersion = "2.7.5"
         private const val hiltNavigationComposeVersion = "1.1.0"
+        private const val materialIconsExtendedVersion = "1.5.4"
 
         const val multidex = "androidx.multidex:multidex:$multidexVersion"
         const val lifecycleViewmodelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleViewmodelKtxVersion"
         const val fragmentKtx = "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
         const val navigationCompose = "androidx.navigation:navigation-compose:$navigationComposeVersion"
         const val hiltNavigationCompose = "androidx.hilt:hilt-navigation-compose:$hiltNavigationComposeVersion"
+        const val materialIconExtended = "androidx.compose.material:material-icons-extended:$materialIconsExtendedVersion"
 
         object Room {
             private const val roomVersion = "2.6.1"

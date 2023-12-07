@@ -19,7 +19,9 @@ fun PoemListRoute(
     when (val state = uiState) {
         is PoemListViewModel.UiState.Loaded -> {
             PoemListScreen(
-                state.poems
+                state.poems,
+                state.currentItemIndex,
+                viewModel::randomPoem
             )
         }
 

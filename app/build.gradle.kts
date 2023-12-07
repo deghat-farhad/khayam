@@ -65,4 +65,6 @@ dependencies {
     implementation(Libs.AndroidX.hiltNavigationCompose)
     implementation(Libs.Hilt.hiltAndroid)
     ksp(Libs.Hilt.hiltCompiler)
+
+    implementation(Libs.AndroidX.materialIconExtended)
 }

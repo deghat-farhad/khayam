@@ -1,5 +1,20 @@
+import Versions.hiltVersion
+
 object Versions {
-    val kspVersion = "1.9.21-1.0.15"
+    const val kspVersion = "1.9.21-1.0.15"
+    const val hiltVersion = "2.49"
+}
+
+object Plugins {
+    const val ksp = "com.google.devtools.ksp"
+    const val hiltAndroid = "com.google.dagger.hilt.android"
+    const val application = "com.android.application"
+    const val library = "com.android.library"
+    const val kotlin = "kotlin"
+
+    object Kotlin {
+        const val android = "android"
+    }
 }
 
 object Libs {
@@ -7,13 +22,11 @@ object Libs {
     private const val materialVersion = "1.10.0"
     private const val scrollingPagerIndicatorVersion = "1.2.5"
     private const val kotlinxCoroutinesCoreVersion = "1.7.3"
-    private const val fragmentKtxVersion = "1.6.2"
 
     const val androidGradlePlugin = "com.android.tools.build:gradle:$androidGradlePluginVersion"
     const val material = "com.google.android.material:material:$materialVersion"
     const val scrollingPagerIndicator = "ru.tinkoff.scrollingpagerindicator:scrollingpagerindicator:$scrollingPagerIndicatorVersion"
     const val kotlinxCoroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxCoroutinesCoreVersion"
-    const val fragmentKtx = "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
 
     object Kotlin {
         private const val kotlinVersion = "1.9.21"
@@ -24,14 +37,28 @@ object Libs {
     object AndroidX {
         private const val multidexVersion = "2.0.1"
         private const val lifecycleViewmodelKtxVersion = "2.6.2"
+        private const val fragmentKtxVersion = "1.6.2"
+        private const val navigationComposeVersion = "2.7.5"
+        private const val hiltNavigationComposeVersion = "1.1.0"
 
         const val multidex = "androidx.multidex:multidex:$multidexVersion"
         const val lifecycleViewmodelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleViewmodelKtxVersion"
+        const val fragmentKtx = "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
+        const val navigationCompose = "androidx.navigation:navigation-compose:$navigationComposeVersion"
+        const val hiltNavigationCompose = "androidx.hilt:hilt-navigation-compose:$hiltNavigationComposeVersion"
 
         object Room {
             private const val roomVersion = "2.6.1"
             const val RoomKtx = "androidx.room:room-ktx:$roomVersion"
             const val RoomCompiler = "androidx.room:room-compiler:$roomVersion"
+        }
+
+        object Compose {
+            private const val composeBomVersion = "2023.10.01"
+
+            const val Bom = "androidx.compose:compose-bom:$composeBomVersion"
+            const val Runtime = "androidx.compose.runtime:runtime"
+            const val Material3 = "androidx.compose.material3:material3"
         }
     }
 
@@ -40,5 +67,10 @@ object Libs {
 
         const val dagger = "com.google.dagger:dagger:$daggerVersion"
         const val daggerCompiler = "com.google.dagger:dagger-compiler:$daggerVersion"
+    }
+
+    object Hilt {
+        const val hiltAndroid = "com.google.dagger:hilt-android:$hiltVersion"
+        const val hiltCompiler = "com.google.dagger:hilt-compiler:$hiltVersion"
     }
 }

@@ -12,14 +12,14 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentActivity
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.raven.khayam.R
-import com.raven.khayam.di.DaggerViewModelComponent
-import com.raven.khayam.di.ViewModelFactory
 import com.raven.khayam.model.PoemItem
-import com.raven.khayam.poemList.ViewModelPoemList
+import com.raven.khayam.poemList.PoemListViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator
@@ -27,11 +27,10 @@ import java.io.File
 import javax.inject.Inject
 
 
+@AndroidEntryPoint
 class MainActivity : FragmentActivity() {
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelFactory
-    val viewModel: ViewModelPoemList by viewModels { viewModelFactory }
+    val viewModel: PoemListViewModel by viewModels<PoemListViewModel>()
 
     private lateinit var poemPagerAdapter: PoemPagerAdapter
     private lateinit var poemLayout: FrameLayout
@@ -49,15 +48,9 @@ class MainActivity : FragmentActivity() {
         )
         setContentView(R.layout.activity_main)
 
-        injectThisToDagger()
-
         initiate()
         setObservers()
         viewModel.viewIsReady()
-    }
-
-    private fun injectThisToDagger() {
-        DaggerViewModelComponent.builder().application(application).build().injectActivity(this)
     }
 
     private fun initiate() {
@@ -128,7 +121,7 @@ class MainActivity : FragmentActivity() {
     private fun setObservers() {
         viewModel.uiState.onEach { uiState ->
             when (uiState) {
-                is ViewModelPoemList.UiState.Loaded -> {
+                is PoemListViewModel.UiState.Loaded -> {
                     if(!::poemViewPager.isInitialized || poemPagerAdapter.poemList !=  uiState.poems)
                         initPoemViwPager(uiState.poems)
                     uiState.shareIntent?.let { intent ->
@@ -145,7 +138,7 @@ class MainActivity : FragmentActivity() {
                     if(::poemViewPager.isInitialized && poemViewPager.currentItem != uiState.currentItemIndex)
                         poemViewPager.currentItem = uiState.currentItemIndex
                 }
-                ViewModelPoemList.UiState.Loading -> {}
+                PoemListViewModel.UiState.Loading -> {}
             }
         }.launchIn(lifecycleScope)
     }

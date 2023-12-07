@@ -12,6 +12,7 @@ import com.raven.khayam.domain.usecase.findPoems.FindPoemsParams
 import com.raven.khayam.domain.usecase.getPoems.GetPoems
 import com.raven.khayam.mapper.PoemItemMapper
 import com.raven.khayam.model.PoemItem
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -22,7 +23,8 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 
-class ViewModelPoemList @Inject constructor(
+@HiltViewModel
+class PoemListViewModel @Inject constructor(
     private val getPoems: GetPoems,
     private val findPoems: FindPoems,
     private val poemItemMapper: PoemItemMapper

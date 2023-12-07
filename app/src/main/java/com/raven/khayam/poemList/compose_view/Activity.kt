@@ -1,0 +1,29 @@
+package com.raven.khayam.poemList.compose_view
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import com.raven.khayam.poemList.compose_view.poem_list.ROUTE_POEM_LIST
+import com.raven.khayam.poemList.compose_view.poem_list.poemList
+import com.raven.khayam.poemList.compose_view.theme.KhayamTheme
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+class Activity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            val navController = rememberNavController()
+            KhayamTheme {
+                NavHost(
+                    navController = navController,
+                    startDestination = ROUTE_POEM_LIST,
+                ) {
+                    poemList(navController)
+                }
+            }
+        }
+    }
+}

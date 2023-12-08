@@ -21,7 +21,8 @@ fun PoemListRoute(
             PoemListScreen(
                 state.poems,
                 state.currentItemIndex,
-                viewModel::randomPoem
+                viewModel::randomPoem,
+                viewModel::findPoem,
             )
         }
 

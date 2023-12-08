@@ -14,11 +14,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.raven.khayam.model.PoemItem
-import com.raven.khayam.poemList.compose_view.PoemView
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PoemHorizontalPager(
+    modifier: Modifier = Modifier,
     poemList: List<PoemItem>,
     currentPoemIndex: Int
 ) {
@@ -29,11 +29,14 @@ fun PoemHorizontalPager(
         pagerState.animateScrollToPage(currentPoemIndex)
     }
     HorizontalPager(
+        modifier = modifier,
         state = pagerState,
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) { page ->
         Card(
-            modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)
+            modifier = Modifier
+                .padding(horizontal = 4.dp, vertical = 8.dp)
+                .fillMaxSize()
         ) {
             Box(
                 modifier = Modifier.fillMaxSize(),

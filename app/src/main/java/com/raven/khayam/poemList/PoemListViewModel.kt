@@ -15,8 +15,10 @@ import com.raven.khayam.model.PoemItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
@@ -33,11 +35,90 @@ class PoemListViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
     val uiState: StateFlow<UiState> = _uiState
 
-
-    private val poemList: MutableList<PoemItem> = mutableListOf()
+    private var searchResult: MutableList<PoemItem> = mutableListOf()
+    private val currentPoemIndex get() = (_uiState.value as UiState.Loaded).currentItemIndex
+    private val poemList get() = (_uiState.value as UiState.Loaded).poems
+    private val currentPoem get() = poemList[currentPoemIndex]
 
     fun viewIsReady() {
         loadPoems()
+    }
+
+    fun setCurrentPoemIndex(currentPoemIndex: Int) {
+        updateUiState(
+            currentItemIndex = currentPoemIndex
+        )
+    }
+
+    private fun loadPoems() {
+        getPoems().onEach { poems ->
+            updateUiState(
+                poems = poemItemMapper.mapToPresentation(poems),
+                currentItemIndex = 0
+            )
+        }.launchIn(viewModelScope)
+    }
+
+    private suspend fun findPoem(
+        searchPhrase: String,
+        condition: (index: Int) -> Boolean = { true }
+    ): PoemItem? {
+        val params = FindPoemsParams(searchPhrase)
+        searchResult = poemItemMapper.mapToPresentation(findPoems(params).first()).toMutableList()
+
+        return searchResult.filter {
+            condition(it.index)
+        }.minByOrNull {
+            kotlin.math.abs(it.index - currentPoemIndex)
+        }
+    }
+
+    fun findNearestPoem(searchPhrase: String) {
+        viewModelScope.launch {
+            updateUiState(
+                currentItemIndex = findPoem(searchPhrase)?.index ?: currentPoemIndex
+            )
+        }
+    }
+
+    fun onNextResult(searchPhrase: String) {
+        viewModelScope.launch {
+            updateUiState(
+                currentItemIndex = findPoem(searchPhrase) {
+                    it > currentPoemIndex
+                }?.index ?: currentPoemIndex
+            )
+        }
+    }
+
+    fun onPreviousResult(searchPhrase: String) {
+        viewModelScope.launch {
+            updateUiState(
+                currentItemIndex = findPoem(searchPhrase) {
+                    it < currentPoemIndex
+                }?.index ?: currentPoemIndex
+            )
+        }
+    }
+
+    fun sharePoemText() {
+        val shareIntent = Intent()
+        shareIntent.action = Intent.ACTION_SEND
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        shareIntent.type = "text/plain"
+        shareIntent.putExtra(Intent.EXTRA_TEXT, assemblePoem(currentPoem))
+        updateUiState(shareIntent = shareIntent, currentItemIndex = currentPoemIndex)
+    }
+
+    fun copyPoem(clipboard: ClipboardManager) {
+        val poemText = assemblePoem(currentPoem)
+        val clip = ClipData.newPlainText("poem", poemText)
+        clipboard.setPrimaryClip(clip)
+        updateUiState(copiedPoem = poemText, currentItemIndex = currentPoemIndex)
+    }
+
+    fun randomPoem() {
+        setCurrentPoemIndex(Random.nextInt(poemList.size))
     }
 
     fun sharePoemImage(bitmap: Bitmap, cacheDir: File, currentItemIndex: Int) {
@@ -52,7 +133,10 @@ class PoemListViewModel @Inject constructor(
         stream.close()
 
         val imagePath = File(cacheDir, "images")
-        updateUiState(imageToShare = File(imagePath, "image.jpg"), currentItemIndex = currentItemIndex)
+        updateUiState(
+            imageToShare = File(imagePath, "image.jpg"),
+            currentItemIndex = currentItemIndex
+        )
     }
 
     fun sharePoemImageUri(poemUri: Uri, currentItemIndex: Int) {
@@ -64,45 +148,7 @@ class PoemListViewModel @Inject constructor(
         updateUiState(shareIntent = shareIntent, currentItemIndex = currentItemIndex)
     }
 
-    private fun emitPoems(poems: List<PoemItem>) {
-        poemList.clear()
-        poemList.addAll(poems)
-        updateUiState(poems = poemList, currentItemIndex = 0)
-    }
-
-    private fun loadPoems() {
-        getPoems().onEach {poems ->
-            emitPoems(poemItemMapper.mapToPresentation(poems))
-        }.launchIn(viewModelScope)
-    }
-
-    fun findPoem(searchPhrase: String) {
-        val params = FindPoemsParams(searchPhrase)
-        findPoems(params).onEach {poems ->
-            emitPoems(poemItemMapper.mapToPresentation(poems))
-        }.launchIn(viewModelScope)
-    }
-
-    fun sharePoemText(currentItem: Int) {
-        val shareIntent = Intent()
-        shareIntent.action = Intent.ACTION_SEND
-        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        shareIntent.type = "text/plain"
-        shareIntent.putExtra(Intent.EXTRA_TEXT, assemblePoem(poemList[currentItem]))
-        updateUiState(shareIntent = shareIntent, currentItemIndex = currentItem)
-    }
-
-    fun copyPoem(currentItem: Int, clipboard: ClipboardManager) {
-        val poemText = assemblePoem(poemList[currentItem])
-        val clip = ClipData.newPlainText("poem", poemText)
-        clipboard.setPrimaryClip(clip)
-        updateUiState(copiedPoem = poemText, currentItemIndex = currentItem)
-    }
-
-    fun randomPoem() {
-        updateUiState(currentItemIndex = Random.nextInt(poemList.size))
-    }
-    fun searchClosed(){
+    fun searchClosed() {
         loadPoems()
     }
 
@@ -111,7 +157,7 @@ class PoemListViewModel @Inject constructor(
         imageToShare: File? = null,
         shareIntent: Intent? = null,
         copiedPoem: String? = null,
-        currentItemIndex: Int
+        currentItemIndex: Int,
     ) {
         when (val state = _uiState.value) {
             is UiState.Loaded -> {
@@ -120,7 +166,10 @@ class PoemListViewModel @Inject constructor(
                     imageToShare = imageToShare,
                     shareIntent = shareIntent,
                     copiedPoem = copiedPoem,
-                    currentItemIndex = currentItemIndex
+                    isThereAnyResult = searchResult.isNotEmpty(),
+                    isThereNextResult = searchResult.isNotEmpty() && currentItemIndex < searchResult.last().index,
+                    isTherePreviousResult = searchResult.isNotEmpty() && currentItemIndex > searchResult.first().index,
+                    currentItemIndex = currentItemIndex,
                 )
             }
             UiState.Loading -> {
@@ -132,7 +181,7 @@ class PoemListViewModel @Inject constructor(
                     imageToShare = imageToShare,
                     shareIntent = shareIntent,
                     copiedPoem = copiedPoem,
-                    currentItemIndex = currentItemIndex
+                    currentItemIndex = currentItemIndex,
                 )
             }
         }
@@ -149,13 +198,21 @@ class PoemListViewModel @Inject constructor(
     }
 
     sealed class UiState{
-        object Loading: UiState()
+        data object Loading : UiState()
         data class Loaded(
             val poems: List<PoemItem>,
             val imageToShare: File?,
             val shareIntent: Intent?,
             val copiedPoem: String?,
-            val currentItemIndex: Int = 0
-            ): UiState()
+            val currentItemIndex: Int = 0,
+            val isThereAnyResult: Boolean = false,
+            val isThereNextResult: Boolean = false,
+            val isTherePreviousResult: Boolean = false,
+        ) : UiState()
     }
+
+    val PoemItem.index: Int
+        get() {
+            return id - 1
+        }
 }

@@ -22,7 +22,13 @@ fun PoemListRoute(
                 state.poems,
                 state.currentItemIndex,
                 viewModel::randomPoem,
-                viewModel::findPoem,
+                viewModel::findNearestPoem,
+                viewModel::onNextResult,
+                viewModel::onPreviousResult,
+                viewModel::setCurrentPoemIndex,
+                state.isThereAnyResult,
+                state.isThereNextResult,
+                state.isTherePreviousResult,
             )
         }
 

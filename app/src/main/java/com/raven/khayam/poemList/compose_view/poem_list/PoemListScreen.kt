@@ -22,7 +22,13 @@ fun PoemListScreen(
     poemList: List<PoemItem>,
     currentPoemIndex: Int,
     onRandomPoem: () -> Unit,
-    onSearch: (String) -> Unit
+    onSearch: (String) -> Unit,
+    onNextResult: (String) -> Unit,
+    onPreviousResult: (String) -> Unit,
+    setCurrentPoemIndex: (Int) -> Unit,
+    isThereAnyResult: Boolean,
+    isThereNextResult: Boolean,
+    isTherePreviousResult: Boolean,
 ) {
     Column(
         Modifier
@@ -36,7 +42,8 @@ fun PoemListScreen(
             PoemHorizontalPager(
                 modifier = Modifier.fillMaxSize(),
                 poemList = poemList,
-                currentPoemIndex = currentPoemIndex
+                currentPoemIndex = currentPoemIndex,
+                setCurrentPoemIndex = setCurrentPoemIndex,
             )
             FloatingActionButton(
                 modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
@@ -52,8 +59,12 @@ fun PoemListScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 8.dp, start = 20.dp, end = 20.dp),
-        ) {
-            onSearch(it)
-        }
+            onChange = onSearch,
+            onNextResult = onNextResult,
+            onPreviousResult = onPreviousResult,
+            isThereAnyResult = isThereAnyResult,
+            isThereNextResult = isThereNextResult,
+            isTherePreviousResult = isTherePreviousResult,
+        )
     }
 }

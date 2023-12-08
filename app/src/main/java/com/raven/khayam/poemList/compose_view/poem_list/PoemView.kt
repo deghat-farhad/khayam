@@ -22,6 +22,11 @@ fun PoemView(
             modifier = modifier,
             horizontalAlignment = Alignment.End
         ) {
+            Text(
+                //modifier = Modifier.fillMaxWidth(),
+                text = poemItem.id.toString(),
+                textAlign = TextAlign.Start,
+            )
             Column(
                 modifier = Modifier.fillMaxWidth(),
             ) {

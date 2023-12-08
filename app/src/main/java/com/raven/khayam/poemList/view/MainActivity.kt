@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentActivity
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -24,7 +23,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import ru.tinkoff.scrollingpagerindicator.ScrollingPagerIndicator
 import java.io.File
-import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -61,7 +59,7 @@ class MainActivity : FragmentActivity() {
         searchView = findViewById(R.id.searchView)
         searchView.listener = object : SearchView.Listener {
             override fun onSearchListener(searchPhrase: String) {
-                viewModel.findPoem(searchPhrase)
+                viewModel.findNearestPoem(searchPhrase)
             }
 
             override fun onSearchCloseListener() {
@@ -98,12 +96,11 @@ class MainActivity : FragmentActivity() {
         }
 
         fabText.setOnClickListener {
-            viewModel.sharePoemText(poemViewPager.currentItem)
+            viewModel.sharePoemText()
         }
 
         fabCopy.setOnClickListener {
             viewModel.copyPoem(
-                poemViewPager.currentItem,
                 getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             )
         }

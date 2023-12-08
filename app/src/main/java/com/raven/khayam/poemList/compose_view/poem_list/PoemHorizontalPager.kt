@@ -20,13 +20,19 @@ import com.raven.khayam.model.PoemItem
 fun PoemHorizontalPager(
     modifier: Modifier = Modifier,
     poemList: List<PoemItem>,
-    currentPoemIndex: Int
+    currentPoemIndex: Int,
+    setCurrentPoemIndex: (Int) -> Unit,
 ) {
     val pagerState = rememberPagerState(pageCount = {
         poemList.size
     })
+    LaunchedEffect(pagerState.isScrollInProgress) {
+        if (!pagerState.isScrollInProgress && pagerState.currentPage != currentPoemIndex)
+            setCurrentPoemIndex(pagerState.currentPage)
+    }
     LaunchedEffect(key1 = currentPoemIndex) {
-        pagerState.animateScrollToPage(currentPoemIndex)
+        if (currentPoemIndex != pagerState.currentPage)
+            pagerState.animateScrollToPage(currentPoemIndex)
     }
     HorizontalPager(
         modifier = modifier,

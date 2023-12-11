@@ -29,6 +29,9 @@ fun PoemListScreen(
     isThereAnyResult: Boolean,
     isThereNextResult: Boolean,
     isTherePreviousResult: Boolean,
+    onCopyPoemText: () -> Unit,
+    onSharePoemText: () -> Unit,
+    onSharePoemImage: () -> Unit,
 ) {
     Column(
         Modifier
@@ -45,14 +48,24 @@ fun PoemListScreen(
                 currentPoemIndex = currentPoemIndex,
                 setCurrentPoemIndex = setCurrentPoemIndex,
             )
-            FloatingActionButton(
-                modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
-                onClick = { onRandomPoem() }
+            Column(
+                modifier = Modifier.padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.End
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Shuffle,
-                    contentDescription = null
+                ShareButton(
+                    onCopyText = onCopyPoemText,
+                    onShareText = onSharePoemText,
+                    onShareImage = onSharePoemImage,
                 )
+                FloatingActionButton(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    onClick = { onRandomPoem() }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Shuffle,
+                        contentDescription = null
+                    )
+                }
             }
         }
         KSearchBar(

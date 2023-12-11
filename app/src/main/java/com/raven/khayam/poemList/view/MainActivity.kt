@@ -1,14 +1,10 @@
 package com.raven.khayam.poemList.view
 
-import android.content.ClipboardManager
-import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
 import android.view.WindowManager
 import android.widget.FrameLayout
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentActivity
@@ -92,7 +88,7 @@ class MainActivity : FragmentActivity() {
         ViewAnimation.init(fabText)
 
         fabImage.setOnClickListener {
-            viewModel.sharePoemImage(getBitmapOfPoem(), cacheDir, poemViewPager.currentItem)
+            viewModel.sharePoemImage(getBitmapOfPoem(), cacheDir)
         }
 
         fabText.setOnClickListener {
@@ -100,9 +96,9 @@ class MainActivity : FragmentActivity() {
         }
 
         fabCopy.setOnClickListener {
-            viewModel.copyPoem(
+            /*viewModel.copyPoem(
                 getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            )
+            )*/
         }
     }
 
@@ -118,7 +114,7 @@ class MainActivity : FragmentActivity() {
     private fun setObservers() {
         viewModel.uiState.onEach { uiState ->
             when (uiState) {
-                is PoemListViewModel.UiState.Loaded -> {
+                is PoemListViewModel.UiState.Loaded -> {/*
                     if(!::poemViewPager.isInitialized || poemPagerAdapter.poemList !=  uiState.poems)
                         initPoemViwPager(uiState.poems)
                     uiState.shareIntent?.let { intent ->
@@ -134,6 +130,7 @@ class MainActivity : FragmentActivity() {
                     }
                     if(::poemViewPager.isInitialized && poemViewPager.currentItem != uiState.currentItemIndex)
                         poemViewPager.currentItem = uiState.currentItemIndex
+                */
                 }
                 PoemListViewModel.UiState.Loading -> {}
             }

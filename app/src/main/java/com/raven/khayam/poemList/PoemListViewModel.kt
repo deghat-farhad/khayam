@@ -1,10 +1,10 @@
 package com.raven.khayam.poemList
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.raven.khayam.domain.usecase.findPoems.FindPoems
@@ -107,21 +107,20 @@ class PoemListViewModel @Inject constructor(
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         shareIntent.type = "text/plain"
         shareIntent.putExtra(Intent.EXTRA_TEXT, assemblePoem(currentPoem))
-        updateUiState(shareIntent = shareIntent, currentItemIndex = currentPoemIndex)
+        updateUiState(eventToConsume = Event.SharePoemText(shareIntent))
     }
 
     fun copyPoem(clipboard: ClipboardManager) {
         val poemText = assemblePoem(currentPoem)
-        val clip = ClipData.newPlainText("poem", poemText)
-        clipboard.setPrimaryClip(clip)
-        updateUiState(copiedPoem = poemText, currentItemIndex = currentPoemIndex)
+        clipboard.setText(AnnotatedString(poemText))
+        updateUiState(eventToConsume = Event.CopyPoemText(poemText))
     }
 
     fun randomPoem() {
         setCurrentPoemIndex(Random.nextInt(poemList.size))
     }
 
-    fun sharePoemImage(bitmap: Bitmap, cacheDir: File, currentItemIndex: Int) {
+    fun sharePoemImage(bitmap: Bitmap, cacheDir: File) {
 
         val cachePath = File(cacheDir, "images")
         cachePath.mkdirs()
@@ -134,42 +133,44 @@ class PoemListViewModel @Inject constructor(
 
         val imagePath = File(cacheDir, "images")
         updateUiState(
-            imageToShare = File(imagePath, "image.jpg"),
-            currentItemIndex = currentItemIndex
+            eventToConsume = Event.SharePoemImage(File(imagePath, "image.jpg")),
         )
     }
 
-    fun sharePoemImageUri(poemUri: Uri, currentItemIndex: Int) {
+    fun sharePoemImageUri(poemUri: Uri) {
         val shareIntent = Intent()
         shareIntent.action = Intent.ACTION_SEND
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         shareIntent.setDataAndType(poemUri, "image/*")
         shareIntent.putExtra(Intent.EXTRA_STREAM, poemUri)
-        updateUiState(shareIntent = shareIntent, currentItemIndex = currentItemIndex)
+        updateUiState(
+            eventToConsume = Event.SharePoemText(shareIntent),
+        )
     }
 
     fun searchClosed() {
         loadPoems()
     }
 
+    fun onEventConsumed(event: Event) {
+        updateUiState(eventConsumed = event)
+    }
+
     private fun updateUiState(
         poems: List<PoemItem>? = null,
-        imageToShare: File? = null,
-        shareIntent: Intent? = null,
-        copiedPoem: String? = null,
-        currentItemIndex: Int,
+        currentItemIndex: Int = currentPoemIndex,
+        eventToConsume: Event? = null,
+        eventConsumed: Event? = null,
     ) {
         when (val state = _uiState.value) {
             is UiState.Loaded -> {
                 _uiState.value = state.copy(
                     poems = poems ?: state.poems,
-                    imageToShare = imageToShare,
-                    shareIntent = shareIntent,
-                    copiedPoem = copiedPoem,
                     isThereAnyResult = searchResult.isNotEmpty(),
                     isThereNextResult = searchResult.isNotEmpty() && currentItemIndex < searchResult.last().index,
                     isTherePreviousResult = searchResult.isNotEmpty() && currentItemIndex > searchResult.first().index,
                     currentItemIndex = currentItemIndex,
+                    events = (state.events.filterNot { it == eventConsumed } + eventToConsume).filterNotNull(),
                 )
             }
             UiState.Loading -> {
@@ -178,9 +179,6 @@ class PoemListViewModel @Inject constructor(
                 }
                 _uiState.value = UiState.Loaded(
                     poems = poems,
-                    imageToShare = imageToShare,
-                    shareIntent = shareIntent,
-                    copiedPoem = copiedPoem,
                     currentItemIndex = currentItemIndex,
                 )
             }
@@ -201,17 +199,29 @@ class PoemListViewModel @Inject constructor(
         data object Loading : UiState()
         data class Loaded(
             val poems: List<PoemItem>,
-            val imageToShare: File?,
-            val shareIntent: Intent?,
-            val copiedPoem: String?,
             val currentItemIndex: Int = 0,
             val isThereAnyResult: Boolean = false,
             val isThereNextResult: Boolean = false,
             val isTherePreviousResult: Boolean = false,
+            val events: List<Event> = emptyList(),
         ) : UiState()
     }
 
-    val PoemItem.index: Int
+    sealed class Event {
+        data class SharePoemImage(
+            val imageToShare: File,
+        ) : Event()
+
+        data class SharePoemText(
+            val shareIntent: Intent,
+        ) : Event()
+
+        data class CopyPoemText(
+            val copiedPoem: String,
+        ) : Event()
+    }
+
+    private val PoemItem.index: Int
         get() {
             return id - 1
         }

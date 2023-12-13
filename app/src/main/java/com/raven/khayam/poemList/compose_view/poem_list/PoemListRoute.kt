@@ -22,6 +22,7 @@ fun PoemListRoute(
     val uiState by viewModel.uiState.collectAsState()
     val clipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
+    val cacheDir = context.cacheDir
 
     LaunchedEffect(key1 = true) {
         viewModel.viewIsReady()
@@ -72,7 +73,9 @@ fun PoemListRoute(
                     viewModel.copyPoem(clipboardManager)
                 },
                 onSharePoemText = viewModel::sharePoemText,
-                onSharePoemImage = {}
+                onSharePoemImage = { bitmap ->
+                    viewModel.sharePoemImage(bitmap, cacheDir)
+                }
             )
         }
 

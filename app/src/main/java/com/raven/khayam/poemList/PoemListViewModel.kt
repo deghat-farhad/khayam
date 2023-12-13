@@ -126,14 +126,14 @@ class PoemListViewModel @Inject constructor(
         cachePath.mkdirs()
 
         val stream =
-            FileOutputStream("$cachePath/image.jpg")
+            FileOutputStream("$cachePath/image.png")
 
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
         stream.close()
 
         val imagePath = File(cacheDir, "images")
         updateUiState(
-            eventToConsume = Event.SharePoemImage(File(imagePath, "image.jpg")),
+            eventToConsume = Event.SharePoemImage(File(imagePath, "image.png")),
         )
     }
 

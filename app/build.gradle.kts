@@ -60,6 +60,7 @@ dependencies {
     implementation(platform(Libs.AndroidX.Compose.Bom))
     implementation(Libs.AndroidX.Compose.Runtime)
     implementation (Libs.AndroidX.Compose.Material3)
+    implementation (Libs.AndroidX.Compose.ui)
     implementation (Libs.AndroidX.navigationCompose)
 
     implementation(Libs.AndroidX.hiltNavigationCompose)

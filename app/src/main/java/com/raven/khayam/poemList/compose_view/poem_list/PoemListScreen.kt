@@ -1,5 +1,6 @@
 package com.raven.khayam.poemList.compose_view.poem_list
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,10 @@ import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -31,8 +36,9 @@ fun PoemListScreen(
     isTherePreviousResult: Boolean,
     onCopyPoemText: () -> Unit,
     onSharePoemText: () -> Unit,
-    onSharePoemImage: () -> Unit,
+    onSharePoemImage: (Bitmap) -> Unit,
 ) {
+    var capture by remember { mutableStateOf({ _: Bitmap -> }) }
     Column(
         Modifier
             .systemBarsPadding()
@@ -47,6 +53,7 @@ fun PoemListScreen(
                 poemList = poemList,
                 currentPoemIndex = currentPoemIndex,
                 setCurrentPoemIndex = setCurrentPoemIndex,
+                captureCurrentPage = capture
             )
             Column(
                 modifier = Modifier.padding(horizontal = 24.dp),
@@ -55,7 +62,11 @@ fun PoemListScreen(
                 ShareButton(
                     onCopyText = onCopyPoemText,
                     onShareText = onSharePoemText,
-                    onShareImage = onSharePoemImage,
+                    onShareImage = {
+                        capture = { bitmap ->
+                            onSharePoemImage(bitmap)
+                        }
+                    },
                 )
                 FloatingActionButton(
                     modifier = Modifier.padding(vertical = 12.dp),

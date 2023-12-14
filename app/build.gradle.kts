@@ -1,7 +1,8 @@
 plugins {
-    id("com.google.devtools.ksp")
-    id("com.android.application")
-    kotlin("android")
+    id(Plugins.ksp)
+    id(Plugins.application)
+    id(Plugins.hiltAndroid)
+    kotlin(Plugins.Kotlin.android)
 }
 
 android {
@@ -37,7 +38,10 @@ android {
     }
 
     buildFeatures {
-        viewBinding = true
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.6"
     }
 }
 
@@ -45,14 +49,15 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":domain"))
 
-    implementation(Libs.Dagger.dagger)
-    ksp(Libs.Dagger.daggerCompiler)
+    implementation(platform(Libs.AndroidX.Compose.Bom))
+    implementation (Libs.AndroidX.Compose.Material3)
+    //TODO: remove compose ui after compose bom update.
+    implementation (Libs.AndroidX.Compose.ui)
 
-    implementation(Libs.AndroidX.multidex)
-    implementation(Libs.AndroidX.lifecycleViewmodelKtx)
+    implementation(Libs.AndroidX.hiltNavigationCompose)
+    implementation(Libs.Hilt.hiltAndroid)
+    ksp(Libs.Hilt.hiltCompiler)
 
-    implementation(Libs.fragmentKtx)
-    implementation(Libs.material)
-    implementation(Libs.scrollingPagerIndicator)
-
+    implementation(Libs.AndroidX.materialIconExtended)
+    implementation (Libs.AndroidX.activityKtx)
 }

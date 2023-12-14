@@ -1,6 +1,5 @@
 plugins {
-    id("kotlin")
-    kotlin("kapt")
+    id(Plugins.kotlin)
 }
 
 java {

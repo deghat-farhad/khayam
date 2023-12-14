@@ -1,5 +1,7 @@
 plugins {
-    id("com.google.devtools.ksp") version Versions.kspVersion apply false
+    id(Plugins.ksp) version Versions.kspVersion apply false
+    id(Plugins.hiltAndroid) version Versions.hiltVersion apply false
+
 }
 
 buildscript {

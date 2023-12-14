@@ -1,4 +1,4 @@
-package com.raven.khayam.poemList.compose_view.theme
+package com.raven.khayam.poemList.view.theme
 
 import androidx.compose.ui.graphics.Color
 

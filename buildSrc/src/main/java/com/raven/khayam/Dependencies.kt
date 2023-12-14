@@ -19,13 +19,9 @@ object Plugins {
 
 object Libs {
     private const val androidGradlePluginVersion = "8.2.0"
-    private const val materialVersion = "1.10.0"
-    private const val scrollingPagerIndicatorVersion = "1.2.5"
     private const val kotlinxCoroutinesCoreVersion = "1.7.3"
 
     const val androidGradlePlugin = "com.android.tools.build:gradle:$androidGradlePluginVersion"
-    const val material = "com.google.android.material:material:$materialVersion"
-    const val scrollingPagerIndicator = "ru.tinkoff.scrollingpagerindicator:scrollingpagerindicator:$scrollingPagerIndicatorVersion"
     const val kotlinxCoroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxCoroutinesCoreVersion"
 
     object Kotlin {
@@ -35,19 +31,13 @@ object Libs {
     }
 
     object AndroidX {
-        private const val multidexVersion = "2.0.1"
-        private const val lifecycleViewmodelKtxVersion = "2.6.2"
-        private const val fragmentKtxVersion = "1.6.2"
-        private const val navigationComposeVersion = "2.7.5"
         private const val hiltNavigationComposeVersion = "1.1.0"
         private const val materialIconsExtendedVersion = "1.5.4"
+        private const val activityKtxVersion = "1.8.2"
 
-        const val multidex = "androidx.multidex:multidex:$multidexVersion"
-        const val lifecycleViewmodelKtx = "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleViewmodelKtxVersion"
-        const val fragmentKtx = "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
-        const val navigationCompose = "androidx.navigation:navigation-compose:$navigationComposeVersion"
         const val hiltNavigationCompose = "androidx.hilt:hilt-navigation-compose:$hiltNavigationComposeVersion"
         const val materialIconExtended = "androidx.compose.material:material-icons-extended:$materialIconsExtendedVersion"
+        const val activityKtx = "androidx.activity:activity-ktx:$activityKtxVersion"
 
         object Room {
             private const val roomVersion = "2.6.1"
@@ -60,7 +50,6 @@ object Libs {
             private const val composeUiVersion = "1.6.0-beta02"
 
             const val Bom = "androidx.compose:compose-bom:$composeBomVersion"
-            const val Runtime = "androidx.compose.runtime:runtime"
             const val Material3 = "androidx.compose.material3:material3"
             const val ui = "androidx.compose.ui:ui:$composeUiVersion"
         }

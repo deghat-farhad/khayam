@@ -1,4 +1,4 @@
-package com.raven.khayam.poemList.compose_view.poem_list
+package com.raven.khayam.poemList.view.poem_list
 
 import android.content.Context
 import android.content.Intent

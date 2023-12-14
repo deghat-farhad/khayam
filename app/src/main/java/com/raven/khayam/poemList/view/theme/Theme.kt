@@ -1,4 +1,4 @@
-package com.raven.khayam.poemList.compose_view.theme
+package com.raven.khayam.poemList.view.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

@@ -13,12 +13,15 @@ import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.raven.khayam.model.PoemItem
 
@@ -44,38 +47,40 @@ fun PoemListScreen(
             .systemBarsPadding()
             .imePadding()
     ) {
-        Box(
-            modifier = Modifier.weight(1.0f),
-            contentAlignment = Alignment.BottomEnd
-        ) {
-            PoemHorizontalPager(
-                modifier = Modifier.fillMaxSize(),
-                poemList = poemList,
-                currentPoemIndex = currentPoemIndex,
-                setCurrentPoemIndex = setCurrentPoemIndex,
-                captureCurrentPage = capture
-            )
-            Column(
-                modifier = Modifier.padding(horizontal = 24.dp),
-                horizontalAlignment = Alignment.End
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr ) {
+            Box(
+                modifier = Modifier
+                    .weight(1.0f),
+                contentAlignment = Alignment.BottomEnd
             ) {
-                ShareButton(
-                    onCopyText = onCopyPoemText,
-                    onShareText = onSharePoemText,
-                    onShareImage = {
-                        capture = { bitmap ->
-                            onSharePoemImage(bitmap)
-                        }
-                    },
+                PoemHorizontalPager(
+                    modifier = Modifier.fillMaxSize(),
+                    poemList = poemList,
+                    currentPoemIndex = currentPoemIndex,
+                    setCurrentPoemIndex = setCurrentPoemIndex,
+                    captureCurrentPage = capture
                 )
-                FloatingActionButton(
-                    modifier = Modifier.padding(vertical = 12.dp),
-                    onClick = { onRandomPoem() }
+                Column(
+                    modifier = Modifier.padding(horizontal = 24.dp),
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.Shuffle,
-                        contentDescription = null
+                    ShareButton(
+                        onCopyText = onCopyPoemText,
+                        onShareText = onSharePoemText,
+                        onShareImage = {
+                            capture = { bitmap ->
+                                onSharePoemImage(bitmap)
+                            }
+                        },
                     )
+                    FloatingActionButton(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        onClick = { onRandomPoem() }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Shuffle,
+                            contentDescription = null
+                        )
+                    }
                 }
             }
         }

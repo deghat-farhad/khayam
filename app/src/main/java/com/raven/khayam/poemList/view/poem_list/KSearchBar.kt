@@ -26,8 +26,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.LayoutDirection
 
 @Composable
 fun KSearchBar(
@@ -82,7 +84,11 @@ fun KSearchBar(
                 enabled = isTherePreviousResult
             ) {
                 Icon(
-                    imageVector = Icons.Filled.KeyboardArrowLeft,
+                    imageVector =
+                    if (LocalLayoutDirection.current == LayoutDirection.Rtl)
+                        Icons.Filled.KeyboardArrowRight
+                    else
+                        Icons.Filled.KeyboardArrowLeft,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -92,7 +98,11 @@ fun KSearchBar(
                 enabled = isThereNextResult
             ) {
                 Icon(
-                    imageVector = Icons.Filled.KeyboardArrowRight,
+                    imageVector =
+                    if (LocalLayoutDirection.current == LayoutDirection.Rtl)
+                        Icons.Filled.KeyboardArrowLeft
+                    else
+                        Icons.Filled.KeyboardArrowRight,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )

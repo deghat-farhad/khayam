@@ -27,9 +27,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.LayoutDirection
+import com.raven.khayam.R
 
 @Composable
 fun KSearchBar(
@@ -67,7 +69,7 @@ fun KSearchBar(
                     onChange?.invoke(it)
                 },
                 leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = "") },
-                placeholder = { Text(text = "Search") },
+                placeholder = { Text(text = stringResource(id = R.string.search)) },
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = {

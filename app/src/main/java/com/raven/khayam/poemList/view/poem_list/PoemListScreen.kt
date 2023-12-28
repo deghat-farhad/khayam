@@ -13,7 +13,6 @@ import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,40 +46,41 @@ fun PoemListScreen(
             .systemBarsPadding()
             .imePadding()
     ) {
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr ) {
-            Box(
-                modifier = Modifier
-                    .weight(1.0f),
-                contentAlignment = Alignment.BottomEnd
+        Box(
+            modifier = Modifier.weight(1.0f),
+            contentAlignment = if (LocalLayoutDirection.current == LayoutDirection.Rtl) {
+                Alignment.BottomStart
+            } else {
+                Alignment.BottomEnd
+            }
+        ) {
+            PoemHorizontalPager(
+                modifier = Modifier.fillMaxSize(),
+                poemList = poemList,
+                currentPoemIndex = currentPoemIndex,
+                setCurrentPoemIndex = setCurrentPoemIndex,
+                captureCurrentPage = capture
+            )
+            Column(
+                modifier = Modifier.padding(horizontal = 24.dp),
             ) {
-                PoemHorizontalPager(
-                    modifier = Modifier.fillMaxSize(),
-                    poemList = poemList,
-                    currentPoemIndex = currentPoemIndex,
-                    setCurrentPoemIndex = setCurrentPoemIndex,
-                    captureCurrentPage = capture
+                ShareButton(
+                    onCopyText = onCopyPoemText,
+                    onShareText = onSharePoemText,
+                    onShareImage = {
+                        capture = { bitmap ->
+                            onSharePoemImage(bitmap)
+                        }
+                    },
                 )
-                Column(
-                    modifier = Modifier.padding(horizontal = 24.dp),
+                FloatingActionButton(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    onClick = { onRandomPoem() }
                 ) {
-                    ShareButton(
-                        onCopyText = onCopyPoemText,
-                        onShareText = onSharePoemText,
-                        onShareImage = {
-                            capture = { bitmap ->
-                                onSharePoemImage(bitmap)
-                            }
-                        },
+                    Icon(
+                        imageVector = Icons.Filled.Shuffle,
+                        contentDescription = null
                     )
-                    FloatingActionButton(
-                        modifier = Modifier.padding(vertical = 12.dp),
-                        onClick = { onRandomPoem() }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Shuffle,
-                            contentDescription = null
-                        )
-                    }
                 }
             }
         }

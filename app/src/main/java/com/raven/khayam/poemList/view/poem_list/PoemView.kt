@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import com.raven.khayam.model.PoemItem
+import java.text.NumberFormat
 
 @Composable
 fun PoemView(
@@ -24,7 +25,7 @@ fun PoemView(
         ) {
             Text(
                 //modifier = Modifier.fillMaxWidth(),
-                text = poemItem.id.toString(),
+                text = NumberFormat.getInstance().format(poemItem.id),
                 textAlign = TextAlign.Start,
             )
             Column(

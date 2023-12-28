@@ -84,6 +84,7 @@ fun KSearchBar(
                 Icon(
                     imageVector = Icons.Filled.KeyboardArrowLeft,
                     contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             IconButton(
@@ -93,6 +94,7 @@ fun KSearchBar(
                 Icon(
                     imageVector = Icons.Filled.KeyboardArrowRight,
                     contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

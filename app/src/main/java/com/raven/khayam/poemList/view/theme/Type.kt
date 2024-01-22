@@ -13,14 +13,14 @@ import java.util.Locale
 val fontFamily = if (Locale.getDefault().language == "fa")
     FontFamily(
         Font(
-            R.font.iran_sans_regular
+            R.font.iran_sans_x_regular
         )
     )
 else
     FontFamily.Default
 
 val fontSizeCoefficient = if (Locale.getDefault().language == "fa")
-    1.3f
+    1.1f
 else
     1f
 

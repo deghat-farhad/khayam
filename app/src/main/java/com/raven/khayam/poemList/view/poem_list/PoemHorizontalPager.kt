@@ -26,6 +26,8 @@ import androidx.compose.ui.graphics.drawscope.draw
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.raven.khayam.model.PoemItem
@@ -82,7 +84,7 @@ fun PoemHorizontalPager(
                 contentAlignment = Alignment.Center,
             ) {
                 AnimatedPoemView(
-                    modifier = Modifier.padding(horizontal = 56.dp),
+                    modifier = Modifier.padding(horizontal = 16.dp),
                     currentPageIndex = pagerState.currentPage,
                     thisPageIndex = page,
                     currentPageOffsetFraction = pagerState.currentPageOffsetFraction,
@@ -101,6 +103,7 @@ private fun AnimatedPoemView(
     thisPageIndex: Int,
     currentPageOffsetFraction: Float,
 ) {
+    val direction = LocalLayoutDirection.current
     PoemView(
         modifier = modifier
             .graphicsLayer {
@@ -108,7 +111,11 @@ private fun AnimatedPoemView(
                 val translationFactor = size.width / 2
                 translationX = translationFactor * lerp(
                     start = 0f,
-                    stop = -1f,
+                    stop =
+                    if (direction == LayoutDirection.Rtl)
+                        1f
+                    else
+                        -1f,
                     fraction = pageOffset.coerceIn(-1f, 1f)
                 )
             },
@@ -126,6 +133,7 @@ private fun AnimatedCaptureableCard(
     capture: ((Bitmap) -> Unit)?,
     content: @Composable () -> Unit,
 ) {
+    val direction = LocalLayoutDirection.current
     CaptureableCard(
         modifier = modifier
             .graphicsLayer {
@@ -134,7 +142,10 @@ private fun AnimatedCaptureableCard(
                 val translationFactor = size.width * (1 - scalingFactor) / 2
                 val translationX = translationFactor * lerp(
                     start = 0f,
-                    stop = 1f,
+                    stop = if (direction == LayoutDirection.Rtl)
+                        -1f
+                    else
+                        1f,
                     fraction = pageOffset.coerceIn(-1f, 1f)
                 )
                 scaleX = scale

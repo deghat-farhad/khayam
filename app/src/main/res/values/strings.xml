@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">khayam</string>
+    <string name="search">Search</string>
+    <string name="copyText">Copy text</string>
+    <string name="shareText">Share text</string>
+    <string name="shareImage">Share image</string>
 </resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">خیام</string>
+    <string name="search">جستجو</string>
+    <string name="copyText">کپی متن</string>
+    <string name="shareText">اشتراک‌گذاری متن</string>
+    <string name="shareImage">اشتراک‌گذاری تصویر</string>
+</resources>

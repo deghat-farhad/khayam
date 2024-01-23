@@ -1,58 +1,63 @@
 package com.raven.khayam.poemList.view.poem_list
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import com.raven.khayam.model.PoemItem
+import java.text.NumberFormat
 
 @Composable
 fun PoemView(
     modifier: Modifier = Modifier,
     poemItem: PoemItem,
 ) {
-    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Column(
-            modifier = modifier,
             horizontalAlignment = Alignment.End
         ) {
             Text(
-                //modifier = Modifier.fillMaxWidth(),
-                text = poemItem.id.toString(),
-                textAlign = TextAlign.Start,
+                text = NumberFormat.getInstance().format(poemItem.id),
             )
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(
-                    //modifier = Modifier.fillMaxWidth(),
-                    text = poemItem.hemistich1,
-                    textAlign = TextAlign.Start,
-                )
-                Text(
-                    //modifier = Modifier.fillMaxWidth(),
-                    text = poemItem.hemistich2,
-                    textAlign = TextAlign.Start,
-                )
-            }
-            Column {
-                Text(
-                    //modifier = Modifier.fillMaxWidth(),
-                    text = poemItem.hemistich3,
-                    textAlign = TextAlign.Start,
-                )
-                Text(
-                    //modifier = Modifier.fillMaxWidth(),
-                    text = poemItem.hemistich4,
-                    textAlign = TextAlign.Start,
-                )
-            }
+
+            Divider(
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = poemItem.hemistich1,
+            textAlign = TextAlign.Center,
+        )
+
+        Text(
+            text = poemItem.hemistich2,
+            textAlign = TextAlign.Center,
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = poemItem.hemistich3,
+            textAlign = TextAlign.Center,
+        )
+
+        Text(
+            text = poemItem.hemistich4,
+            textAlign = TextAlign.Center,
+        )
     }
 }

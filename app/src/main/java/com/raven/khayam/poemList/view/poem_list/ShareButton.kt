@@ -16,6 +16,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.raven.khayam.R
 
 @Composable
 fun ShareButton(
@@ -47,7 +49,7 @@ fun ShareButton(
             },
             text = {
                 Text(
-                    text = "Copy text"
+                    text = stringResource(id = R.string.copyText)
                 )
             },
             leadingIcon = {
@@ -64,7 +66,7 @@ fun ShareButton(
             },
             text = {
                 Text(
-                    text = "Share text"
+                    text = stringResource(id = R.string.shareText)
                 )
             },
             leadingIcon = {
@@ -81,7 +83,7 @@ fun ShareButton(
             },
             text = {
                 Text(
-                    text = "Share Image"
+                    text = stringResource(id = R.string.shareImage)
                 )
             },
             leadingIcon = {

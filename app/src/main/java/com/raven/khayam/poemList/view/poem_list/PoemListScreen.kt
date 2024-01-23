@@ -19,6 +19,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.raven.khayam.model.PoemItem
 
@@ -46,7 +48,11 @@ fun PoemListScreen(
     ) {
         Box(
             modifier = Modifier.weight(1.0f),
-            contentAlignment = Alignment.BottomEnd
+            contentAlignment = if (LocalLayoutDirection.current == LayoutDirection.Rtl) {
+                Alignment.BottomStart
+            } else {
+                Alignment.BottomEnd
+            }
         ) {
             PoemHorizontalPager(
                 modifier = Modifier.fillMaxSize(),
@@ -57,7 +63,6 @@ fun PoemListScreen(
             )
             Column(
                 modifier = Modifier.padding(horizontal = 24.dp),
-                horizontalAlignment = Alignment.End
             ) {
                 ShareButton(
                     onCopyText = onCopyPoemText,

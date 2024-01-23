@@ -52,6 +52,7 @@ object Libs {
             const val Bom = "androidx.compose:compose-bom:$composeBomVersion"
             const val Material3 = "androidx.compose.material3:material3"
             const val ui = "androidx.compose.ui:ui:$composeUiVersion"
+            const val uiTooling = "androidx.compose.ui:ui-tooling"
         }
     }
 

@@ -47,7 +47,7 @@ object Libs {
 
         object Compose {
             private const val composeBomVersion = "2023.10.01"
-            private const val composeUiVersion = "1.6.0-beta02"
+            private const val composeUiVersion = "1.6.0-beta03"
 
             const val Bom = "androidx.compose:compose-bom:$composeBomVersion"
             const val Material3 = "androidx.compose.material3:material3"

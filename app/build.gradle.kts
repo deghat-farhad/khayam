@@ -53,6 +53,8 @@ dependencies {
     implementation (Libs.AndroidX.Compose.Material3)
     //TODO: remove compose ui after compose bom update.
     implementation (Libs.AndroidX.Compose.ui)
+    implementation (Libs.AndroidX.Compose.uiTooling)
+
 
     implementation(Libs.AndroidX.hiltNavigationCompose)
     implementation(Libs.Hilt.hiltAndroid)

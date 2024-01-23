@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -52,6 +53,7 @@ fun KSearchBar(
 ) {
     var searchPhrase by remember { mutableStateOf("") }
     val isError = searchPhrase.isNotEmpty() && !isThereAnyResult
+    val focusManager = LocalFocusManager.current
 
     Box(
         modifier = modifier
@@ -94,9 +96,6 @@ fun KSearchBar(
                 placeholder = { Text(text = stringResource(id = R.string.search)) },
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions(onSearch = {
-                    onSearch?.invoke(searchPhrase)
-                }),
                 textStyle = if (isError) {
                     TextStyle(color = MaterialTheme.colorScheme.error)
                 } else {

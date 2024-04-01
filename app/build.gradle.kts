@@ -3,6 +3,8 @@ plugins {
     id(Plugins.application)
     id(Plugins.hiltAndroid)
     id(Plugins.jetbrainsKotlinAndroid)
+    id(Plugins.googleService)
+    id(Plugins.crashlytics)
 }
 
 android {
@@ -62,4 +64,8 @@ dependencies {
 
     implementation(Libs.AndroidX.materialIconExtended)
     implementation (Libs.AndroidX.activityKtx)
+
+    implementation(platform(Libs.Firebase.Bom))
+    implementation(Libs.Firebase.analytics)
+    implementation(Libs.Firebase.crashlytics)
 }

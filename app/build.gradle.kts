@@ -2,7 +2,7 @@ plugins {
     id(Plugins.ksp)
     id(Plugins.application)
     id(Plugins.hiltAndroid)
-    kotlin(Plugins.Kotlin.android)
+    id(Plugins.jetbrainsKotlinAndroid)
 }
 
 android {

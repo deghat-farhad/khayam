@@ -3,6 +3,8 @@ import Versions.hiltVersion
 object Versions {
     const val kspVersion = "1.9.21-1.0.15"
     const val hiltVersion = "2.49"
+    const val androidGradlePluginVersion = "8.2.0"
+    const val kotlinVersion = "1.9.21"
 }
 
 object Plugins {
@@ -11,24 +13,13 @@ object Plugins {
     const val application = "com.android.application"
     const val library = "com.android.library"
     const val kotlin = "kotlin"
-
-    object Kotlin {
-        const val android = "android"
-    }
+    const val jetbrainsKotlinAndroid = "org.jetbrains.kotlin.android"q
 }
 
 object Libs {
-    private const val androidGradlePluginVersion = "8.2.0"
     private const val kotlinxCoroutinesCoreVersion = "1.7.3"
 
-    const val androidGradlePlugin = "com.android.tools.build:gradle:$androidGradlePluginVersion"
     const val kotlinxCoroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxCoroutinesCoreVersion"
-
-    object Kotlin {
-        private const val kotlinVersion = "1.9.21"
-
-        const val gradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    }
 
     object AndroidX {
         private const val hiltNavigationComposeVersion = "1.1.0"

@@ -5,6 +5,8 @@ object Versions {
     const val hiltVersion = "2.49"
     const val androidGradlePluginVersion = "8.2.0"
     const val kotlinVersion = "1.9.21"
+    const val googleServiceVersion = "4.4.1"
+    const val crashlyticsVersion = "2.9.9"
 }
 
 object Plugins {
@@ -13,7 +15,9 @@ object Plugins {
     const val application = "com.android.application"
     const val library = "com.android.library"
     const val kotlin = "kotlin"
-    const val jetbrainsKotlinAndroid = "org.jetbrains.kotlin.android"q
+    const val jetbrainsKotlinAndroid = "org.jetbrains.kotlin.android"
+    const val googleService = "com.google.gms.google-services"
+    const val crashlytics = "com.google.firebase.crashlytics"
 }
 
 object Libs {
@@ -57,5 +61,13 @@ object Libs {
     object Hilt {
         const val hiltAndroid = "com.google.dagger:hilt-android:$hiltVersion"
         const val hiltCompiler = "com.google.dagger:hilt-compiler:$hiltVersion"
+    }
+
+    object Firebase {
+        private const val firebaseBomVersion = "32.8.0"
+
+        const val Bom = "com.google.firebase:firebase-bom:$firebaseBomVersion"
+        const val analytics = "com.google.firebase:firebase-analytics"
+        const val crashlytics = "com.google.firebase:firebase-crashlytics"
     }
 }

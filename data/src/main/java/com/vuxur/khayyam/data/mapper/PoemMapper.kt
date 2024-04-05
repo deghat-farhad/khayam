@@ -12,7 +12,7 @@ class PoemMapper {
             poemEntity.hemistich3,
             poemEntity.hemistich4,
             poemEntity.isSuspicious,
-            poemEntity.category
+            poemEntity.language
         )
 
     fun mapToDomain(poemEntityList: List<PoemEntity>) = poemEntityList.map { mapToDomain(it) }

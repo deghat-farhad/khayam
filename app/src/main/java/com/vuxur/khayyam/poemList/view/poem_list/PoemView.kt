@@ -19,7 +19,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.vuxur.khayyam.model.PoemItem
-import java.text.NumberFormat
 
 @Composable
 fun PoemView(
@@ -36,7 +35,7 @@ fun PoemView(
             horizontalAlignment = Alignment.End
         ) {
             Text(
-                text = NumberFormat.getInstance().format(poemItem.id),
+                text = poemItem.id,
             )
 
             Divider(

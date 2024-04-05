@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class CategoryEntity(
+data class LanguageEntity(
     @PrimaryKey val id: Int,
-    val name: String
+    val code: String
 )

@@ -7,18 +7,18 @@ import androidx.room.PrimaryKey
 
 @Entity(
     foreignKeys = [ForeignKey(
-        entity = CategoryEntity::class,
+        entity = LanguageEntity::class,
         parentColumns = ["id"],
-        childColumns = ["category"],
+        childColumns = ["language"],
         onDelete = CASCADE
     )]
 )
 data class PoemEntity(
-    @PrimaryKey val id: Int,
+    @PrimaryKey val id: String,
     val hemistich1: String,
     val hemistich2: String,
     val hemistich3: String,
     val hemistich4: String,
     val isSuspicious: Boolean,
-    val category: Int
+    val language: Int
 )

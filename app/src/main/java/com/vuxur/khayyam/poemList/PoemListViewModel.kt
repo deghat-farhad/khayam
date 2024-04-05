@@ -223,6 +223,6 @@ class PoemListViewModel @Inject constructor(
 
     private val PoemItem.index: Int
         get() {
-            return id - 1
+            return poemList.indexOf(this)
         }
 }

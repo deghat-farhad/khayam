@@ -89,3 +89,6 @@ lint/tmp/
 
 # google_services.json
 app/google-services.json
+
+# keystore
+keystore

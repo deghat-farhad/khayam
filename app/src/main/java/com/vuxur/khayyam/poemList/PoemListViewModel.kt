@@ -29,7 +29,7 @@ import kotlin.random.Random
 class PoemListViewModel @Inject constructor(
     private val getPoems: GetPoems,
     private val findPoems: FindPoems,
-    private val poemItemMapper: PoemItemMapper
+    private val poemItemMapper: PoemItemMapper,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
@@ -51,12 +51,14 @@ class PoemListViewModel @Inject constructor(
     }
 
     private fun loadPoems() {
-        getPoems().onEach { poems ->
-            updateUiState(
-                poems = poemItemMapper.mapToPresentation(poems),
-                currentItemIndex = 0
-            )
-        }.launchIn(viewModelScope)
+        viewModelScope.launch {
+            getPoems().onEach { poems ->
+                updateUiState(
+                    poems = poemItemMapper.mapToPresentation(poems),
+                    currentItemIndex = 0
+                )
+            }.launchIn(this)
+        }
     }
 
     private suspend fun findPoem(

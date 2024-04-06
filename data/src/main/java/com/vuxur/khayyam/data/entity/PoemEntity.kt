@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 
 @Entity(
     foreignKeys = [ForeignKey(
-        entity = LanguageEntity::class,
+        entity = LanguageTagEntity::class,
         parentColumns = ["id"],
         childColumns = ["language"],
         onDelete = CASCADE

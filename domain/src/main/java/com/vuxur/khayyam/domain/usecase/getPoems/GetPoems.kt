@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 class GetPoems(
     private val poemRepository: PoemRepository
 ) : UseCase<List<Poem>>{
-    override fun invoke(): Flow<List<Poem>> {
+    override suspend fun invoke(): Flow<List<Poem>> {
         return poemRepository.getPoems()
     }
 }

@@ -13,4 +13,8 @@ class DataModule {
     @Provides
     fun poemRepository(application: Application) =
         DaggerDataComponent.builder().application(application).build().poemRepository()
+
+    @Provides
+    fun localeRepository(application: Application) =
+        DaggerDataComponent.builder().application(application).build().localeRepository()
 }

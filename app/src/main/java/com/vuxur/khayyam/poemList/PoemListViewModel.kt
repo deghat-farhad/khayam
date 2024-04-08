@@ -1,6 +1,7 @@
 package com.vuxur.khayyam.poemList
 
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.ui.platform.ClipboardManager
@@ -10,8 +11,10 @@ import androidx.lifecycle.viewModelScope
 import com.vuxur.khayyam.domain.usecase.findPoems.FindPoems
 import com.vuxur.khayyam.domain.usecase.findPoems.FindPoemsParams
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoems
+import com.vuxur.khayyam.domain.usecase.getPoems.GetPoemsParams
 import com.vuxur.khayyam.mapper.PoemItemMapper
 import com.vuxur.khayyam.model.PoemItem
+import com.vuxur.khayyam.utils.getCurrentLocale
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -52,7 +55,10 @@ class PoemListViewModel @Inject constructor(
 
     private fun loadPoems() {
         viewModelScope.launch {
-            getPoems().onEach { poems ->
+            val params = GetPoemsParams(
+                locale = getCurrentLocale(Resources.getSystem())
+            )
+            getPoems(params).onEach { poems ->
                 updateUiState(
                     poems = poemItemMapper.mapToPresentation(poems),
                     currentItemIndex = 0

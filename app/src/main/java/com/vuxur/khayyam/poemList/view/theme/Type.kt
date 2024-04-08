@@ -1,5 +1,6 @@
 package com.vuxur.khayyam.poemList.view.theme
 
+import android.content.res.Resources
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -7,10 +8,12 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.vuxur.khayyam.R
-import java.util.Locale
+import com.vuxur.khayyam.utils.getCurrentLocale
+
+val isFarsi = getCurrentLocale(Resources.getSystem()).language == "fa"
 
 // Set of Material typography styles to start with
-val fontFamily = if (Locale.getDefault().language == "fa")
+val fontFamily = if (isFarsi)
     FontFamily(
         Font(
             R.font.iran_sans_x_regular
@@ -19,7 +22,7 @@ val fontFamily = if (Locale.getDefault().language == "fa")
 else
     FontFamily.Default
 
-val fontSizeCoefficient = if (Locale.getDefault().language == "fa")
+val fontSizeCoefficient = if (isFarsi)
     1.1f
 else
     1f

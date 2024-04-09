@@ -15,7 +15,7 @@ class Local(
     private val languageTagEntityMapper: LanguageTagEntityMapper,
     private val preferencesDataSource: PreferencesDataSource,
 ) {
-    fun getPoems(localeEntity: LocaleEntity.SelectedLocale) =
+    fun getPoems(localeEntity: LocaleEntity.CustomLocale) =
         database.getPoems(localeEntity.locale.toLanguageTag())
 
     fun findPoems(searchPhrase: String) = database.findPoems(searchPhrase.toEnglishDigits())
@@ -26,7 +26,7 @@ class Local(
                 NO_LANGUAGE_SELECTED
             )
 
-            is LocaleEntity.SelectedLocale -> preferencesDataSource.setSelectedPoemLanguageTag(
+            is LocaleEntity.CustomLocale -> preferencesDataSource.setSelectedPoemLanguageTag(
                 localeEntity.locale.toLanguageTag()
             )
 
@@ -39,7 +39,7 @@ class Local(
         when (languageTag) {
             SYSTEM_DEFAULT_LANGUAGE -> LocaleEntity.SystemLocale
             NO_LANGUAGE_SELECTED -> LocaleEntity.NoLocale
-            else -> LocaleEntity.SelectedLocale(
+            else -> LocaleEntity.CustomLocale(
                 locale = Locale.forLanguageTag(languageTag)
             )
         }

@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class LanguageTagEntityMapper @Inject constructor() {
     fun mapToLocaleEntity(languageTagEntity: LanguageTagEntity) =
-        LocaleEntity.SelectedLocale(
+        LocaleEntity.CustomLocale(
             locale = java.util.Locale.forLanguageTag(languageTagEntity.languageTag)
         )
 

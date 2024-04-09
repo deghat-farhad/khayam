@@ -14,7 +14,6 @@ import com.vuxur.khayyam.domain.usecase.findPoems.FindPoemsParams
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoems
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoemsParams
 import com.vuxur.khayyam.domain.usecase.getSelectedPoemLocale.GetSelectedPoemLocale
-import com.vuxur.khayyam.domain.usecase.setSelectedPoemLocale.SetSelectedPoemLocale
 import com.vuxur.khayyam.mapper.LocaleItemMapper
 import com.vuxur.khayyam.mapper.PoemItemMapper
 import com.vuxur.khayyam.model.LocaleItem
@@ -38,9 +37,8 @@ class PoemListViewModel @Inject constructor(
     private val getPoems: GetPoems,
     private val findPoems: FindPoems,
     private val poemItemMapper: PoemItemMapper,
-    private val setSelectedPoemLocale: SetSelectedPoemLocale,
     private val getSelectedPoemLocale: GetSelectedPoemLocale,
-    private val localeItemMapper: LocaleItemMapper
+    private val localeItemMapper: LocaleItemMapper,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
@@ -55,15 +53,15 @@ class PoemListViewModel @Inject constructor(
         viewModelScope.launch {
             getSelectedPoemLocale().collect { selectedPoemLocale ->
                 when (selectedPoemLocale) {
-                    Locale.NoLocale -> println("noLocale!")
-                    is Locale.SelectedLocale -> loadPoems(
+                    Locale.NoLocale -> println("noLocale!") //todo: navigate to language setting
+                    is Locale.CustomLocale -> loadPoems(
                         localeItemMapper.mapToPresentation(
                             selectedPoemLocale
                         )
                     )
 
                     Locale.SystemLocale -> loadPoems(
-                        LocaleItem.SelectedLocale(
+                        LocaleItem.CustomLocale(
                             getCurrentLocale(
                                 Resources.getSystem()
                             )
@@ -80,7 +78,7 @@ class PoemListViewModel @Inject constructor(
         )
     }
 
-    private suspend fun loadPoems(selectedPoemLocale: LocaleItem.SelectedLocale) {
+    private suspend fun loadPoems(selectedPoemLocale: LocaleItem.CustomLocale) {
             val params = GetPoemsParams(
                 locale = localeItemMapper.mapToDomain(selectedPoemLocale)
             )

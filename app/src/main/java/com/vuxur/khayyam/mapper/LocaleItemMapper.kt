@@ -6,20 +6,20 @@ import javax.inject.Inject
 
 class LocaleItemMapper @Inject constructor() {
     fun mapToPresentation(locale: Locale) = when (locale) {
-        is Locale.SelectedLocale -> mapToPresentation(locale)
+        is Locale.CustomLocale -> mapToPresentation(locale)
         Locale.SystemLocale -> LocaleItem.SystemLocale
         Locale.NoLocale -> LocaleItem.NoLocale
     }
 
     fun mapToDomain(localeItem: LocaleItem) = when (localeItem) {
-        is LocaleItem.SelectedLocale -> mapToDomain(localeItem)
+        is LocaleItem.CustomLocale -> mapToDomain(localeItem)
         LocaleItem.SystemLocale -> Locale.SystemLocale
         LocaleItem.NoLocale -> Locale.NoLocale
     }
 
-    fun mapToDomain(selectedLocaleItem: LocaleItem.SelectedLocale) =
-        Locale.SelectedLocale(selectedLocaleItem.locale)
+    fun mapToDomain(customLocaleItem: LocaleItem.CustomLocale) =
+        Locale.CustomLocale(customLocaleItem.locale)
 
-    fun mapToPresentation(selectedLocale: Locale.SelectedLocale) =
-        LocaleItem.SelectedLocale(selectedLocale.locale)
+    fun mapToPresentation(customLocale: Locale.CustomLocale) =
+        LocaleItem.CustomLocale(customLocale.locale)
 }

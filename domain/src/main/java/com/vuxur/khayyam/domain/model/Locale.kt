@@ -4,7 +4,7 @@ sealed class Locale {
 
     data object NoLocale : Locale()
     data object SystemLocale : Locale()
-    data class SelectedLocale(
+    data class CustomLocale(
         val locale: java.util.Locale
     ) : Locale()
 }

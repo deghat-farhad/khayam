@@ -5,7 +5,7 @@ import java.util.Locale
 sealed class LocaleItem {
     data object NoLocale : LocaleItem()
     data object SystemLocale : LocaleItem()
-    data class SelectedLocale(
+    data class CustomLocale(
         val locale: Locale
     ) : LocaleItem()
 }

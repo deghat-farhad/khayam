@@ -16,7 +16,7 @@ class PoemRepositoryImpl @Inject constructor(
     private val localeMapper: LocaleMapper,
 ) :
     PoemRepository {
-    override fun getPoems(locale: Locale.SelectedLocale): Flow<List<Poem>> {
+    override fun getPoems(locale: Locale.CustomLocale): Flow<List<Poem>> {
         return local.getPoems(localeMapper.mapToData(locale)).map { poemMapper.mapToDomain(it) }
     }
 

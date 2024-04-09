@@ -19,7 +19,8 @@ class DomainModule {
     @Provides
     fun getPoems(
         poemRepository: PoemRepository,
-   ) = GetPoems(poemRepository)
+        getSupportedLocale: GetSupportedLocale,
+    ) = GetPoems(poemRepository, getSupportedLocale)
 
     @Provides
     fun findPoems(

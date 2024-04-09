@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 class GetPoems(
     private val poemRepository: PoemRepository
 ) : UseCaseWithParams<List<Poem>, GetPoemsParams> {
-    override fun invoke(params: GetPoemsParams): Flow<List<Poem>> {
+    override suspend fun invoke(params: GetPoemsParams): Flow<List<Poem>> {
         return poemRepository.getPoems(params.locale)
     }
 }

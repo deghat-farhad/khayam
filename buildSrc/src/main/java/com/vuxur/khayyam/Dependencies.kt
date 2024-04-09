@@ -29,10 +29,13 @@ object Libs {
         private const val hiltNavigationComposeVersion = "1.1.0"
         private const val materialIconsExtendedVersion = "1.5.4"
         private const val activityKtxVersion = "1.8.2"
+        private const val datastorePreferencesVersion = "1.0.0"
 
         const val hiltNavigationCompose = "androidx.hilt:hilt-navigation-compose:$hiltNavigationComposeVersion"
         const val materialIconExtended = "androidx.compose.material:material-icons-extended:$materialIconsExtendedVersion"
         const val activityKtx = "androidx.activity:activity-ktx:$activityKtxVersion"
+        const val datastorePreferences =
+            "androidx.datastore:datastore-preferences:$datastorePreferencesVersion"
 
         object Room {
             private const val roomVersion = "2.6.1"

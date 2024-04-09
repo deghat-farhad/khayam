@@ -47,4 +47,6 @@ dependencies {
 
     implementation (Libs.Dagger.dagger)
     ksp (Libs.Dagger.daggerCompiler)
+
+    implementation(Libs.AndroidX.datastorePreferences)
 }

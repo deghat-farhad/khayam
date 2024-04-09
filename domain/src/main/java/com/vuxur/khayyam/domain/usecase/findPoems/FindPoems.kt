@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 class FindPoems(
     private val poemRepository: PoemRepository
 ) : UseCaseWithParams<List<Poem>, FindPoemsParams>{
-    override fun invoke(params: FindPoemsParams): Flow<List<Poem>> {
+    override suspend fun invoke(params: FindPoemsParams): Flow<List<Poem>> {
         return poemRepository.findPoems(params.searchPhrase)
     }
 }

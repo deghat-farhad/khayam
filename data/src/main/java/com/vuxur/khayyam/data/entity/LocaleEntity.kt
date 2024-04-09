@@ -2,6 +2,10 @@ package com.vuxur.khayyam.data.entity
 
 import java.util.Locale
 
-data class LocaleEntity(
-    val locale: Locale
-)
+sealed class LocaleEntity {
+    data object NoLocale : LocaleEntity()
+    data object SystemLocale : LocaleEntity()
+    data class SelectedLocale(
+        val locale: Locale
+    ) : LocaleEntity()
+}

@@ -33,25 +33,14 @@ fun PoemView(
 ) {
     val density = LocalDensity.current
     var maxWidth by remember { mutableStateOf(0.dp) }
-    val isFarsi = localeItem.locale.language == "fa"
-
-    val fontFamily = if (isFarsi)
-        FontFamily(
-            Font(
-                R.font.iran_sans_x_regular
-            )
+    val fontFamily = FontFamily(
+        Font(
+            if (localeItem.locale.language == "fa") R.font.iran_sans_x_regular
+            else R.font.e_b_garamond_regular
         )
-    else
-        FontFamily(
-            Font(
-                R.font.e_b_garamond_regular
-            )
-        )
+    )
 
-    val fontSize = if (isFarsi)
-        19.sp
-    else
-        18.sp
+    val fontSize = if (localeItem.locale.language == "fa") 19.sp else 18.sp
 
     Column(
         modifier = modifier,

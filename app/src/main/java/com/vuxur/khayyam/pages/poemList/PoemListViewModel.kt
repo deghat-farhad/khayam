@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.io.File
@@ -56,26 +57,26 @@ class PoemListViewModel @Inject constructor(
     private val currentPoem get() = poemList[currentPoemIndex]
 
     fun viewIsReady() {
+        loadPoemsWithSelectedLocale()
+    }
+
+    private fun loadPoemsWithSelectedLocale() {
         viewModelScope.launch {
-            getSelectedPoemLocale().collect { selectedPoemLocale ->
-                when (selectedPoemLocale) {
-                    Locale.NoLocale -> updateUiState(eventToConsume = Event.NavigateToLanguageSetting)
+            getSelectedPoemLocale().map { localeItemMapper.mapToPresentation(it) }
+                .collect { selectedPoemLocale ->
+                    when (selectedPoemLocale) {
+                        LocaleItem.NoLocale -> updateUiState(eventToConsume = Event.NavigateToLanguageSetting)
 
-                    is Locale.CustomLocale -> loadPoems(
-                        localeItemMapper.mapToPresentation(
-                            selectedPoemLocale
-                        )
-                    )
-
-                    Locale.SystemLocale -> loadPoems(
-                        LocaleItem.CustomLocale(
-                            getCurrentLocale(
-                                Resources.getSystem()
+                        is LocaleItem.CustomLocale, LocaleItem.SystemLocale -> {
+                            loadPoems(
+                                if (selectedPoemLocale is LocaleItem.CustomLocale)
+                                    selectedPoemLocale
+                                else
+                                    LocaleItem.CustomLocale(getCurrentLocale(Resources.getSystem()))
                             )
-                        )
-                    )
+                        }
+                    }
                 }
-            }
         }
     }
 
@@ -195,10 +196,6 @@ class PoemListViewModel @Inject constructor(
         updateUiState(
             eventToConsume = Event.SharePoemText(shareIntent),
         )
-    }
-
-    fun searchClosed() {
-        viewIsReady()
     }
 
     fun onEventConsumed(event: Event) {

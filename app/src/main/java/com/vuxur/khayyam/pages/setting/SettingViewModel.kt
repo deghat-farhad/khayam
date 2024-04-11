@@ -1,4 +1,4 @@
-package com.vuxur.khayyam.setting
+package com.vuxur.khayyam.pages.setting
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -6,9 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.vuxur.khayyam.poemList.view.poem_list.ROUTE_POEM_LIST
-import com.vuxur.khayyam.poemList.view.poem_list.poemList
-import com.vuxur.khayyam.setting.view.setting
+import com.vuxur.khayyam.pages.poemList.view.poem_list.ROUTE_POEM_LIST
+import com.vuxur.khayyam.pages.poemList.view.poem_list.poemList
+import com.vuxur.khayyam.pages.setting.view.setting
 import com.vuxur.khayyam.theme.KhayyamTheme
 import dagger.hilt.android.AndroidEntryPoint
 

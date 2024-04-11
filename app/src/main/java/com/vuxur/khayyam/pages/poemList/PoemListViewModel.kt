@@ -1,4 +1,4 @@
-package com.vuxur.khayyam.poemList
+package com.vuxur.khayyam.pages.poemList
 
 import android.content.Intent
 import android.content.res.Resources
@@ -14,7 +14,6 @@ import com.vuxur.khayyam.domain.usecase.findPoems.FindPoemsParams
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoems
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoemsParams
 import com.vuxur.khayyam.domain.usecase.getSelectedPoemLocale.GetSelectedPoemLocale
-import com.vuxur.khayyam.domain.usecase.setSelectedPoemLocale.SetSelectedPoemLocale
 import com.vuxur.khayyam.mapper.LocaleItemMapper
 import com.vuxur.khayyam.mapper.PoemItemMapper
 import com.vuxur.khayyam.model.LocaleItem
@@ -38,12 +37,11 @@ class PoemListViewModel @Inject constructor(
     private val getPoems: GetPoems,
     private val findPoems: FindPoems,
     private val poemItemMapper: PoemItemMapper,
-    private val setSelectedPoemLocale: SetSelectedPoemLocale,
     private val getSelectedPoemLocale: GetSelectedPoemLocale,
     private val localeItemMapper: LocaleItemMapper,
 ) : ViewModel() {
 
-    private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.PreLoad())
+    private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading())
     val uiState: StateFlow<UiState> = _uiState
 
     private var searchResult: MutableList<PoemItem> = mutableListOf()
@@ -94,7 +92,8 @@ class PoemListViewModel @Inject constructor(
             getPoems(params).onEach { poems ->
                 updateUiState(
                     poems = poemItemMapper.mapToPresentation(poems),
-                    currentItemIndex = 0
+                    currentItemIndex = 0,
+                    selectedLocaleItem = selectedPoemLocale,
                 )
             }.launchIn(viewModelScope)
     }
@@ -201,6 +200,7 @@ class PoemListViewModel @Inject constructor(
         currentItemIndex: Int = currentPoemIndex,
         eventToConsume: Event? = null,
         eventConsumed: Event? = null,
+        selectedLocaleItem: LocaleItem.CustomLocale? = null,
     ) {
         when (val state = _uiState.value) {
             is UiState.Loaded -> {
@@ -211,27 +211,19 @@ class PoemListViewModel @Inject constructor(
                     isTherePreviousResult = searchResult.isNotEmpty() && currentItemIndex > searchResult.first().index,
                     currentItemIndex = currentItemIndex,
                     events = (state.events.filterNot { it == eventConsumed } + eventToConsume).filterNotNull(),
+                    selectedLocaleItem = selectedLocaleItem ?: state.selectedLocaleItem
                 )
             }
 
-            UiState.Loading -> {
-                if (poems == null) {
-                    throw IllegalArgumentException("poems and currentItemIndex cannot be null when UiState is Loading")
-                }
-                _uiState.value = UiState.Loaded(
-                    poems = poems,
-                    currentItemIndex = currentItemIndex,
-                )
-            }
-
-            is UiState.PreLoad -> {
-                if (poems != null) {
+            is UiState.Loading -> {
+                if (selectedLocaleItem != null && poems != null && currentItemIndex != -1) {
                     _uiState.value = UiState.Loaded(
                         poems = poems,
                         currentItemIndex = currentItemIndex,
+                        selectedLocaleItem = selectedLocaleItem,
                     )
                 } else {
-                    _uiState.value = UiState.PreLoad(
+                    _uiState.value = UiState.Loading(
                         events = (state.events.filterNot { it == eventConsumed } + eventToConsume).filterNotNull(),
                     )
                 }
@@ -251,10 +243,9 @@ class PoemListViewModel @Inject constructor(
 
     sealed class UiState{
 
-        data class PreLoad(
+        data class Loading(
             val events: List<Event> = emptyList(),
         ) : UiState()
-        data object Loading : UiState()
         data class Loaded(
             val poems: List<PoemItem>,
             val currentItemIndex: Int = 0,
@@ -262,6 +253,7 @@ class PoemListViewModel @Inject constructor(
             val isThereNextResult: Boolean = false,
             val isTherePreviousResult: Boolean = false,
             val events: List<Event> = emptyList(),
+            val selectedLocaleItem: LocaleItem.CustomLocale,
         ) : UiState()
     }
 

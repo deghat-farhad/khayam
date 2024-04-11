@@ -1,11 +1,11 @@
-package com.vuxur.khayyam.setting.view
+package com.vuxur.khayyam.pages.setting.view
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.vuxur.khayyam.setting.SettingViewModel
+import com.vuxur.khayyam.pages.setting.SettingViewModel
 
 @Composable
 fun SettingRoute(

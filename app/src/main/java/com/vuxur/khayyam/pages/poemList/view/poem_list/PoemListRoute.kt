@@ -1,4 +1,4 @@
-package com.vuxur.khayyam.poemList.view.poem_list
+package com.vuxur.khayyam.pages.poemList.view.poem_list
 
 import android.content.Context
 import android.content.Intent
@@ -12,7 +12,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
-import com.vuxur.khayyam.poemList.PoemListViewModel
+import com.vuxur.khayyam.pages.poemList.PoemListViewModel
 import java.io.File
 
 @Composable
@@ -62,8 +62,7 @@ fun PoemListRoute(
                     }
                 }
 
-                PoemListViewModel.UiState.Loading -> {}
-                is PoemListViewModel.UiState.PreLoad -> {
+                is PoemListViewModel.UiState.Loading -> {
                     uiStateSnapshot.events.forEach { event ->
                         when (event) {
                             is PoemListViewModel.Event.CopyPoemText -> {
@@ -113,11 +112,11 @@ fun PoemListRoute(
                     viewModel.sharePoemImage(bitmap, cacheDir)
                 },
                 onNavigateToSetting = navigateToSetting,
+                localeItem = state.selectedLocaleItem,
             )
         }
 
-        PoemListViewModel.UiState.Loading -> {}
-        is PoemListViewModel.UiState.PreLoad -> {}
+        is PoemListViewModel.UiState.Loading -> {}
     }
 }
 

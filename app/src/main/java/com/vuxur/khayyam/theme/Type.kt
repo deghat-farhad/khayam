@@ -22,10 +22,7 @@ val fontFamily = if (isFarsi)
 else
     FontFamily.Default
 
-val fontSizeCoefficient = if (isFarsi)
-    1.1f
-else
-    1f
+val fontSizeCoefficient = 1.1f
 
 val BodyLarge = TextStyle(
     fontFamily = fontFamily,

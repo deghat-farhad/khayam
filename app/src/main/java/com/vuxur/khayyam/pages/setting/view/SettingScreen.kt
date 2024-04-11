@@ -1,4 +1,4 @@
-package com.vuxur.khayyam.setting.view
+package com.vuxur.khayyam.pages.setting.view
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable

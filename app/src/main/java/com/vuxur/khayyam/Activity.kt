@@ -1,4 +1,4 @@
-package com.vuxur.khayyam.poemList.view
+package com.vuxur.khayyam
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,7 +8,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.vuxur.khayyam.poemList.view.poem_list.ROUTE_POEM_LIST
 import com.vuxur.khayyam.poemList.view.poem_list.poemList
-import com.vuxur.khayyam.poemList.view.theme.KhayyamTheme
+import com.vuxur.khayyam.setting.view.setting
+import com.vuxur.khayyam.theme.KhayyamTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,6 +25,7 @@ class Activity : ComponentActivity() {
                     startDestination = ROUTE_POEM_LIST,
                 ) {
                     poemList(navController)
+                    setting(navController)
                 }
             }
         }

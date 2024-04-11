@@ -18,6 +18,7 @@ import java.io.File
 @Composable
 fun PoemListRoute(
     viewModel: PoemListViewModel,
+    navigateToSetting: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val clipboardManager = LocalClipboardManager.current
@@ -29,29 +30,64 @@ fun PoemListRoute(
     }
 
     DisposableEffect(uiState) {
-        val localUiState = uiState
-        if (localUiState is PoemListViewModel.UiState.Loaded) {
-            localUiState.events.forEach { event ->
-                when (event) {
-                    is PoemListViewModel.Event.CopyPoemText -> {
-                        Toast.makeText(context, "poem copied to clipboard.", Toast.LENGTH_SHORT)
-                            .show()
-                    }
+        uiState.let { uiStateSnapshot ->
+            when (uiStateSnapshot) {
+                is PoemListViewModel.UiState.Loaded -> {
+                    uiStateSnapshot.events.forEach { event ->
+                        when (event) {
+                            is PoemListViewModel.Event.CopyPoemText -> {
+                                Toast.makeText(
+                                    context,
+                                    "poem copied to clipboard.",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }
 
-                    is PoemListViewModel.Event.SharePoemImage -> {
-                        viewModel.sharePoemImageUri(getUriOf(context, event.imageToShare))
-                    }
+                            is PoemListViewModel.Event.SharePoemImage -> {
+                                viewModel.sharePoemImageUri(getUriOf(context, event.imageToShare))
+                            }
 
-                    is PoemListViewModel.Event.SharePoemText -> {
-                        startActivity(
-                            context,
-                            Intent.createChooser(event.shareIntent, "choose an app"),
-                            null
-                        )
+                            is PoemListViewModel.Event.SharePoemText -> {
+                                startActivity(
+                                    context,
+                                    Intent.createChooser(event.shareIntent, "choose an app"),
+                                    null
+                                )
+                            }
+
+                            PoemListViewModel.Event.NavigateToLanguageSetting -> navigateToSetting()
+                        }
+                        viewModel.onEventConsumed(event)
                     }
                 }
-                viewModel.onEventConsumed(event)
+
+                PoemListViewModel.UiState.Loading -> {}
+                is PoemListViewModel.UiState.PreLoad -> {
+                    uiStateSnapshot.events.forEach { event ->
+                        when (event) {
+                            is PoemListViewModel.Event.CopyPoemText -> {
+                                throw (IllegalStateException("there is no poem to copy in \"PreLoad\" state."))
+                            }
+
+                            is PoemListViewModel.Event.SharePoemImage -> {
+                                throw (IllegalStateException("there is no poem to share in \"PreLoad\" state."))
+                            }
+
+                            is PoemListViewModel.Event.SharePoemText -> {
+                                throw (IllegalStateException("there is no poem to share in \"PreLoad\" state."))
+                            }
+
+                            PoemListViewModel.Event.NavigateToLanguageSetting -> navigateToSetting()
+                        }
+                        viewModel.onEventConsumed(event)
+                    }
+                }
             }
+        }
+        val uiStateSnapshot = uiState
+        if (uiStateSnapshot is PoemListViewModel.UiState.Loaded) {
+
         }
         onDispose { }
     }
@@ -75,11 +111,13 @@ fun PoemListRoute(
                 onSharePoemText = viewModel::sharePoemText,
                 onSharePoemImage = { bitmap ->
                     viewModel.sharePoemImage(bitmap, cacheDir)
-                }
+                },
+                onNavigateToSetting = navigateToSetting,
             )
         }
 
         PoemListViewModel.UiState.Loading -> {}
+        is PoemListViewModel.UiState.PreLoad -> {}
     }
 }
 

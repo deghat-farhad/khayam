@@ -9,9 +9,13 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shuffle
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,6 +28,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.vuxur.khayyam.model.PoemItem
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PoemListScreen(
     poemList: List<PoemItem>,
@@ -39,8 +44,10 @@ fun PoemListScreen(
     onCopyPoemText: () -> Unit,
     onSharePoemText: () -> Unit,
     onSharePoemImage: (Bitmap) -> Unit,
+    onNavigateToSetting: () -> Unit,
 ) {
     var capture by remember { mutableStateOf({ _: Bitmap -> }) }
+
     Column(
         Modifier
             .systemBarsPadding()
@@ -82,6 +89,21 @@ fun PoemListScreen(
                         contentDescription = null
                     )
                 }
+            }
+            IconButton(
+                modifier = Modifier
+                    // Fills the entire parent Box
+                    //.fillMaxSize()
+                    // Positions the icon at top right corner with some padding
+                    .align(Alignment.TopEnd)
+                    .padding(top = 8.dp, end = 16.dp),
+                onClick = onNavigateToSetting,
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Settings,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
         }
         KSearchBar(

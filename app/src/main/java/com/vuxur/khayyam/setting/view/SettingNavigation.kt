@@ -1,4 +1,4 @@
-package com.vuxur.khayyam.poemList.view.poem_list
+package com.vuxur.khayyam.setting.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -9,21 +9,25 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.vuxur.khayyam.setting.view.navigateToSetting
 
-const val ROUTE_POEM_LIST = "poem_list_route"
-fun NavGraphBuilder.poemList(
+const val ROUTE_SETTING = "setting_route"
+
+fun NavController.navigateToSetting() {
+    this.navigate(ROUTE_SETTING)
+}
+
+fun NavGraphBuilder.setting(
     navController: NavController
 ) {
-    composable(ROUTE_POEM_LIST) {
+    composable(ROUTE_SETTING) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            PoemListRoute(
+            SettingRoute(
                 viewModel = hiltViewModel(),
-                navController::navigateToSetting,
+                navController::popBackStack
             )
         }
     }

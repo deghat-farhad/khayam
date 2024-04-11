@@ -1,4 +1,4 @@
-package com.vuxur.khayyam.poemList.view.theme
+package com.vuxur.khayyam.theme
 
 import android.content.res.Resources
 import androidx.compose.material3.Typography

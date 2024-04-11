@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.flowOf
 class GetSupportedLocale(
     private val localeRepository: LocaleRepository
 ) : UseCase<List<Locale>> {
-    override suspend fun invoke(): Flow<List<Locale.CustomLocale>> {
-        return flowOf(localeRepository.getSupportedLanguages())
+    override suspend fun invoke(): Flow<List<Locale>> {
+        val supportedLocales = localeRepository.getSupportedLanguages().toMutableList()
+        supportedLocales.add(Locale.SystemLocale)
+        return flowOf(supportedLocales)
     }
 }

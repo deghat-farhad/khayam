@@ -10,7 +10,7 @@ class LocaleRepositoryImpl @Inject constructor(
     private val local: Local,
     private val localeMapper: LocaleMapper,
 ) : LocaleRepository {
-    override suspend fun getSupportedLanguages(): List<Locale.CustomLocale> {
+    override suspend fun getSupportedLanguages(): List<Locale> {
         return localeMapper.mapToDomain(local.getLocales())
     }
 }

@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.vuxur.khayyam.R
 import com.vuxur.khayyam.model.LocaleItem
 import com.vuxur.khayyam.model.PoemItem
@@ -41,7 +42,16 @@ fun PoemView(
             )
         )
     else
-        FontFamily.Default
+        FontFamily(
+            Font(
+                R.font.e_b_garamond_regular
+            )
+        )
+
+    val fontSize = if (isFarsi)
+        19.sp
+    else
+        18.sp
 
     Column(
         modifier = modifier,
@@ -53,6 +63,7 @@ fun PoemView(
             Text(
                 text = poemItem.id,
                 fontFamily = fontFamily,
+                fontSize = fontSize,
             )
 
             Divider(
@@ -77,12 +88,14 @@ fun PoemView(
                 text = poemItem.hemistich1,
                 textAlign = TextAlign.Center,
                 fontFamily = fontFamily,
+                fontSize = fontSize,
             )
 
             Text(
                 text = poemItem.hemistich2,
                 textAlign = TextAlign.Center,
                 fontFamily = fontFamily,
+                fontSize = fontSize,
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -91,12 +104,14 @@ fun PoemView(
                 text = poemItem.hemistich3,
                 textAlign = TextAlign.Center,
                 fontFamily = fontFamily,
+                fontSize = fontSize,
             )
 
             Text(
                 text = poemItem.hemistich4,
                 textAlign = TextAlign.Center,
                 fontFamily = fontFamily,
+                fontSize = fontSize,
             )
         }
     }

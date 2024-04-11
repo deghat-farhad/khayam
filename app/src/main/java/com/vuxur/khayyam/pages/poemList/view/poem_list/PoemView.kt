@@ -52,6 +52,7 @@ fun PoemView(
         ) {
             Text(
                 text = poemItem.id,
+                fontFamily = fontFamily,
             )
 
             Divider(

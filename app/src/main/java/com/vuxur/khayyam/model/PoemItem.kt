@@ -1,7 +1,7 @@
 package com.vuxur.khayyam.model
 
 data class PoemItem(
-    val id: Int,
+    val id: String,
     val hemistich1: String,
     val hemistich2: String,
     val hemistich3: String,

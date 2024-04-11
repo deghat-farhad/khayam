@@ -1,14 +1,15 @@
-package com.vuxur.khayyam.poemList.view.poem_list
+package com.vuxur.khayyam.pages.poemList.view.poem_list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import androidx.hilt.navigation.compose.hiltViewModel
+import com.vuxur.khayyam.pages.setting.view.navigateToSetting
 
 const val ROUTE_POEM_LIST = "poem_list_route"
 fun NavGraphBuilder.poemList(
@@ -22,6 +23,7 @@ fun NavGraphBuilder.poemList(
         ) {
             PoemListRoute(
                 viewModel = hiltViewModel(),
+                navController::navigateToSetting,
             )
         }
     }

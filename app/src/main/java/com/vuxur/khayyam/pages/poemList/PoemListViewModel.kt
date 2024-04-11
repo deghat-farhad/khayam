@@ -1,17 +1,24 @@
-package com.vuxur.khayyam.poemList
+package com.vuxur.khayyam.pages.poemList
 
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vuxur.khayyam.domain.model.Locale
 import com.vuxur.khayyam.domain.usecase.findPoems.FindPoems
 import com.vuxur.khayyam.domain.usecase.findPoems.FindPoemsParams
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoems
+import com.vuxur.khayyam.domain.usecase.getPoems.GetPoemsParams
+import com.vuxur.khayyam.domain.usecase.getSelectedPoemLocale.GetSelectedPoemLocale
+import com.vuxur.khayyam.mapper.LocaleItemMapper
 import com.vuxur.khayyam.mapper.PoemItemMapper
+import com.vuxur.khayyam.model.LocaleItem
 import com.vuxur.khayyam.model.PoemItem
+import com.vuxur.khayyam.utils.getCurrentLocale
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,19 +36,47 @@ import kotlin.random.Random
 class PoemListViewModel @Inject constructor(
     private val getPoems: GetPoems,
     private val findPoems: FindPoems,
-    private val poemItemMapper: PoemItemMapper
+    private val poemItemMapper: PoemItemMapper,
+    private val getSelectedPoemLocale: GetSelectedPoemLocale,
+    private val localeItemMapper: LocaleItemMapper,
 ) : ViewModel() {
 
-    private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
+    private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading())
     val uiState: StateFlow<UiState> = _uiState
 
     private var searchResult: MutableList<PoemItem> = mutableListOf()
-    private val currentPoemIndex get() = (_uiState.value as UiState.Loaded).currentItemIndex
+    private val currentPoemIndex
+        get() = _uiState.value.let { uiStateSnapshot ->
+            if (uiStateSnapshot is UiState.Loaded)
+                uiStateSnapshot.currentItemIndex
+            else
+                -1
+        }
     private val poemList get() = (_uiState.value as UiState.Loaded).poems
     private val currentPoem get() = poemList[currentPoemIndex]
 
     fun viewIsReady() {
-        loadPoems()
+        viewModelScope.launch {
+            getSelectedPoemLocale().collect { selectedPoemLocale ->
+                when (selectedPoemLocale) {
+                    Locale.NoLocale -> updateUiState(eventToConsume = Event.NavigateToLanguageSetting)
+
+                    is Locale.CustomLocale -> loadPoems(
+                        localeItemMapper.mapToPresentation(
+                            selectedPoemLocale
+                        )
+                    )
+
+                    Locale.SystemLocale -> loadPoems(
+                        LocaleItem.CustomLocale(
+                            getCurrentLocale(
+                                Resources.getSystem()
+                            )
+                        )
+                    )
+                }
+            }
+        }
     }
 
     fun setCurrentPoemIndex(currentPoemIndex: Int) {
@@ -50,20 +85,25 @@ class PoemListViewModel @Inject constructor(
         )
     }
 
-    private fun loadPoems() {
-        getPoems().onEach { poems ->
-            updateUiState(
-                poems = poemItemMapper.mapToPresentation(poems),
-                currentItemIndex = 0
+    private suspend fun loadPoems(selectedPoemLocale: LocaleItem.CustomLocale) {
+            val params = GetPoemsParams(
+                locale = localeItemMapper.mapToDomain(selectedPoemLocale)
             )
-        }.launchIn(viewModelScope)
+            getPoems(params).onEach { poems ->
+                updateUiState(
+                    poems = poemItemMapper.mapToPresentation(poems),
+                    currentItemIndex = 0,
+                    selectedLocaleItem = selectedPoemLocale,
+                )
+            }.launchIn(viewModelScope)
     }
 
     private suspend fun findPoem(
         searchPhrase: String,
-        condition: (index: Int) -> Boolean = { true }
+        selectedPoemLocale: LocaleItem.CustomLocale,
+        condition: (index: Int) -> Boolean = { true },
     ): PoemItem? {
-        val params = FindPoemsParams(searchPhrase)
+        val params = FindPoemsParams(searchPhrase, localeItemMapper.mapToDomain(selectedPoemLocale))
         searchResult = poemItemMapper.mapToPresentation(findPoems(params).first()).toMutableList()
 
         return searchResult.filter {
@@ -75,29 +115,38 @@ class PoemListViewModel @Inject constructor(
 
     fun findNearestPoem(searchPhrase: String) {
         viewModelScope.launch {
-            updateUiState(
-                currentItemIndex = findPoem(searchPhrase)?.index ?: currentPoemIndex
-            )
+            (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+                updateUiState(
+                    currentItemIndex = findPoem(
+                        searchPhrase,
+                        uiStateSnapshot.selectedLocaleItem
+                    )?.index ?: currentPoemIndex
+                )
+            }
         }
     }
 
     fun onNextResult(searchPhrase: String) {
         viewModelScope.launch {
-            updateUiState(
-                currentItemIndex = findPoem(searchPhrase) {
-                    it > currentPoemIndex
-                }?.index ?: currentPoemIndex
-            )
+            (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+                updateUiState(
+                    currentItemIndex = findPoem(searchPhrase, uiStateSnapshot.selectedLocaleItem) {
+                        it > currentPoemIndex
+                    }?.index ?: currentPoemIndex
+                )
+            }
         }
     }
 
     fun onPreviousResult(searchPhrase: String) {
         viewModelScope.launch {
-            updateUiState(
-                currentItemIndex = findPoem(searchPhrase) {
-                    it < currentPoemIndex
-                }?.index ?: currentPoemIndex
-            )
+            (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+                updateUiState(
+                    currentItemIndex = findPoem(searchPhrase, uiStateSnapshot.selectedLocaleItem) {
+                        it < currentPoemIndex
+                    }?.index ?: currentPoemIndex
+                )
+            }
         }
     }
 
@@ -149,7 +198,7 @@ class PoemListViewModel @Inject constructor(
     }
 
     fun searchClosed() {
-        loadPoems()
+        viewIsReady()
     }
 
     fun onEventConsumed(event: Event) {
@@ -161,6 +210,7 @@ class PoemListViewModel @Inject constructor(
         currentItemIndex: Int = currentPoemIndex,
         eventToConsume: Event? = null,
         eventConsumed: Event? = null,
+        selectedLocaleItem: LocaleItem.CustomLocale? = null,
     ) {
         when (val state = _uiState.value) {
             is UiState.Loaded -> {
@@ -171,16 +221,22 @@ class PoemListViewModel @Inject constructor(
                     isTherePreviousResult = searchResult.isNotEmpty() && currentItemIndex > searchResult.first().index,
                     currentItemIndex = currentItemIndex,
                     events = (state.events.filterNot { it == eventConsumed } + eventToConsume).filterNotNull(),
+                    selectedLocaleItem = selectedLocaleItem ?: state.selectedLocaleItem
                 )
             }
-            UiState.Loading -> {
-                if (poems == null) {
-                    throw IllegalArgumentException("poems and currentItemIndex cannot be null when UiState is Loading")
+
+            is UiState.Loading -> {
+                if (selectedLocaleItem != null && poems != null && currentItemIndex != -1) {
+                    _uiState.value = UiState.Loaded(
+                        poems = poems,
+                        currentItemIndex = currentItemIndex,
+                        selectedLocaleItem = selectedLocaleItem,
+                    )
+                } else {
+                    _uiState.value = UiState.Loading(
+                        events = (state.events.filterNot { it == eventConsumed } + eventToConsume).filterNotNull(),
+                    )
                 }
-                _uiState.value = UiState.Loaded(
-                    poems = poems,
-                    currentItemIndex = currentItemIndex,
-                )
             }
         }
     }
@@ -196,7 +252,10 @@ class PoemListViewModel @Inject constructor(
     }
 
     sealed class UiState{
-        data object Loading : UiState()
+
+        data class Loading(
+            val events: List<Event> = emptyList(),
+        ) : UiState()
         data class Loaded(
             val poems: List<PoemItem>,
             val currentItemIndex: Int = 0,
@@ -204,6 +263,7 @@ class PoemListViewModel @Inject constructor(
             val isThereNextResult: Boolean = false,
             val isTherePreviousResult: Boolean = false,
             val events: List<Event> = emptyList(),
+            val selectedLocaleItem: LocaleItem.CustomLocale,
         ) : UiState()
     }
 
@@ -219,10 +279,12 @@ class PoemListViewModel @Inject constructor(
         data class CopyPoemText(
             val copiedPoem: String,
         ) : Event()
+
+        data object NavigateToLanguageSetting : Event()
     }
 
     private val PoemItem.index: Int
         get() {
-            return id - 1
+            return poemList.indexOf(this)
         }
 }

@@ -1,4 +1,4 @@
-package com.vuxur.khayyam.poemList.view.theme
+package com.vuxur.khayyam.theme
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme

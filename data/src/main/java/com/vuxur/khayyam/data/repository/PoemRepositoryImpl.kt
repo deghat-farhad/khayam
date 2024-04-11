@@ -20,7 +20,8 @@ class PoemRepositoryImpl @Inject constructor(
         return local.getPoems(localeMapper.mapToData(locale)).map { poemMapper.mapToDomain(it) }
     }
 
-    override fun findPoems(searchPhrase: String): Flow<List<Poem>> {
-        return local.findPoems(searchPhrase).map {poemMapper.mapToDomain(it)}
+    override fun findPoems(searchPhrase: String, locale: Locale.CustomLocale): Flow<List<Poem>> {
+        return local.findPoems(searchPhrase, localeMapper.mapToData(locale))
+            .map { poemMapper.mapToDomain(it) }
     }
 }

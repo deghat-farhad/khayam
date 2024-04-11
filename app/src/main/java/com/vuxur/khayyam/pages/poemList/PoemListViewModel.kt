@@ -100,9 +100,10 @@ class PoemListViewModel @Inject constructor(
 
     private suspend fun findPoem(
         searchPhrase: String,
-        condition: (index: Int) -> Boolean = { true }
+        selectedPoemLocale: LocaleItem.CustomLocale,
+        condition: (index: Int) -> Boolean = { true },
     ): PoemItem? {
-        val params = FindPoemsParams(searchPhrase)
+        val params = FindPoemsParams(searchPhrase, localeItemMapper.mapToDomain(selectedPoemLocale))
         searchResult = poemItemMapper.mapToPresentation(findPoems(params).first()).toMutableList()
 
         return searchResult.filter {
@@ -114,29 +115,38 @@ class PoemListViewModel @Inject constructor(
 
     fun findNearestPoem(searchPhrase: String) {
         viewModelScope.launch {
-            updateUiState(
-                currentItemIndex = findPoem(searchPhrase)?.index ?: currentPoemIndex
-            )
+            (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+                updateUiState(
+                    currentItemIndex = findPoem(
+                        searchPhrase,
+                        uiStateSnapshot.selectedLocaleItem
+                    )?.index ?: currentPoemIndex
+                )
+            }
         }
     }
 
     fun onNextResult(searchPhrase: String) {
         viewModelScope.launch {
-            updateUiState(
-                currentItemIndex = findPoem(searchPhrase) {
-                    it > currentPoemIndex
-                }?.index ?: currentPoemIndex
-            )
+            (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+                updateUiState(
+                    currentItemIndex = findPoem(searchPhrase, uiStateSnapshot.selectedLocaleItem) {
+                        it > currentPoemIndex
+                    }?.index ?: currentPoemIndex
+                )
+            }
         }
     }
 
     fun onPreviousResult(searchPhrase: String) {
         viewModelScope.launch {
-            updateUiState(
-                currentItemIndex = findPoem(searchPhrase) {
-                    it < currentPoemIndex
-                }?.index ?: currentPoemIndex
-            )
+            (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+                updateUiState(
+                    currentItemIndex = findPoem(searchPhrase, uiStateSnapshot.selectedLocaleItem) {
+                        it < currentPoemIndex
+                    }?.index ?: currentPoemIndex
+                )
+            }
         }
     }
 

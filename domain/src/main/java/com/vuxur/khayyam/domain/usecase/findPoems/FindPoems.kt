@@ -9,6 +9,6 @@ class FindPoems(
     private val poemRepository: PoemRepository
 ) : UseCaseWithParams<List<Poem>, FindPoemsParams>{
     override suspend fun invoke(params: FindPoemsParams): Flow<List<Poem>> {
-        return poemRepository.findPoems(params.searchPhrase)
+        return poemRepository.findPoems(params.searchPhrase, params.locale)
     }
 }

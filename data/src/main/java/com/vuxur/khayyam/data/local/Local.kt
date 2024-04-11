@@ -6,7 +6,6 @@ import com.vuxur.khayyam.data.local.sharedPreferences.NO_LANGUAGE_SELECTED
 import com.vuxur.khayyam.data.local.sharedPreferences.PreferencesDataSource
 import com.vuxur.khayyam.data.local.sharedPreferences.SYSTEM_DEFAULT_LANGUAGE
 import com.vuxur.khayyam.data.mapper.LanguageTagEntityMapper
-import com.vuxur.khayyam.data.utils.PersianDigitsMapper.toEnglishDigits
 import kotlinx.coroutines.flow.map
 import java.util.Locale
 
@@ -18,8 +17,13 @@ class Local(
     fun getPoems(localeEntity: LocaleEntity.CustomLocale) =
         database.getPoems(localeEntity.locale.toLanguageTag())
 
-    fun findPoems(searchPhrase: String) = database.findPoems(searchPhrase.toEnglishDigits())
+    fun findPoems(
+        searchPhrase: String,
+        localeEntity: LocaleEntity.CustomLocale
+    ) = database.findPoems(searchPhrase, localeEntity.locale.toLanguageTag())
+
     suspend fun getLocales() = languageTagEntityMapper.mapToLocaleEntity(database.getLocales())
+
     suspend fun setSelectedPoemLocale(localeEntity: LocaleEntity) =
         when (localeEntity) {
             LocaleEntity.NoLocale -> preferencesDataSource.setSelectedPoemLanguageTag(

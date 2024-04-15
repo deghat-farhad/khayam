@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 val mutedReddishBrown = Color(0xFF734854)
 val creamyBeige = Color(0xFFF2F2E9)
-val earthyBrown = Color(0xFF736766)
+val earthyBrown = Color(0xFF4F464E)
 val mutedGrayishBrown = Color(0xFFD9D7C5)
 val mutedMauve = Color(0xFFA69580)
 

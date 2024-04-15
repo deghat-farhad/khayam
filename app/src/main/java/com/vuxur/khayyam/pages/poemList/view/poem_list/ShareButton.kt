@@ -34,7 +34,7 @@ fun ShareButton(
     ) {
         Icon(
             imageVector = Icons.Filled.Share,
-            contentDescription = null
+            contentDescription = stringResource(R.string.share)
         )
     }
 
@@ -55,7 +55,7 @@ fun ShareButton(
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Filled.CopyAll,
-                    contentDescription = null
+                    contentDescription = stringResource(id = R.string.copyText)
                 )
             }
         )
@@ -72,7 +72,7 @@ fun ShareButton(
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Filled.TextSnippet,
-                    contentDescription = null
+                    contentDescription = stringResource(id = R.string.shareText)
                 )
             }
         )
@@ -89,7 +89,7 @@ fun ShareButton(
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Filled.Image,
-                    contentDescription = null
+                    contentDescription = stringResource(id = R.string.shareImage)
                 )
             }
         )

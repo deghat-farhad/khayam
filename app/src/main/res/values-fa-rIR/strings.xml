@@ -9,4 +9,9 @@
     <string name="selected_language">زبان انتخاب‌شده</string>
     <string name="poems_language">زبان اشعار</string>
     <string name="settings">تنظیمات</string>
+    <string name="previous_result">نتیجه قبلی</string>
+    <string name="next_result">نتیجه بعدی</string>
+    <string name="random_poem">شعر تصادفی</string>
+    <string name="share">اشتراک‌گذاری</string>
+
 </resources>

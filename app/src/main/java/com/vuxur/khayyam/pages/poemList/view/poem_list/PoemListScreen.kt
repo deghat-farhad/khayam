@@ -25,9 +25,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.text.layoutDirection
+import com.vuxur.khayyam.R
 import com.vuxur.khayyam.model.LocaleItem
 import com.vuxur.khayyam.model.PoemItem
 
@@ -92,7 +94,7 @@ fun PoemListScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Settings,
-                                contentDescription = null,
+                                contentDescription = stringResource(id = R.string.settings),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
@@ -112,7 +114,7 @@ fun PoemListScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Shuffle,
-                            contentDescription = null
+                            contentDescription = stringResource(R.string.random_poem)
                         )
                     }
                 }

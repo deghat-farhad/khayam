@@ -91,7 +91,7 @@ fun KSearchBar(
                     searchPhrase = it
                     onChange?.invoke(it)
                 },
-                leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = "") },
+                leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = stringResource(id = R.string.search)) },
                 placeholder = { Text(text = stringResource(id = R.string.search)) },
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
@@ -111,7 +111,7 @@ fun KSearchBar(
                         Icons.Filled.KeyboardArrowRight
                     else
                         Icons.Filled.KeyboardArrowLeft,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.previous_result),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
@@ -125,7 +125,7 @@ fun KSearchBar(
                         Icons.Filled.KeyboardArrowLeft
                     else
                         Icons.Filled.KeyboardArrowRight,
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.next_result),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }

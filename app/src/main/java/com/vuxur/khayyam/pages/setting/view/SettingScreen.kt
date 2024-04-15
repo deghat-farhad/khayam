@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -42,7 +44,7 @@ fun SettingScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp)
+                .padding(vertical = 16.dp)
         ) {
             item {
                 SettingsSection(title = stringResource(R.string.poems_language)) {
@@ -65,14 +67,22 @@ private fun SettingsSection(
     title: String,
     content: @Composable () -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(vertical = 16.dp),
-            color = MaterialTheme.colorScheme.onPrimaryContainer
-        )
-        content()
+    Surface {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(vertical = 16.dp),
+            )
+            Divider(
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            content()
+        }
     }
 }
 
@@ -101,7 +111,7 @@ private fun LanguageItem(
                 else
                     stringResource(R.string.system_language),
                 style = MaterialTheme.typography.bodyMedium,
-                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onPrimaryContainer,
+                color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Unspecified,
                 modifier = Modifier.weight(1f)
             )
             if (isSelected) {

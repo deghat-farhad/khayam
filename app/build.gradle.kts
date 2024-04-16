@@ -27,6 +27,10 @@ android {
         kotlinOptions {
             jvmTarget = ConfigurationData.javaVersion.toString()
         }
+
+        buildFeatures {
+            buildConfig = true
+        }
     }
 
     buildTypes {

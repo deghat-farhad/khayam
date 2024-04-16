@@ -2,9 +2,8 @@ package com.vuxur.khayyam.domain.repository
 
 import com.vuxur.khayyam.domain.model.Locale
 import com.vuxur.khayyam.domain.model.Poem
-import kotlinx.coroutines.flow.Flow
 
 interface PoemRepository {
-    fun getPoems(locale: Locale.CustomLocale): Flow<List<Poem>>
-    fun findPoems(searchPhrase: String, locale: Locale.CustomLocale): Flow<List<Poem>>
+    suspend fun getPoems(locale: Locale.CustomLocale): List<Poem>
+    suspend fun findPoems(searchPhrase: String, locale: Locale.CustomLocale): List<Poem>
 }

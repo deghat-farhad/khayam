@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 class GetSelectedPoemLocale(
     private val settingRepository: SettingRepository
-) : UseCase<Locale> {
+) : UseCase<Flow<Locale>> {
     override suspend fun invoke(): Flow<Locale> {
         return settingRepository.selectedPoemLocale
     }

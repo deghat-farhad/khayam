@@ -22,9 +22,6 @@ import com.vuxur.khayyam.utils.getCurrentLocale
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
@@ -86,16 +83,15 @@ class PoemListViewModel @Inject constructor(
     }
 
     private suspend fun loadPoems(selectedPoemLocale: LocaleItem.CustomLocale) {
-            val params = GetPoemsParams(
-                locale = localeItemMapper.mapToDomain(selectedPoemLocale)
-            )
-            getPoems(params).onEach { poems ->
-                updateUiState(
-                    poems = poemItemMapper.mapToPresentation(poems),
-                    currentItemIndex = 0,
-                    selectedLocaleItem = selectedPoemLocale,
-                )
-            }.launchIn(viewModelScope)
+        val params = GetPoemsParams(
+            locale = localeItemMapper.mapToDomain(selectedPoemLocale)
+        )
+        val poems = poemItemMapper.mapToPresentation(getPoems(params))
+        updateUiState(
+            poems = poems,
+            currentItemIndex = 0,
+            selectedLocaleItem = selectedPoemLocale,
+        )
     }
 
     private suspend fun findPoem(
@@ -104,7 +100,7 @@ class PoemListViewModel @Inject constructor(
         condition: (index: Int) -> Boolean = { true },
     ): PoemItem? {
         val params = FindPoemsParams(searchPhrase, localeItemMapper.mapToDomain(selectedPoemLocale))
-        searchResult = poemItemMapper.mapToPresentation(findPoems(params).first()).toMutableList()
+        searchResult = poemItemMapper.mapToPresentation(findPoems(params)).toMutableList()
 
         return searchResult.filter {
             condition(it.index)
@@ -195,10 +191,6 @@ class PoemListViewModel @Inject constructor(
         updateUiState(
             eventToConsume = Event.SharePoemText(shareIntent),
         )
-    }
-
-    fun searchClosed() {
-        viewIsReady()
     }
 
     fun onEventConsumed(event: Event) {

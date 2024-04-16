@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Query
 import com.vuxur.khayyam.data.entity.LanguageTagEntity
 import com.vuxur.khayyam.data.entity.PoemEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PoemDatabaseDao {
@@ -27,7 +26,7 @@ interface PoemDatabaseDao {
                 LanguageTagEntity.languageTag = :languageCode
     """
     )
-    fun getPoems(languageCode: String): Flow<List<PoemEntity>>
+    suspend fun getPoems(languageCode: String): List<PoemEntity>
 
     @Query(
         """
@@ -53,7 +52,7 @@ interface PoemDatabaseDao {
                 AND LanguageTagEntity.languageTag = :languageCode
         """
     )
-    fun findPoems(searchPhrase: String, languageCode: String): Flow<List<PoemEntity>>
+    suspend fun findPoems(searchPhrase: String, languageCode: String): List<PoemEntity>
 
     @Query("SELECT * FROM LanguageTagEntity")
     suspend fun getLocales(): List<LanguageTagEntity>

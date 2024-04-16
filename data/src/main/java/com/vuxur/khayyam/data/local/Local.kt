@@ -14,10 +14,10 @@ class Local(
     private val languageTagEntityMapper: LanguageTagEntityMapper,
     private val preferencesDataSource: PreferencesDataSource,
 ) {
-    fun getPoems(localeEntity: LocaleEntity.CustomLocale) =
+    suspend fun getPoems(localeEntity: LocaleEntity.CustomLocale) =
         database.getPoems(localeEntity.locale.toLanguageTag())
 
-    fun findPoems(
+    suspend fun findPoems(
         searchPhrase: String,
         localeEntity: LocaleEntity.CustomLocale
     ) = database.findPoems(searchPhrase, localeEntity.locale.toLanguageTag())

@@ -15,30 +15,30 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-class DomainModule {
+class UseCaseModule {
     @Provides
-    fun getPoems(
+    fun provideGetPoems(
         poemRepository: PoemRepository,
         getSupportedLocale: GetSupportedLocale,
     ) = GetPoems(poemRepository, getSupportedLocale)
 
     @Provides
-    fun findPoems(
+    fun provideFindPoems(
         poemRepository: PoemRepository,
     ) = FindPoems(poemRepository)
 
     @Provides
-    fun getSupportedLocale(
+    fun provideGetSupportedLocale(
         localeRepository: LocaleRepository
     ) = GetSupportedLocale(localeRepository)
 
     @Provides
-    fun getSelectedPoemLocale(
+    fun provideGetSelectedPoemLocale(
         settingRepository: SettingRepository
     ) = GetSelectedPoemLocale(settingRepository)
 
     @Provides
-    fun setSelectedPoemLocale(
+    fun provideSetSelectedPoemLocale(
         settingRepository: SettingRepository
     ) = SetSelectedPoemLocale(settingRepository)
 }

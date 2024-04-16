@@ -2,8 +2,9 @@ package com.vuxur.khayyam.data.mapper
 
 import com.vuxur.khayyam.data.entity.PoemEntity
 import com.vuxur.khayyam.domain.model.Poem
+import javax.inject.Inject
 
-class PoemMapper {
+class PoemMapper @Inject constructor() {
     fun mapToDomain(poemEntity: PoemEntity) =
         Poem(
             poemEntity.id,

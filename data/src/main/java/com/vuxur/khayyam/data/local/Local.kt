@@ -8,8 +8,9 @@ import com.vuxur.khayyam.data.local.sharedPreferences.SYSTEM_DEFAULT_LANGUAGE
 import com.vuxur.khayyam.data.mapper.LanguageTagEntityMapper
 import kotlinx.coroutines.flow.map
 import java.util.Locale
+import javax.inject.Inject
 
-class Local(
+class Local @Inject constructor(
     private val database: PoemDatabaseDao,
     private val languageTagEntityMapper: LanguageTagEntityMapper,
     private val preferencesDataSource: PreferencesDataSource,

@@ -13,3 +13,6 @@ val deepIndigo = Color(0xFF1A2C40)
 val lightLavender = Color(0xFFEDE8FF)
 val mutedRose = Color(0xFFBF7885)
 val dustyRose = Color(0xFF8C4F65)
+
+val softBlush = Color(0xFFDCA1BB)
+val deepPlum = Color(0xFF941C44)

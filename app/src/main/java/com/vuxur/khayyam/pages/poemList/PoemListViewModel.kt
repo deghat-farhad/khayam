@@ -42,21 +42,13 @@ class PoemListViewModel @Inject constructor(
     val uiState: StateFlow<UiState> = _uiState
 
     private var searchResult: MutableList<PoemItem> = mutableListOf()
-    private val currentPoemIndex
-        get() = _uiState.value.let { uiStateSnapshot ->
-            if (uiStateSnapshot is UiState.Loaded)
-                uiStateSnapshot.currentItemIndex
-            else
-                -1
-        }
     private val poemList get() = (_uiState.value as UiState.Loaded).poems
-    private val currentPoem get() = poemList[currentPoemIndex]
 
     fun viewIsReady() {
         viewModelScope.launch {
             getSelectedPoemLocale().collect { selectedPoemLocale ->
                 when (selectedPoemLocale) {
-                    Locale.NoLocale -> updateUiState(eventToConsume = Event.NavigateToLanguageSetting)
+                    Locale.NoLocale -> consumeEvent(Event.NavigateToLanguageSetting)
 
                     is Locale.CustomLocale -> loadPoems(
                         localeItemMapper.mapToPresentation(
@@ -77,88 +69,82 @@ class PoemListViewModel @Inject constructor(
     }
 
     fun setCurrentPoemIndex(currentPoemIndex: Int) {
-        updateUiState(
-            currentItemIndex = currentPoemIndex
-        )
-    }
-
-    private suspend fun loadPoems(selectedPoemLocale: LocaleItem.CustomLocale) {
-        val params = GetPoemsParams(
-            locale = localeItemMapper.mapToDomain(selectedPoemLocale)
-        )
-        val poems = poemItemMapper.mapToPresentation(getPoems(params))
-        updateUiState(
-            poems = poems,
-            currentItemIndex = 0,
-            selectedLocaleItem = selectedPoemLocale,
-        )
-    }
-
-    private suspend fun findPoem(
-        searchPhrase: String,
-        selectedPoemLocale: LocaleItem.CustomLocale,
-        condition: (index: Int) -> Boolean = { true },
-    ): PoemItem? {
-        val params = FindPoemsParams(searchPhrase, localeItemMapper.mapToDomain(selectedPoemLocale))
-        searchResult = poemItemMapper.mapToPresentation(findPoems(params)).toMutableList()
-
-        return searchResult.filter {
-            condition(it.index)
-        }.minByOrNull {
-            kotlin.math.abs(it.index - currentPoemIndex)
+        (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+            _uiState.value = uiStateSnapshot.copy(
+                currentItemIndex = currentPoemIndex,
+                isThereAnyResult = searchResult.isNotEmpty(),
+                isThereNextResult = searchResult.isNotEmpty() && currentPoemIndex < searchResult.last().index,
+                isTherePreviousResult = searchResult.isNotEmpty() && currentPoemIndex > searchResult.first().index,
+            )
         }
     }
 
     fun findNearestPoem(searchPhrase: String) {
-        viewModelScope.launch {
-            (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
-                updateUiState(
-                    currentItemIndex = findPoem(
-                        searchPhrase,
-                        uiStateSnapshot.selectedLocaleItem
-                    )?.index ?: currentPoemIndex
-                )
+        (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+            viewModelScope.launch {
+                findPoem(
+                    searchPhrase,
+                    uiStateSnapshot.selectedLocaleItem,
+                    uiStateSnapshot.currentItemIndex,
+                )?.let { result ->
+                    setCurrentPoemIndex(result.index)
+                }
             }
         }
     }
 
     fun onNextResult(searchPhrase: String) {
-        viewModelScope.launch {
-            (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
-                updateUiState(
-                    currentItemIndex = findPoem(searchPhrase, uiStateSnapshot.selectedLocaleItem) {
-                        it > currentPoemIndex
-                    }?.index ?: currentPoemIndex
-                )
+        (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+            viewModelScope.launch {
+                findPoem(
+                    searchPhrase,
+                    uiStateSnapshot.selectedLocaleItem,
+                    uiStateSnapshot.currentItemIndex,
+                ) {
+                    it > uiStateSnapshot.currentItemIndex
+                }?.let { result ->
+                    setCurrentPoemIndex(result.index)
+                }
             }
         }
     }
 
     fun onPreviousResult(searchPhrase: String) {
-        viewModelScope.launch {
-            (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
-                updateUiState(
-                    currentItemIndex = findPoem(searchPhrase, uiStateSnapshot.selectedLocaleItem) {
-                        it < currentPoemIndex
-                    }?.index ?: currentPoemIndex
-                )
+        (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+            viewModelScope.launch {
+                findPoem(
+                    searchPhrase,
+                    uiStateSnapshot.selectedLocaleItem,
+                    uiStateSnapshot.currentItemIndex,
+                ) {
+                    it < uiStateSnapshot.currentItemIndex
+                }?.let { result ->
+                    setCurrentPoemIndex(result.index)
+                }
             }
         }
     }
 
     fun sharePoemText() {
-        val shareIntent = Intent()
-        shareIntent.action = Intent.ACTION_SEND
-        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        shareIntent.type = "text/plain"
-        shareIntent.putExtra(Intent.EXTRA_TEXT, assemblePoem(currentPoem))
-        updateUiState(eventToConsume = Event.SharePoemText(shareIntent))
+        (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+            val shareIntent = Intent()
+            shareIntent.action = Intent.ACTION_SEND
+            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            shareIntent.type = "text/plain"
+            shareIntent.putExtra(
+                Intent.EXTRA_TEXT,
+                assemblePoem(poemList[uiStateSnapshot.currentItemIndex])
+            )
+            consumeEvent(Event.SharePoemText(shareIntent))
+        }
     }
 
     fun copyPoem(clipboard: ClipboardManager) {
-        val poemText = assemblePoem(currentPoem)
-        clipboard.setText(AnnotatedString(poemText))
-        updateUiState(eventToConsume = Event.CopyPoemText(poemText))
+        (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+            val poemText = assemblePoem(poemList[uiStateSnapshot.currentItemIndex])
+            clipboard.setText(AnnotatedString(poemText))
+            consumeEvent(Event.CopyPoemText(poemText))
+        }
     }
 
     fun randomPoem() {
@@ -177,9 +163,7 @@ class PoemListViewModel @Inject constructor(
         stream.close()
 
         val imagePath = File(cacheDir, "images")
-        updateUiState(
-            eventToConsume = Event.SharePoemImage(File(imagePath, "image.png")),
-        )
+        consumeEvent(Event.SharePoemImage(File(imagePath, "image.png")))
     }
 
     fun sharePoemImageUri(poemUri: Uri) {
@@ -188,48 +172,66 @@ class PoemListViewModel @Inject constructor(
         shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         shareIntent.setDataAndType(poemUri, "image/*")
         shareIntent.putExtra(Intent.EXTRA_STREAM, poemUri)
-        updateUiState(
-            eventToConsume = Event.SharePoemText(shareIntent),
+        consumeEvent(Event.SharePoemText(shareIntent))
+    }
+
+    fun onEventConsumed(
+        eventConsumed: Event,
+    ) {
+        when (val uiStateSnapshot = _uiState.value) {
+            is UiState.Loaded -> _uiState.value = uiStateSnapshot.copy(
+                events = uiStateSnapshot.events.filterNot { event ->
+                    event == eventConsumed
+                },
+            )
+
+            is UiState.Loading -> _uiState.value = uiStateSnapshot.copy(
+                events = uiStateSnapshot.events.filterNot { event ->
+                    event == eventConsumed
+                },
+            )
+        }
+    }
+
+    private suspend fun loadPoems(selectedPoemLocale: LocaleItem.CustomLocale) {
+        val params = GetPoemsParams(
+            locale = localeItemMapper.mapToDomain(selectedPoemLocale)
+        )
+        val poems = poemItemMapper.mapToPresentation(getPoems(params))
+        _uiState.value = UiState.Loaded(
+            poems = poems,
+            currentItemIndex = 0,
+            selectedLocaleItem = selectedPoemLocale
         )
     }
 
-    fun onEventConsumed(event: Event) {
-        updateUiState(eventConsumed = event)
+    private suspend fun findPoem(
+        searchPhrase: String,
+        selectedPoemLocale: LocaleItem.CustomLocale,
+        currentPoemIndex: Int,
+        condition: (index: Int) -> Boolean = { true },
+    ): PoemItem? {
+        val params = FindPoemsParams(searchPhrase, localeItemMapper.mapToDomain(selectedPoemLocale))
+        searchResult = poemItemMapper.mapToPresentation(findPoems(params)).toMutableList()
+
+        return searchResult.filter {
+            condition(it.index)
+        }.minByOrNull {
+            kotlin.math.abs(it.index - currentPoemIndex)
+        }
     }
 
-    private fun updateUiState(
-        poems: List<PoemItem>? = null,
-        currentItemIndex: Int = currentPoemIndex,
-        eventToConsume: Event? = null,
-        eventConsumed: Event? = null,
-        selectedLocaleItem: LocaleItem.CustomLocale? = null,
+    private fun consumeEvent(
+        eventToConsume: Event,
     ) {
-        when (val state = _uiState.value) {
-            is UiState.Loaded -> {
-                _uiState.value = state.copy(
-                    poems = poems ?: state.poems,
-                    isThereAnyResult = searchResult.isNotEmpty(),
-                    isThereNextResult = searchResult.isNotEmpty() && currentItemIndex < searchResult.last().index,
-                    isTherePreviousResult = searchResult.isNotEmpty() && currentItemIndex > searchResult.first().index,
-                    currentItemIndex = currentItemIndex,
-                    events = (state.events.filterNot { it == eventConsumed } + eventToConsume).filterNotNull(),
-                    selectedLocaleItem = selectedLocaleItem ?: state.selectedLocaleItem
-                )
-            }
+        when (val uiStateSnapshot = _uiState.value) {
+            is UiState.Loaded -> _uiState.value = uiStateSnapshot.copy(
+                events = (uiStateSnapshot.events + eventToConsume)
+            )
 
-            is UiState.Loading -> {
-                if (selectedLocaleItem != null && poems != null && currentItemIndex != -1) {
-                    _uiState.value = UiState.Loaded(
-                        poems = poems,
-                        currentItemIndex = currentItemIndex,
-                        selectedLocaleItem = selectedLocaleItem,
-                    )
-                } else {
-                    _uiState.value = UiState.Loading(
-                        events = (state.events.filterNot { it == eventConsumed } + eventToConsume).filterNotNull(),
-                    )
-                }
-            }
+            is UiState.Loading -> _uiState.value = uiStateSnapshot.copy(
+                events = (uiStateSnapshot.events + eventToConsume)
+            )
         }
     }
 
@@ -244,7 +246,6 @@ class PoemListViewModel @Inject constructor(
     }
 
     sealed class UiState{
-
         data class Loading(
             val events: List<Event> = emptyList(),
         ) : UiState()

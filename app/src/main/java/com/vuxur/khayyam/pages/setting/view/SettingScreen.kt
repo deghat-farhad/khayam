@@ -29,7 +29,7 @@ import com.vuxur.khayyam.model.LocaleItem
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreen(
-    currentLocale: LocaleItem,
+    currentLocale: LocaleItem?,
     supportedLocales: List<LocaleItem>,
     onLanguageSelected: (LocaleItem) -> Unit
 ) {

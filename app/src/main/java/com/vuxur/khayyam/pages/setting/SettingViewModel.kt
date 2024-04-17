@@ -25,7 +25,12 @@ class SettingViewModel @Inject constructor(
     val uiState: StateFlow<UiState> = _uiState
 
     fun viewIsReady() {
-        getLocaleSettingInfo()
+        viewModelScope.launch {
+            _uiState.value = UiState.Loaded(
+                supportedLocales = localeItemMapper.mapToPresentation(getSupportedLocale())
+            )
+            collectSelectedPoemLocale()
+        }
     }
 
     fun setSelectedPoemLocale(localeItem: LocaleItem) {
@@ -34,48 +39,40 @@ class SettingViewModel @Inject constructor(
                 locale = localeItemMapper.mapToDomain(localeItem)
             )
             setSelectedPoemLocale(params)
-            updateUiState(eventToConsume = Event.popBack)
+            consumeEvent(eventToConsume = Event.popBack)
         }
     }
 
-    private fun getLocaleSettingInfo() {
-        viewModelScope.launch {
-            val supportedLocales = getSupportedLocale()
-            getSelectedPoemLocale().collect { selectedLocale ->
-                updateUiState(
-                    supportedLocales = localeItemMapper.mapToPresentation(supportedLocales),
-                    selectedPoemLocale = localeItemMapper.mapToPresentation(selectedLocale)
-                )
-            }
-        }
-    }
-
-    fun onEventConsumed(event: Event) {
-        updateUiState(eventConsumed = event)
-    }
-
-    private fun updateUiState(
-        supportedLocales: List<LocaleItem>? = null,
-        selectedPoemLocale: LocaleItem? = null,
-        eventToConsume: Event? = null,
-        eventConsumed: Event? = null,
+    fun onEventConsumed(
+        eventConsumed: Event,
     ) {
-        when (val uiStateSnapshot = _uiState.value) {
-            is UiState.Loaded -> {
-                _uiState.value = UiState.Loaded(
-                    supportedLocales = supportedLocales ?: uiStateSnapshot.supportedLocales,
-                    selectedPoemLocale = selectedPoemLocale ?: uiStateSnapshot.selectedPoemLocale,
-                    events = (uiStateSnapshot.events.filterNot { it == eventConsumed } + eventToConsume).filterNotNull(),
-                )
-            }
+        (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+            uiStateSnapshot.copy(
+                events = uiStateSnapshot.events.filterNot { event ->
+                    event == eventConsumed
+                },
+            )
+        }
+    }
 
-            UiState.Loading -> {
-                if (supportedLocales == null) throw IllegalArgumentException("supportedLocales can not be null in loading state.")
-                if (selectedPoemLocale == null) throw IllegalArgumentException("selectedPoemLocale can not be null in loading state.")
-                _uiState.value = UiState.Loaded(
-                    supportedLocales = supportedLocales,
-                    selectedPoemLocale = selectedPoemLocale,
-                )
+    private fun consumeEvent(
+        eventToConsume: Event,
+    ) {
+        (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+            _uiState.value = uiStateSnapshot.copy(
+                events = (uiStateSnapshot.events + eventToConsume)
+            )
+        }
+    }
+
+    private fun collectSelectedPoemLocale() {
+        (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+            viewModelScope.launch {
+                getSelectedPoemLocale().collect { selectedLocale ->
+                    _uiState.value = uiStateSnapshot.copy(
+                        selectedPoemLocale = localeItemMapper.mapToPresentation(selectedLocale)
+                    )
+                }
             }
         }
     }
@@ -84,7 +81,7 @@ class SettingViewModel @Inject constructor(
         data object Loading : UiState()
         data class Loaded(
             val supportedLocales: List<LocaleItem>,
-            val selectedPoemLocale: LocaleItem,
+            val selectedPoemLocale: LocaleItem? = null,
             val events: List<Event> = emptyList(),
         ) : UiState()
     }

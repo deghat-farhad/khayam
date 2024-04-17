@@ -36,7 +36,8 @@ private val LightColorScheme = lightColorScheme(
     inverseOnSurface = mutedGrayishBrown,
     outline = earthyBrown,
     outlineVariant = mutedGrayishBrown,
-    scrim = Color.Gray
+    scrim = Color.Gray,
+    error = deepPlum,
 )
 
 private val DarkColorScheme = darkColorScheme(
@@ -64,7 +65,8 @@ private val DarkColorScheme = darkColorScheme(
     inverseOnSurface = deepIndigo,
     outline = lightLavender,
     outlineVariant = deepIndigo,
-    scrim = Color.Gray
+    scrim = Color.Gray,
+    error = softBlush,
 )
 
 @Composable

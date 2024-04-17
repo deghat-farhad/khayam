@@ -25,11 +25,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -43,7 +44,6 @@ import com.vuxur.khayyam.R
 fun KSearchBar(
     modifier: Modifier = Modifier,
     onChange: ((String) -> Unit)? = null,
-    onSearch: ((String) -> Unit)? = null,
     onNextResult: (String) -> Unit,
     onPreviousResult: (String) -> Unit,
     isThereAnyResult: Boolean,
@@ -52,7 +52,6 @@ fun KSearchBar(
 ) {
     var searchPhrase by remember { mutableStateOf("") }
     val isError = searchPhrase.isNotEmpty() && !isThereAnyResult
-    val focusManager = LocalFocusManager.current
 
     Box(
         modifier = modifier
@@ -101,34 +100,45 @@ fun KSearchBar(
                     LocalTextStyle.current
                 }
             )
-            IconButton(
+            NavigationIconButton(
                 onClick = { onPreviousResult(searchPhrase) },
-                enabled = isTherePreviousResult
-            ) {
-                Icon(
-                    imageVector =
-                    if (LocalLayoutDirection.current == LayoutDirection.Rtl)
-                        Icons.Filled.KeyboardArrowRight
-                    else
-                        Icons.Filled.KeyboardArrowLeft,
-                    contentDescription = stringResource(R.string.previous_result),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            IconButton(
+                enabled = isTherePreviousResult,
+                contentDescription = stringResource(R.string.previous_result),
+                icon = if (LocalLayoutDirection.current == LayoutDirection.Rtl)
+                    Icons.Filled.KeyboardArrowRight
+                else
+                    Icons.Filled.KeyboardArrowLeft
+            )
+
+            NavigationIconButton(
                 onClick = { onNextResult(searchPhrase) },
-                enabled = isThereNextResult
-            ) {
-                Icon(
-                    imageVector =
-                    if (LocalLayoutDirection.current == LayoutDirection.Rtl)
-                        Icons.Filled.KeyboardArrowLeft
-                    else
-                        Icons.Filled.KeyboardArrowRight,
-                    contentDescription = stringResource(R.string.next_result),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+                enabled = isThereNextResult,
+                contentDescription = stringResource(R.string.next_result),
+                icon = if (LocalLayoutDirection.current == LayoutDirection.Rtl)
+                    Icons.Filled.KeyboardArrowLeft
+                else
+                    Icons.Filled.KeyboardArrowRight
+            )
         }
+    }
+}
+
+@Composable
+fun NavigationIconButton(
+    onClick: () -> Unit,
+    enabled: Boolean,
+    contentDescription: String,
+    icon: ImageVector
+) {
+    IconButton(
+        onClick = onClick,
+        enabled = enabled
+    ) {
+        Icon(
+            modifier = Modifier.alpha(if (enabled) 1f else .3f),
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }

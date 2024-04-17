@@ -82,13 +82,13 @@ class PoemListViewModel @Inject constructor(
     fun findNearestPoem(searchPhrase: String) {
         (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
             viewModelScope.launch {
-                findPoem(
-                    searchPhrase,
-                    uiStateSnapshot.selectedLocaleItem,
-                    uiStateSnapshot.currentItemIndex,
-                )?.let { result ->
-                    setCurrentPoemIndex(result.index)
-                }
+                setCurrentPoemIndex(
+                    findPoem(
+                        searchPhrase,
+                        uiStateSnapshot.selectedLocaleItem,
+                        uiStateSnapshot.currentItemIndex,
+                    )?.index ?: uiStateSnapshot.currentItemIndex
+                )
             }
         }
     }
@@ -211,7 +211,12 @@ class PoemListViewModel @Inject constructor(
         currentPoemIndex: Int,
         condition: (index: Int) -> Boolean = { true },
     ): PoemItem? {
-        val params = FindPoemsParams(searchPhrase, localeItemMapper.mapToDomain(selectedPoemLocale))
+        if (searchPhrase.isBlank()) {
+            searchResult.clear()
+            return null
+        }
+        val params =
+            FindPoemsParams(searchPhrase, localeItemMapper.mapToDomain(selectedPoemLocale))
         searchResult = poemItemMapper.mapToPresentation(findPoems(params)).toMutableList()
 
         return searchResult.filter {

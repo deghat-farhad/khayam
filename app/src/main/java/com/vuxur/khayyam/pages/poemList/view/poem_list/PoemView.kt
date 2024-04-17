@@ -12,14 +12,12 @@ import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.vuxur.khayyam.R
 import com.vuxur.khayyam.model.LocaleItem
 import com.vuxur.khayyam.model.PoemItem
+import com.vuxur.khayyam.utils.getPoemsFontFamily
+import com.vuxur.khayyam.utils.getPoemsFontSize
 
 @NonRestartableComposable
 @Composable
@@ -28,18 +26,13 @@ fun PoemView(
     poemItem: PoemItem,
     localeItem: LocaleItem.CustomLocale,
 ) {
-    val isFarsi = localeItem.locale.language == "fa"
 
-    val fontFamily = remember(isFarsi) {
-        FontFamily(
-            Font(
-                if (isFarsi) R.font.iran_sans_x_regular else R.font.e_b_garamond_regular
-            )
-        )
+    val fontFamily = remember(localeItem) {
+        getPoemsFontFamily(localeItem)
     }
 
-    val fontSize = remember(isFarsi) {
-        if (isFarsi) 19.sp else 18.sp
+    val fontSize = remember(localeItem) {
+        getPoemsFontSize(localeItem)
     }
 
     Column(

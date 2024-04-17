@@ -34,14 +34,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.vuxur.khayyam.R
 import com.vuxur.khayyam.model.LocaleItem
+import com.vuxur.khayyam.utils.getPoemsFontFamily
+import com.vuxur.khayyam.utils.getPoemsFontSize
 
 @Composable
 fun KSearchBar(
@@ -57,18 +56,12 @@ fun KSearchBar(
     var searchPhrase by remember { mutableStateOf("") }
     val isError = searchPhrase.isNotEmpty() && !isThereAnyResult
 
-    val isFarsi = localeItem.locale.language == "fa"
-
-    val fontFamily = remember(isFarsi) {
-        FontFamily(
-            Font(
-                if (isFarsi) R.font.iran_sans_x_regular else R.font.e_b_garamond_regular
-            )
-        )
+    val fontFamily = remember(localeItem) {
+        getPoemsFontFamily(localeItem)
     }
 
-    val fontSize = remember(isFarsi) {
-        if (isFarsi) 19.sp else 18.sp
+    val fontSize = remember(localeItem) {
+        getPoemsFontSize(localeItem)
     }
 
     Box(

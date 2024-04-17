@@ -130,6 +130,7 @@ fun PoemListScreen(
             isThereAnyResult = isThereAnyResult,
             isThereNextResult = isThereNextResult,
             isTherePreviousResult = isTherePreviousResult,
+            localeItem = localeItem,
         )
     }
 }

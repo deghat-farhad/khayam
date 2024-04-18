@@ -99,7 +99,7 @@ private fun LanguageItem(
             .padding(vertical = 12.dp)
             .border(
                 width = 1.dp,
-                color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                color = if (isSelected) MaterialTheme.colorScheme.error else Color.Transparent,
                 shape = MaterialTheme.shapes.medium
             )
             .padding(16.dp)
@@ -111,14 +111,14 @@ private fun LanguageItem(
                 else
                     stringResource(R.string.system_language),
                 style = MaterialTheme.typography.bodyMedium,
-                color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Unspecified,
+                color = if (isSelected) MaterialTheme.colorScheme.error else Color.Unspecified,
                 modifier = Modifier.weight(1f)
             )
             if (isSelected) {
                 Icon(
                     imageVector = Icons.Filled.Check,
-                    contentDescription = stringResource(R.string.selected_language),
-                    tint = MaterialTheme.colorScheme.primary
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error
                 )
             }
         }

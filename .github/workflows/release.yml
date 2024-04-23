@@ -2,6 +2,8 @@ name: Release
 
 on:
   push:
+    branches:
+      - master
     paths:
       - 'buildSrc/src/main/java/com/vuxur/khayyam/ConfigurationData.kt'
   workflow_dispatch:

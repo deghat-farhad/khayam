@@ -45,6 +45,11 @@ class PoemListViewModel @Inject constructor(
     private val poemList get() = (_uiState.value as UiState.Loaded).poems
 
     fun viewIsReady() {
+        if (uiState.value is UiState.Loading)
+            listenToSelectedPoemLocale()
+    }
+
+    private fun listenToSelectedPoemLocale(){
         viewModelScope.launch {
             getSelectedPoemLocale().collect { selectedPoemLocale ->
                 when (selectedPoemLocale) {

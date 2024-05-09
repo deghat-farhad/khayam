@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +42,7 @@ import com.vuxur.khayyam.R
 import com.vuxur.khayyam.model.LocaleItem
 import com.vuxur.khayyam.utils.getPoemsFontFamily
 import com.vuxur.khayyam.utils.getPoemsFontSize
+import com.vuxur.khayyam.utils.toLayoutDirection
 
 @Composable
 fun KSearchBar(
@@ -115,25 +117,29 @@ fun KSearchBar(
                     }
                 )
             )
-            NavigationIconButton(
-                onClick = { onPreviousResult(searchPhrase) },
-                enabled = isTherePreviousResult,
-                contentDescription = stringResource(R.string.previous_result),
-                icon = if (LocalLayoutDirection.current == LayoutDirection.Rtl)
-                    Icons.Filled.KeyboardArrowRight
-                else
-                    Icons.Filled.KeyboardArrowLeft
-            )
+            CompositionLocalProvider(LocalLayoutDirection provides localeItem.locale.toLayoutDirection()) {
+                Row {
+                    NavigationIconButton(
+                        onClick = { onPreviousResult(searchPhrase) },
+                        enabled = isTherePreviousResult,
+                        contentDescription = stringResource(R.string.previous_result),
+                        icon = if (LocalLayoutDirection.current == LayoutDirection.Rtl)
+                            Icons.Filled.KeyboardArrowRight
+                        else
+                            Icons.Filled.KeyboardArrowLeft
+                    )
 
-            NavigationIconButton(
-                onClick = { onNextResult(searchPhrase) },
-                enabled = isThereNextResult,
-                contentDescription = stringResource(R.string.next_result),
-                icon = if (LocalLayoutDirection.current == LayoutDirection.Rtl)
-                    Icons.Filled.KeyboardArrowLeft
-                else
-                    Icons.Filled.KeyboardArrowRight
-            )
+                    NavigationIconButton(
+                        onClick = { onNextResult(searchPhrase) },
+                        enabled = isThereNextResult,
+                        contentDescription = stringResource(R.string.next_result),
+                        icon = if (LocalLayoutDirection.current == LayoutDirection.Rtl)
+                            Icons.Filled.KeyboardArrowLeft
+                        else
+                            Icons.Filled.KeyboardArrowRight
+                    )
+                }
+            }
         }
     }
 }

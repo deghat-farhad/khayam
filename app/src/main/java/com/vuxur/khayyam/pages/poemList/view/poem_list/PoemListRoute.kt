@@ -12,7 +12,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
-import com.vuxur.khayyam.pages.poemList.PoemListViewModel
+import com.vuxur.khayyam.pages.poemList.view.viewModel.PoemListViewModel
 import java.io.File
 
 @Composable
@@ -97,13 +97,13 @@ fun PoemListRoute(
                 state.poems,
                 state.currentItemIndex,
                 viewModel::randomPoem,
-                viewModel::findNearestPoem,
-                viewModel::onNextResult,
-                viewModel::onPreviousResult,
+                viewModel::navigateToNearestResult,
+                viewModel::navigateToNextResult,
+                viewModel::navigateToPreviousResult,
                 viewModel::setCurrentPoemIndex,
-                state.isThereAnyResult,
-                state.isThereNextResult,
-                state.isTherePreviousResult,
+                state.searchState.hasResult,
+                state.searchState.hasNext,
+                state.searchState.hasPrevious,
                 onCopyPoemText = {
                     viewModel.copyPoem(clipboardManager)
                 },

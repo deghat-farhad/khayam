@@ -1,4 +1,4 @@
-package com.vuxur.khayyam.pages.poemList
+package com.vuxur.khayyam.pages.poemList.view.viewModel
 
 import android.content.Intent
 import android.content.res.Resources
@@ -9,8 +9,6 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vuxur.khayyam.domain.model.Locale
-import com.vuxur.khayyam.domain.usecase.findPoems.FindPoems
-import com.vuxur.khayyam.domain.usecase.findPoems.FindPoemsParams
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoems
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoemsParams
 import com.vuxur.khayyam.domain.usecase.getSelectedPoemLocale.GetSelectedPoemLocale
@@ -32,16 +30,14 @@ import kotlin.random.Random
 @HiltViewModel
 class PoemListViewModel @Inject constructor(
     private val getPoems: GetPoems,
-    private val findPoems: FindPoems,
     private val poemItemMapper: PoemItemMapper,
     private val getSelectedPoemLocale: GetSelectedPoemLocale,
     private val localeItemMapper: LocaleItemMapper,
+    private val searchManager: SearchManager,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading())
     val uiState: StateFlow<UiState> = _uiState
-
-    private var searchResult: MutableList<PoemItem> = mutableListOf()
     private val poemList get() = (_uiState.value as UiState.Loaded).poems
 
     fun viewIsReady() {
@@ -77,56 +73,52 @@ class PoemListViewModel @Inject constructor(
         (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
             _uiState.value = uiStateSnapshot.copy(
                 currentItemIndex = currentPoemIndex,
-                isThereAnyResult = searchResult.isNotEmpty(),
-                isThereNextResult = searchResult.isNotEmpty() && currentPoemIndex < searchResult.last().index,
-                isTherePreviousResult = searchResult.isNotEmpty() && currentPoemIndex > searchResult.first().index,
+            )
+            updateSearchState()
+        }
+    }
+
+    private fun updateSearchState() {
+        (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+            val searchState = searchManager.checkSearchState(uiStateSnapshot.currentItemIndex)
+            _uiState.value = uiStateSnapshot.copy(
+                searchState = searchState,
             )
         }
     }
 
-    fun findNearestPoem(searchPhrase: String) {
+    fun navigateToNearestResult(searchPhrase: String) {
         (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
             viewModelScope.launch {
-                setCurrentPoemIndex(
-                    findPoem(
-                        searchPhrase,
-                        uiStateSnapshot.selectedLocaleItem,
-                        uiStateSnapshot.currentItemIndex,
-                    )?.index ?: uiStateSnapshot.currentItemIndex
-                )
+                val nearestResult = searchManager.nearestSearchResultIndex(
+                    searchPhrase,
+                    uiStateSnapshot.selectedLocaleItem,
+                    uiStateSnapshot.currentItemIndex
+                ) {
+                    poemList.indexOf(it)
+                }
+                if (nearestResult != null)
+                    setCurrentPoemIndex(nearestResult)
+                else
+                    updateSearchState()
             }
         }
     }
 
-    fun onNextResult(searchPhrase: String) {
+    fun navigateToNextResult() {
         (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
-            viewModelScope.launch {
-                findPoem(
-                    searchPhrase,
-                    uiStateSnapshot.selectedLocaleItem,
-                    uiStateSnapshot.currentItemIndex,
-                ) {
-                    it > uiStateSnapshot.currentItemIndex
-                }?.let { result ->
-                    setCurrentPoemIndex(result.index)
-                }
+            searchManager.nextResult(uiStateSnapshot.currentItemIndex)?.let {
+                setCurrentPoemIndex(it)
             }
         }
     }
 
-    fun onPreviousResult(searchPhrase: String) {
+    fun navigateToPreviousResult() {
         (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
-            viewModelScope.launch {
-                findPoem(
-                    searchPhrase,
-                    uiStateSnapshot.selectedLocaleItem,
-                    uiStateSnapshot.currentItemIndex,
-                ) {
-                    it < uiStateSnapshot.currentItemIndex
-                }?.let { result ->
-                    setCurrentPoemIndex(result.index)
-                }
+            searchManager.previousResult(uiStateSnapshot.currentItemIndex)?.let {
+                setCurrentPoemIndex(it)
             }
+
         }
     }
 
@@ -210,27 +202,6 @@ class PoemListViewModel @Inject constructor(
         )
     }
 
-    private suspend fun findPoem(
-        searchPhrase: String,
-        selectedPoemLocale: LocaleItem.CustomLocale,
-        currentPoemIndex: Int,
-        condition: (index: Int) -> Boolean = { true },
-    ): PoemItem? {
-        if (searchPhrase.isBlank()) {
-            searchResult.clear()
-            return null
-        }
-        val params =
-            FindPoemsParams(searchPhrase, localeItemMapper.mapToDomain(selectedPoemLocale))
-        searchResult = poemItemMapper.mapToPresentation(findPoems(params)).toMutableList()
-
-        return searchResult.filter {
-            condition(it.index)
-        }.minByOrNull {
-            kotlin.math.abs(it.index - currentPoemIndex)
-        }
-    }
-
     private fun consumeEvent(
         eventToConsume: Event,
     ) {
@@ -255,6 +226,12 @@ class PoemListViewModel @Inject constructor(
         )
     }
 
+    data class SearchState(
+        val hasResult: Boolean,
+        val hasNext: Boolean,
+        val hasPrevious: Boolean,
+    )
+
     sealed class UiState{
         data class Loading(
             val events: List<Event> = emptyList(),
@@ -262,9 +239,11 @@ class PoemListViewModel @Inject constructor(
         data class Loaded(
             val poems: List<PoemItem>,
             val currentItemIndex: Int = 0,
-            val isThereAnyResult: Boolean = false,
-            val isThereNextResult: Boolean = false,
-            val isTherePreviousResult: Boolean = false,
+            val searchState: SearchState = SearchState(
+                hasResult = false,
+                hasNext = false,
+                hasPrevious = false
+            ),
             val events: List<Event> = emptyList(),
             val selectedLocaleItem: LocaleItem.CustomLocale,
         ) : UiState()
@@ -285,9 +264,4 @@ class PoemListViewModel @Inject constructor(
 
         data object NavigateToLanguageSetting : Event()
     }
-
-    private val PoemItem.index: Int
-        get() {
-            return poemList.indexOf(this)
-        }
 }

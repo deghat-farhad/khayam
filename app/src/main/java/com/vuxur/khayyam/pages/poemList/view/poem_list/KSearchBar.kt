@@ -48,8 +48,8 @@ import com.vuxur.khayyam.utils.toLayoutDirection
 fun KSearchBar(
     modifier: Modifier = Modifier,
     onChange: ((String) -> Unit)? = null,
-    onNextResult: (String) -> Unit,
-    onPreviousResult: (String) -> Unit,
+    onNextResult: () -> Unit,
+    onPreviousResult: () -> Unit,
     isThereAnyResult: Boolean,
     isThereNextResult: Boolean,
     isTherePreviousResult: Boolean,
@@ -120,7 +120,7 @@ fun KSearchBar(
             CompositionLocalProvider(LocalLayoutDirection provides localeItem.locale.toLayoutDirection()) {
                 Row {
                     NavigationIconButton(
-                        onClick = { onPreviousResult(searchPhrase) },
+                        onClick = onPreviousResult,
                         enabled = isTherePreviousResult,
                         contentDescription = stringResource(R.string.previous_result),
                         icon = if (LocalLayoutDirection.current == LayoutDirection.Rtl)
@@ -130,7 +130,7 @@ fun KSearchBar(
                     )
 
                     NavigationIconButton(
-                        onClick = { onNextResult(searchPhrase) },
+                        onClick = onNextResult,
                         enabled = isThereNextResult,
                         contentDescription = stringResource(R.string.next_result),
                         icon = if (LocalLayoutDirection.current == LayoutDirection.Rtl)

@@ -49,9 +49,12 @@ fun PoemHorizontalPager(
     captureCurrentPage: (Bitmap) -> Unit,
     localeItem: LocaleItem.CustomLocale,
 ) {
-    val pagerState = rememberPagerState(pageCount = {
-        poemList.size
-    })
+    val pagerState = rememberPagerState(
+        pageCount = {
+            poemList.size
+        },
+        initialPage = currentPoemIndex
+    )
 
     LaunchedEffect(pagerState.isScrollInProgress) {
         if (!pagerState.isScrollInProgress && pagerState.currentPage != currentPoemIndex)

@@ -9,9 +9,12 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vuxur.khayyam.domain.model.Locale
+import com.vuxur.khayyam.domain.usecase.getLastVisitedPoem.GetLastVisitedPoem
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoems
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoemsParams
 import com.vuxur.khayyam.domain.usecase.getSelectedPoemLocale.GetSelectedPoemLocale
+import com.vuxur.khayyam.domain.usecase.setLastVisitedPoem.SetLastVisitedPoem
+import com.vuxur.khayyam.domain.usecase.setLastVisitedPoem.SetLastVisitedPoemParams
 import com.vuxur.khayyam.mapper.LocaleItemMapper
 import com.vuxur.khayyam.mapper.PoemItemMapper
 import com.vuxur.khayyam.model.LocaleItem
@@ -20,6 +23,8 @@ import com.vuxur.khayyam.utils.getCurrentLocale
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
@@ -34,6 +39,8 @@ class PoemListViewModel @Inject constructor(
     private val getSelectedPoemLocale: GetSelectedPoemLocale,
     private val localeItemMapper: LocaleItemMapper,
     private val searchManager: SearchManager,
+    private val setLastVisitedPoem: SetLastVisitedPoem,
+    private val getLastVisitedPoem: GetLastVisitedPoem,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading())
@@ -69,12 +76,33 @@ class PoemListViewModel @Inject constructor(
         }
     }
 
+    private fun listenToLastVisitedPoem() {
+        viewModelScope.launch {
+            getLastVisitedPoem().map { lastVisitedPoem ->
+                poemItemMapper.mapToPresentation(lastVisitedPoem)
+            }.collect { lastVisitedPoemItem ->
+                (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+                    _uiState.value = uiStateSnapshot.copy(
+                        currentItemIndex = poemList.indexOf(lastVisitedPoemItem),
+                    )
+                    updateSearchState()
+                }
+            }
+        }
+    }
+
     fun setCurrentPoemIndex(currentPoemIndex: Int) {
-        (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
-            _uiState.value = uiStateSnapshot.copy(
-                currentItemIndex = currentPoemIndex,
+        setLastVisitedPoemIndex(currentPoemIndex)
+    }
+
+    private fun setLastVisitedPoemIndex(currentPoemIndex: Int) {
+        val setLastVisitedPoemParams = SetLastVisitedPoemParams(
+            lastVisitedPoem = poemItemMapper.mapToDomain(
+                poemList[currentPoemIndex]
             )
-            updateSearchState()
+        )
+        viewModelScope.launch {
+            setLastVisitedPoem(setLastVisitedPoemParams)
         }
     }
 
@@ -197,9 +225,14 @@ class PoemListViewModel @Inject constructor(
         val poems = poemItemMapper.mapToPresentation(getPoems(params))
         _uiState.value = UiState.Loaded(
             poems = poems,
-            currentItemIndex = 0,
+            currentItemIndex = poems.indexOf(getLastVisitedPoem().map {
+                poemItemMapper.mapToPresentation(
+                    it
+                )
+            }.first()),
             selectedLocaleItem = selectedPoemLocale
         )
+        listenToLastVisitedPoem()
     }
 
     private fun consumeEvent(

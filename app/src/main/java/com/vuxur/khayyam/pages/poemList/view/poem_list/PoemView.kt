@@ -43,7 +43,7 @@ fun PoemView(
             horizontalAlignment = Alignment.End
         ) {
             Text(
-                text = poemItem.id,
+                text = poemItem.index,
                 fontFamily = fontFamily,
                 fontSize = fontSize,
             )

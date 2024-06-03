@@ -2,7 +2,6 @@ package com.vuxur.khayyam.data.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.PrimaryKey
 
 @Entity(
@@ -10,11 +9,12 @@ import androidx.room.PrimaryKey
         entity = LanguageTagEntity::class,
         parentColumns = ["id"],
         childColumns = ["language"],
-        onDelete = CASCADE
+        onDelete = ForeignKey.CASCADE
     )]
 )
 data class PoemEntity(
-    @PrimaryKey val id: String,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val index: String,
     val hemistich1: String,
     val hemistich2: String,
     val hemistich3: String,

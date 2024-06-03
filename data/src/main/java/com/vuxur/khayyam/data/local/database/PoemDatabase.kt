@@ -9,7 +9,7 @@ import com.vuxur.khayyam.data.entity.PoemEntity
 
 @Database(
     entities = [PoemEntity::class, LanguageTagEntity::class],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 abstract class PoemDatabase : RoomDatabase() {

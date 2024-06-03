@@ -7,6 +7,7 @@ import javax.inject.Inject
 class PoemItemMapper @Inject constructor() {
     fun mapToPresentation(poem: Poem) = PoemItem(
         poem.id,
+        poem.index,
         poem.hemistich1,
         poem.hemistich2,
         poem.hemistich3,

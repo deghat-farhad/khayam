@@ -11,6 +11,7 @@ interface PoemDatabaseDao {
         """
             SELECT
                 PoemEntity.id,
+                PoemEntity.`index`,
                 PoemEntity.hemistich1,
                 PoemEntity.hemistich2,
                 PoemEntity.hemistich3,
@@ -32,6 +33,7 @@ interface PoemDatabaseDao {
         """
             SELECT
                 PoemEntity.id,
+                PoemEntity.`index`,
                 PoemEntity.hemistich1,
                 PoemEntity.hemistich2,
                 PoemEntity.hemistich3,
@@ -48,7 +50,7 @@ interface PoemDatabaseDao {
                 OR PoemEntity.hemistich2 LIKE '%' || :searchPhrase || '%' 
                 OR PoemEntity.hemistich3 LIKE '%' || :searchPhrase || '%' 
                 OR PoemEntity.hemistich4 LIKE '%' || :searchPhrase || '%' 
-                OR PoemEntity.id = :searchPhrase)
+                OR PoemEntity.`index` = :searchPhrase)
                 AND LanguageTagEntity.languageTag = :languageCode
         """
     )

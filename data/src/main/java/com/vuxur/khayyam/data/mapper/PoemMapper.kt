@@ -8,6 +8,7 @@ class PoemMapper @Inject constructor() {
     fun mapToDomain(poemEntity: PoemEntity) =
         Poem(
             poemEntity.id,
+            poemEntity.index,
             poemEntity.hemistich1,
             poemEntity.hemistich2,
             poemEntity.hemistich3,

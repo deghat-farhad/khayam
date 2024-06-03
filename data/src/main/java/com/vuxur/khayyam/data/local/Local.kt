@@ -1,6 +1,7 @@
 package com.vuxur.khayyam.data.local
 
 import com.vuxur.khayyam.data.entity.LocaleEntity
+import com.vuxur.khayyam.data.entity.PoemEntity
 import com.vuxur.khayyam.data.local.database.PoemDatabaseDao
 import com.vuxur.khayyam.data.local.sharedPreferences.NO_LANGUAGE_SELECTED
 import com.vuxur.khayyam.data.local.sharedPreferences.PreferencesDataSource
@@ -40,6 +41,13 @@ class Local @Inject constructor(
             )
         }
 
+    suspend fun setLastVisitedPoem(poemEntity: PoemEntity) {
+        preferencesDataSource.setLastVisitedPoem(poemEntity)
+    }
+
+    val lastVisitedPoem = preferencesDataSource.lastVisitedPoem.map { lastVisitedPoemId ->
+        database.getPoemById(lastVisitedPoemId)
+    }
     val selectedLanguageLocale = preferencesDataSource.selectedPoemLanguageTag.map { languageTag ->
         when (languageTag) {
             SYSTEM_DEFAULT_LANGUAGE -> LocaleEntity.SystemLocale

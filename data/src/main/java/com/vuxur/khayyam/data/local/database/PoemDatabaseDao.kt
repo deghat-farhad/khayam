@@ -58,4 +58,23 @@ interface PoemDatabaseDao {
 
     @Query("SELECT * FROM LanguageTagEntity")
     suspend fun getLocales(): List<LanguageTagEntity>
+
+    @Query(
+        """
+            SELECT
+                PoemEntity.id,
+                PoemEntity.`index`,
+                PoemEntity.hemistich1,
+                PoemEntity.hemistich2,
+                PoemEntity.hemistich3,
+                PoemEntity.hemistich4,
+                PoemEntity.isSuspicious,
+                PoemEntity.language 
+            FROM
+                PoemEntity
+            WHERE
+                PoemEntity.id = :id
+    """
+    )
+    suspend fun getPoemById(id: Int): PoemEntity
 }

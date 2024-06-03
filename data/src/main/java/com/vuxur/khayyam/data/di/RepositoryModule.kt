@@ -11,7 +11,6 @@ import com.vuxur.khayyam.data.repository.SettingRepositoryImpl
 import com.vuxur.khayyam.domain.repository.LocaleRepository
 import com.vuxur.khayyam.domain.repository.PoemRepository
 import com.vuxur.khayyam.domain.repository.SettingRepository
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,10 +41,12 @@ class RepositoryModule {
     fun provideSettingRepository(
         local: Local,
         localeMapper: LocaleMapper,
+        poemMapper: PoemMapper,
     ): SettingRepository =
         SettingRepositoryImpl(
             local,
             localeMapper,
+            poemMapper,
         )
 
     @Provides

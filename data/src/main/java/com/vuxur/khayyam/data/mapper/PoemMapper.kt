@@ -18,4 +18,16 @@ class PoemMapper @Inject constructor() {
         )
 
     fun mapToDomain(poemEntityList: List<PoemEntity>) = poemEntityList.map { mapToDomain(it) }
+
+    fun mapToData(poem: Poem) =
+        PoemEntity(
+            poem.id,
+            poem.index,
+            poem.hemistich1,
+            poem.hemistich2,
+            poem.hemistich3,
+            poem.hemistich4,
+            poem.isSuspicious,
+            poem.language,
+        )
 }

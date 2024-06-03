@@ -13,8 +13,18 @@ class PoemItemMapper @Inject constructor() {
         poem.hemistich3,
         poem.hemistich4,
         poem.isSuspicious,
-        poem.category
+        poem.language,
     )
 
     fun mapToPresentation(poemList: List<Poem>) = poemList.map { mapToPresentation(it) }
+    fun mapToDomain(poemItem: PoemItem) = Poem(
+        poemItem.id,
+        poemItem.index,
+        poemItem.hemistich1,
+        poemItem.hemistich2,
+        poemItem.hemistich3,
+        poemItem.hemistich4,
+        poemItem.isSuspicious,
+        poemItem.language,
+    )
 }

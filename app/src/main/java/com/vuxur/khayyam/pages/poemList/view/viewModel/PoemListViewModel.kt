@@ -48,57 +48,73 @@ class PoemListViewModel @Inject constructor(
     private val poemList get() = (_uiState.value as UiState.Loaded).poems
 
     fun viewIsReady() {
-        if (uiState.value is UiState.Loading)
-            listenToSelectedPoemLocale()
-    }
-
-    private fun listenToSelectedPoemLocale(){
-        viewModelScope.launch {
-            getSelectedPoemLocale().collect { selectedPoemLocale ->
-                when (selectedPoemLocale) {
-                    Locale.NoLocale -> consumeEvent(Event.NavigateToLanguageSetting)
-
-                    is Locale.CustomLocale -> loadPoems(
-                        localeItemMapper.mapToPresentation(
-                            selectedPoemLocale
-                        )
-                    )
-
-                    Locale.SystemLocale -> loadPoems(
-                        LocaleItem.CustomLocale(
-                            getCurrentLocale(
-                                Resources.getSystem()
-                            )
-                        )
-                    )
-                }
+        if (uiState.value is UiState.Loading) {
+            onSelectedPoemLocaleChange { selectedLocaleItem ->
+                val appropriateLocaleItem =
+                    getAppropriateLocaleItemOrNavigateToSetting(selectedLocaleItem)
+                if (appropriateLocaleItem is LocaleItem.CustomLocale)
+                    setLoadedState(appropriateLocaleItem)
+            }
+            onLastVisitedPoemChanged { lastVisitedPoemItem ->
+                navigateToPoem(lastVisitedPoemItem)
+                updateSearchState()
             }
         }
     }
 
-    private fun listenToLastVisitedPoem() {
+    private fun getAppropriateLocaleItemOrNavigateToSetting(selectedLocaleItem: LocaleItem): LocaleItem {
+        return when (selectedLocaleItem) {
+            is LocaleItem.CustomLocale -> selectedLocaleItem
+            LocaleItem.NoLocale -> {
+                consumeEvent(Event.NavigateToLanguageSetting)
+                selectedLocaleItem
+            }
+
+            LocaleItem.SystemLocale -> LocaleItem.CustomLocale(getCurrentLocale(Resources.getSystem()))
+        }
+    }
+
+    private fun onSelectedPoemLocaleChange(action: suspend (selectedPoemLocaleItem: LocaleItem) -> Unit) {
+        viewModelScope.launch {
+            getSelectedPoemLocale().collect { selectedPoemLocale ->
+                val selectedLocaleItem = localeItemMapper.mapToPresentation(selectedPoemLocale)
+                action(selectedLocaleItem)
+            }
+        }
+    }
+
+    private fun navigateToPoem(poemItem: PoemItem) {
+        (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+            val localIndexOfPoemItem = poemList.indexOf(poemItem)
+            if (localIndexOfPoemItem > 0) {
+                _uiState.value = uiStateSnapshot.copy(
+                    currentItemIndex = localIndexOfPoemItem,
+                )
+            }
+        }
+    }
+
+    private fun onLastVisitedPoemChanged(action: (lastVisitedPoem: PoemItem) -> Unit) {
         viewModelScope.launch {
             getLastVisitedPoem()
-                .mapNotNull { it?.let(poemItemMapper::mapToPresentation) }
-                .collect { lastVisitedPoemItem ->
-                    (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
-                        val currentPoemIndex =
-                            poemList.indexOf(lastVisitedPoemItem).takeIf { it >= 0 } ?: 0
-                        _uiState.value = uiStateSnapshot.copy(currentItemIndex = currentPoemIndex)
-                        updateSearchState()
-                    }
+                .mapNotNull { lastVisitedPoem ->
+                    lastVisitedPoem?.let(poemItemMapper::mapToPresentation)
+                }.collect { lastVisitedPoemItem ->
+                    action(lastVisitedPoemItem)
                 }
         }
     }
 
     fun setCurrentPoemIndex(currentPoemIndex: Int) {
-        setLastVisitedPoemIndex(currentPoemIndex)
+        poemList.getOrNull(currentPoemIndex)?.let { correspondingPoemItem ->
+            setCurrentPoemItem(correspondingPoemItem)
+        }
     }
 
-    private fun setLastVisitedPoemIndex(currentPoemIndex: Int) {
+    private fun setCurrentPoemItem(poemItem: PoemItem) {
         val setLastVisitedPoemParams = SetLastVisitedPoemParams(
             lastVisitedPoem = poemItemMapper.mapToDomain(
-                poemList[currentPoemIndex]
+                poemItem
             )
         )
         viewModelScope.launch {
@@ -218,21 +234,27 @@ class PoemListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadPoems(selectedPoemLocale: LocaleItem.CustomLocale) {
+    private suspend fun loadPoems(selectedPoemLocale: LocaleItem.CustomLocale): List<PoemItem> {
         val params = GetPoemsParams(
             locale = localeItemMapper.mapToDomain(selectedPoemLocale)
         )
-        val poems = poemItemMapper.mapToPresentation(getPoems(params))
+        return poemItemMapper.mapToPresentation(getPoems(params))
+    }
+
+    private suspend fun setLoadedState(selectedLocaleItem: LocaleItem.CustomLocale) {
+        val poems = loadPoems(selectedLocaleItem)
+
         val lastVisitedPoemItem = getLastVisitedPoem()
             .firstOrNull()
             ?.let { poemItemMapper.mapToPresentation(it) }
+
         val initialPoemIndex = poems.indexOf(lastVisitedPoemItem).takeIf { it > 0 } ?: 0
+
         _uiState.value = UiState.Loaded(
             poems = poems,
             currentItemIndex = initialPoemIndex,
-            selectedLocaleItem = selectedPoemLocale
+            selectedLocaleItem = selectedLocaleItem
         )
-        listenToLastVisitedPoem()
     }
 
     private fun consumeEvent(
@@ -296,5 +318,11 @@ class PoemListViewModel @Inject constructor(
         ) : Event()
 
         data object NavigateToLanguageSetting : Event()
+    }
+
+    private fun Locale.toAppropriateLocaleItem() = when (this) {
+        Locale.NoLocale -> localeItemMapper.mapToPresentation(this)
+        is Locale.CustomLocale -> localeItemMapper.mapToPresentation(this)
+        Locale.SystemLocale -> LocaleItem.CustomLocale(getCurrentLocale(Resources.getSystem()))
     }
 }

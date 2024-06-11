@@ -23,8 +23,8 @@ import com.vuxur.khayyam.utils.getCurrentLocale
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
@@ -78,16 +78,16 @@ class PoemListViewModel @Inject constructor(
 
     private fun listenToLastVisitedPoem() {
         viewModelScope.launch {
-            getLastVisitedPoem().map { lastVisitedPoem ->
-                poemItemMapper.mapToPresentation(lastVisitedPoem)
-            }.collect { lastVisitedPoemItem ->
-                (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
-                    _uiState.value = uiStateSnapshot.copy(
-                        currentItemIndex = poemList.indexOf(lastVisitedPoemItem),
-                    )
-                    updateSearchState()
+            getLastVisitedPoem()
+                .mapNotNull { it?.let(poemItemMapper::mapToPresentation) }
+                .collect { lastVisitedPoemItem ->
+                    (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+                        val currentPoemIndex =
+                            poemList.indexOf(lastVisitedPoemItem).takeIf { it >= 0 } ?: 0
+                        _uiState.value = uiStateSnapshot.copy(currentItemIndex = currentPoemIndex)
+                        updateSearchState()
+                    }
                 }
-            }
         }
     }
 
@@ -223,13 +223,13 @@ class PoemListViewModel @Inject constructor(
             locale = localeItemMapper.mapToDomain(selectedPoemLocale)
         )
         val poems = poemItemMapper.mapToPresentation(getPoems(params))
+        val lastVisitedPoemItem = getLastVisitedPoem()
+            .firstOrNull()
+            ?.let { poemItemMapper.mapToPresentation(it) }
+        val initialPoemIndex = poems.indexOf(lastVisitedPoemItem).takeIf { it > 0 } ?: 0
         _uiState.value = UiState.Loaded(
             poems = poems,
-            currentItemIndex = poems.indexOf(getLastVisitedPoem().map {
-                poemItemMapper.mapToPresentation(
-                    it
-                )
-            }.first()),
+            currentItemIndex = initialPoemIndex,
             selectedLocaleItem = selectedPoemLocale
         )
         listenToLastVisitedPoem()

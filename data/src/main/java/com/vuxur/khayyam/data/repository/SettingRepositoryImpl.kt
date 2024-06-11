@@ -15,7 +15,9 @@ class SettingRepositoryImpl @Inject constructor(
     private val poemMapper: PoemMapper,
 ) : SettingRepository {
     override val lastVisitedPoem = local.lastVisitedPoem.map { lastVisitedPoemEntity ->
-        poemMapper.mapToDomain(lastVisitedPoemEntity)
+        lastVisitedPoemEntity?.let {
+            poemMapper.mapToDomain(lastVisitedPoemEntity)
+        }
     }
     override val selectedPoemLocale = local.selectedLanguageLocale.map { localeEntity ->
         localeEntity.let { localeMapper.mapToDomain(it) }

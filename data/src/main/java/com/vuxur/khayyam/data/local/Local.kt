@@ -7,6 +7,7 @@ import com.vuxur.khayyam.data.local.sharedPreferences.NO_LANGUAGE_SELECTED
 import com.vuxur.khayyam.data.local.sharedPreferences.PreferencesDataSource
 import com.vuxur.khayyam.data.local.sharedPreferences.SYSTEM_DEFAULT_LANGUAGE
 import com.vuxur.khayyam.data.mapper.LanguageTagEntityMapper
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.util.Locale
 import javax.inject.Inject
@@ -45,7 +46,8 @@ class Local @Inject constructor(
         preferencesDataSource.setLastVisitedPoem(poemEntity)
     }
 
-    val lastVisitedPoem = preferencesDataSource.lastVisitedPoem.map { lastVisitedPoemId ->
+    val lastVisitedPoem: Flow<PoemEntity?> =
+        preferencesDataSource.lastVisitedPoem.map { lastVisitedPoemId ->
         database.getPoemById(lastVisitedPoemId)
     }
     val selectedLanguageLocale = preferencesDataSource.selectedPoemLanguageTag.map { languageTag ->

@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.Flow
 
 class GetLastVisitedPoem(
     private val settingRepository: SettingRepository
-) : UseCase<Flow<Poem>> {
-    override suspend fun invoke(): Flow<Poem> {
+) : UseCase<Flow<Poem?>> {
+    override suspend fun invoke(): Flow<Poem?> {
         return settingRepository.lastVisitedPoem
     }
 }

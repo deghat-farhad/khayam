@@ -234,9 +234,9 @@ class PoemListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadPoems(selectedPoemLocale: LocaleItem.CustomLocale): List<PoemItem> {
+    private suspend fun loadPoems(selectedPoemLocaleItem: LocaleItem.CustomLocale): List<PoemItem> {
         val params = GetPoemsParams(
-            locale = localeItemMapper.mapToDomain(selectedPoemLocale)
+            locale = localeItemMapper.mapToDomain(selectedPoemLocaleItem) as Locale.CustomLocale
         )
         return poemItemMapper.mapToPresentation(getPoems(params))
     }

@@ -21,10 +21,14 @@ object Plugins {
 }
 
 object Libs {
-    private const val kotlinxCoroutinesCoreVersion = "1.7.3"
+    object Coroutines {
+        private const val kotlinxCoroutinesCoreVersion = "1.8.1"
 
-    const val kotlinxCoroutinesCore = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxCoroutinesCoreVersion"
-
+        const val kotlinxCoroutinesCore =
+            "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxCoroutinesCoreVersion"
+        const val kotlinxCoroutinesTest =
+            "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinxCoroutinesCoreVersion"
+    }
     object AndroidX {
         private const val hiltNavigationComposeVersion = "1.1.0"
         private const val materialIconsExtendedVersion = "1.5.4"
@@ -65,5 +69,13 @@ object Libs {
         const val Bom = "com.google.firebase:firebase-bom:$firebaseBomVersion"
         const val analytics = "com.google.firebase:firebase-analytics"
         const val crashlytics = "com.google.firebase:firebase-crashlytics"
+    }
+
+    object Test {
+        private const val junit5Version = "5.11.0-M2"
+        private const val mockkVersion = "1.13.11"
+
+        const val junit5 = "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
+        const val mockk = "io.mockk:mockk:$mockkVersion"
     }
 }

@@ -8,6 +8,7 @@ import com.vuxur.khayyam.domain.usecase.getPoems.GetPoems
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoemsParams
 import com.vuxur.khayyam.domain.usecase.getSelectedPoemLocale.GetSelectedPoemLocale
 import com.vuxur.khayyam.domain.usecase.setLastVisitedPoem.SetLastVisitedPoem
+import com.vuxur.khayyam.domain.usecase.setLastVisitedPoem.SetLastVisitedPoemParams
 import com.vuxur.khayyam.mapper.LocaleItemMapper
 import com.vuxur.khayyam.mapper.PoemItemMapper
 import com.vuxur.khayyam.model.LocaleItem
@@ -21,6 +22,7 @@ import io.mockk.mockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -189,6 +191,95 @@ class PoemListViewModelTest {
         verify { localeItemMapper.mapToPresentation(selectedPoemLocale) }
         verify { localeItemMapper.mapToDomain(systemLocaleItem) }
         verify { searchManager.checkSearchState(0) }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `setCurrentPoemIndex normal case`() = runTest {
+        val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+        Dispatchers.setMain(testDispatcher)
+
+        // Mock data
+        val poems = listOf(
+            mockk<Poem>(relaxed = true),
+            mockk<Poem>(relaxed = true),
+            mockk<Poem>(relaxed = true),
+        )
+        val poemItems = poems.map { mockk<PoemItem>(relaxed = true) }
+        val selectedPoemLocale: Locale.CustomLocale = mockk()
+        val selectedPoemLocaleItem: LocaleItem.CustomLocale = mockk()
+
+        // Mock interactions
+        coEvery { getSelectedPoemLocale() } returns flowOf(selectedPoemLocale)
+        coEvery { getPoems(any()) } returns poems
+        every { poemItemMapper.mapToPresentation(any<List<Poem>>()) } returns poemItems
+        coEvery { getLastVisitedPoem() } returns flowOf(poems.first())
+        every { poemItemMapper.mapToPresentation(poems.first()) } returns poemItems.first()
+        every { poemItemMapper.mapToPresentation(poems.last()) } returns poemItems.last()
+        every { poemItemMapper.mapToDomain(poemItems.last()) } returns poems.last()
+        every { localeItemMapper.mapToPresentation(selectedPoemLocale) } returns selectedPoemLocaleItem
+        every { localeItemMapper.mapToDomain(selectedPoemLocaleItem) } returns selectedPoemLocale
+        every { searchManager.checkSearchState(0) } returns mockk()
+        coEvery { setLastVisitedPoem(any()) } returns Unit
+
+        // Call the function under test
+        viewModel.viewIsReady()
+
+        // Verify the UI state
+        assertTrue(viewModel.uiState.value is PoemListViewModel.UiState.Loaded)
+
+        viewModel.setCurrentPoemIndex(poemItems.indexOf(poemItems.last()))
+
+        // Verify that the correct functions were called
+        coVerify {
+            setLastVisitedPoem(
+                SetLastVisitedPoemParams(
+                    lastVisitedPoem = poems.last()
+                )
+            )
+        }
+    }
+
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `onLastVisitedPoemChanged normal case`() = runTest {
+        val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+        Dispatchers.setMain(testDispatcher)
+
+        // Mock data
+        val poems = listOf(
+            mockk<Poem>(relaxed = true),
+            mockk<Poem>(relaxed = true),
+            mockk<Poem>(relaxed = true),
+        )
+        val poemItems = poems.map { mockk<PoemItem>(relaxed = true) }
+        val selectedPoemLocale: Locale.CustomLocale = mockk()
+        val selectedPoemLocaleItem: LocaleItem.CustomLocale = mockk()
+        val lastVisitedPoemFlow = MutableStateFlow(poems.first())
+
+        // Mock interactions
+        coEvery { getSelectedPoemLocale() } returns flowOf(selectedPoemLocale)
+        coEvery { getPoems(any()) } returns poems
+        every { poemItemMapper.mapToPresentation(any<List<Poem>>()) } returns poemItems
+        coEvery { getLastVisitedPoem() } returns lastVisitedPoemFlow
+        every { poemItemMapper.mapToPresentation(poems.first()) } returns poemItems.first()
+        every { poemItemMapper.mapToPresentation(poems.last()) } returns poemItems.last()
+        every { poemItemMapper.mapToDomain(poemItems.last()) } returns poems.last()
+        every { localeItemMapper.mapToPresentation(selectedPoemLocale) } returns selectedPoemLocaleItem
+        every { localeItemMapper.mapToDomain(selectedPoemLocaleItem) } returns selectedPoemLocale
+        every { searchManager.checkSearchState(any()) } returns mockk()
+
+        // Call the function under test
+        viewModel.viewIsReady()
+
+        // Verify the UI state
+        assertTrue(viewModel.uiState.value is PoemListViewModel.UiState.Loaded)
+
+        lastVisitedPoemFlow.emit(poems.last())
+
+        val uiState = viewModel.uiState.value as PoemListViewModel.UiState.Loaded
+        assertEquals(poemItems.indexOf(poemItems.last()), uiState.currentItemIndex)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

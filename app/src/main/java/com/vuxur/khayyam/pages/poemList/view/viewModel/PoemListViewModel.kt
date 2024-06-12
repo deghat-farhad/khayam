@@ -69,7 +69,6 @@ class PoemListViewModel @Inject constructor(
                 consumeEvent(Event.NavigateToLanguageSetting)
                 selectedLocaleItem
             }
-
             LocaleItem.SystemLocale -> LocaleItem.CustomLocale(getCurrentLocale(Resources.getSystem()))
         }
     }
@@ -318,11 +317,5 @@ class PoemListViewModel @Inject constructor(
         ) : Event()
 
         data object NavigateToLanguageSetting : Event()
-    }
-
-    private fun Locale.toAppropriateLocaleItem() = when (this) {
-        Locale.NoLocale -> localeItemMapper.mapToPresentation(this)
-        is Locale.CustomLocale -> localeItemMapper.mapToPresentation(this)
-        Locale.SystemLocale -> LocaleItem.CustomLocale(getCurrentLocale(Resources.getSystem()))
     }
 }

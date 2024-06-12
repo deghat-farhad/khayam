@@ -19,6 +19,7 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -280,6 +281,77 @@ class PoemListViewModelTest {
 
         val uiState = viewModel.uiState.value as PoemListViewModel.UiState.Loaded
         assertEquals(poemItems.indexOf(poemItems.last()), uiState.currentItemIndex)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `navigateToNearestResult normal case`() = runTest {
+        val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+        Dispatchers.setMain(testDispatcher)
+
+        // Mock data
+        val poems = listOf(
+            mockk<Poem>(relaxed = true),
+            mockk<Poem>(relaxed = true),
+            mockk<Poem>(relaxed = true),
+        )
+        val poemItems = poems.map { mockk<PoemItem>(relaxed = true) }
+        val selectedPoemLocale: Locale.CustomLocale = mockk()
+        val selectedPoemLocaleItem: LocaleItem.CustomLocale = mockk()
+        val searchPhrase = "searchPhrase"
+
+        // Mock interactions
+        coEvery { getSelectedPoemLocale() } returns flowOf(selectedPoemLocale)
+        coEvery { getPoems(any()) } returns poems
+        every { poemItemMapper.mapToPresentation(any<List<Poem>>()) } returns poemItems
+        coEvery { getLastVisitedPoem() } returns flowOf(poems.first())
+        every { poemItemMapper.mapToPresentation(poems.first()) } returns poemItems.first()
+        every { poemItemMapper.mapToDomain(poemItems.last()) } returns poems.last()
+        every { localeItemMapper.mapToPresentation(selectedPoemLocale) } returns selectedPoemLocaleItem
+        every { localeItemMapper.mapToDomain(selectedPoemLocaleItem) } returns selectedPoemLocale
+        every { searchManager.checkSearchState(0) } returns mockk()
+        coEvery { setLastVisitedPoem(any()) } returns Unit
+
+        val lambdaCapture = slot<(PoemItem) -> Int>()
+        coEvery {
+            searchManager.nearestSearchResultIndex(
+                any(),
+                any(),
+                any(),
+                capture(lambdaCapture)
+            )
+        } returns poems.indexOf(poems.last())
+
+        // Call the function under test
+        viewModel.viewIsReady()
+
+        // Verify the UI state
+        assertTrue(viewModel.uiState.value is PoemListViewModel.UiState.Loaded)
+
+        val uiState = viewModel.uiState.value as PoemListViewModel.UiState.Loaded
+
+        viewModel.navigateToNearestResult(searchPhrase)
+
+        // Check lambda behavior
+        val expectedPoemIndex = poemItems.indexOf(poemItems.last())
+        assertEquals(expectedPoemIndex, lambdaCapture.captured(poemItems[expectedPoemIndex]))
+
+        // Verify that the correct functions were called
+        coVerify {
+            searchManager.nearestSearchResultIndex(
+                searchPhrase,
+                uiState.selectedLocaleItem,
+                uiState.currentItemIndex,
+                any()
+            )
+        }
+        coVerify {
+            setLastVisitedPoem(
+                SetLastVisitedPoemParams(
+                    lastVisitedPoem = poems.last()
+                )
+            )
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

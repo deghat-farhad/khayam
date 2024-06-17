@@ -17,10 +17,10 @@ class LocaleItemMapper @Inject constructor() {
         LocaleItem.NoLocale -> Locale.NoLocale
     }
 
-    fun mapToDomain(customLocaleItem: LocaleItem.CustomLocale) =
+    private fun mapToDomain(customLocaleItem: LocaleItem.CustomLocale) =
         Locale.CustomLocale(customLocaleItem.locale)
 
-    fun mapToPresentation(customLocale: Locale.CustomLocale) =
+    private fun mapToPresentation(customLocale: Locale.CustomLocale) =
         LocaleItem.CustomLocale(customLocale.locale)
 
     fun mapToPresentation(locales: List<Locale>) =

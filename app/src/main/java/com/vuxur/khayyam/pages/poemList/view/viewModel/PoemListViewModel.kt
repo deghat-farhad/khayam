@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vuxur.khayyam.di.UtilityModule
 import com.vuxur.khayyam.domain.model.Locale
 import com.vuxur.khayyam.domain.usecase.getLastVisitedPoem.GetLastVisitedPoem
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoems
@@ -27,8 +28,8 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import java.io.File
-import java.io.FileOutputStream
 import javax.inject.Inject
+import javax.inject.Named
 import kotlin.random.Random
 
 
@@ -41,6 +42,10 @@ class PoemListViewModel @Inject constructor(
     private val searchManager: SearchManager,
     private val setLastVisitedPoem: SetLastVisitedPoem,
     private val getLastVisitedPoem: GetLastVisitedPoem,
+    private val imageFileOutputStreamProvider: ImageFileOutputStreamProvider,
+    @Named(UtilityModule.DI_NAME_IMAGE_FILE)
+    private val imageFile: File,
+    private val shareIntentProvider: ShareIntentProvider,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading())
@@ -48,57 +53,72 @@ class PoemListViewModel @Inject constructor(
     private val poemList get() = (_uiState.value as UiState.Loaded).poems
 
     fun viewIsReady() {
-        if (uiState.value is UiState.Loading)
-            listenToSelectedPoemLocale()
-    }
-
-    private fun listenToSelectedPoemLocale(){
-        viewModelScope.launch {
-            getSelectedPoemLocale().collect { selectedPoemLocale ->
-                when (selectedPoemLocale) {
-                    Locale.NoLocale -> consumeEvent(Event.NavigateToLanguageSetting)
-
-                    is Locale.CustomLocale -> loadPoems(
-                        localeItemMapper.mapToPresentation(
-                            selectedPoemLocale
-                        )
-                    )
-
-                    Locale.SystemLocale -> loadPoems(
-                        LocaleItem.CustomLocale(
-                            getCurrentLocale(
-                                Resources.getSystem()
-                            )
-                        )
-                    )
-                }
+        if (uiState.value is UiState.Loading) {
+            onSelectedPoemLocaleChange { selectedLocaleItem ->
+                val appropriateLocaleItem =
+                    getAppropriateLocaleItemOrNavigateToSetting(selectedLocaleItem)
+                if (appropriateLocaleItem is LocaleItem.CustomLocale)
+                    setLoadedState(appropriateLocaleItem)
+            }
+            onLastVisitedPoemChanged { lastVisitedPoemItem ->
+                navigateToPoem(lastVisitedPoemItem)
+                updateSearchState()
             }
         }
     }
 
-    private fun listenToLastVisitedPoem() {
+    private fun getAppropriateLocaleItemOrNavigateToSetting(selectedLocaleItem: LocaleItem): LocaleItem {
+        return when (selectedLocaleItem) {
+            is LocaleItem.CustomLocale -> selectedLocaleItem
+            LocaleItem.NoLocale -> {
+                consumeEvent(Event.NavigateToLanguageSetting)
+                selectedLocaleItem
+            }
+            LocaleItem.SystemLocale -> LocaleItem.CustomLocale(getCurrentLocale(Resources.getSystem()))
+        }
+    }
+
+    private fun onSelectedPoemLocaleChange(action: suspend (selectedPoemLocaleItem: LocaleItem) -> Unit) {
+        viewModelScope.launch {
+            getSelectedPoemLocale().collect { selectedPoemLocale ->
+                val selectedLocaleItem = localeItemMapper.mapToPresentation(selectedPoemLocale)
+                action(selectedLocaleItem)
+            }
+        }
+    }
+
+    private fun navigateToPoem(poemItem: PoemItem) {
+        (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+            val localIndexOfPoemItem = poemList.indexOf(poemItem)
+            if (localIndexOfPoemItem > 0) {
+                _uiState.value = uiStateSnapshot.copy(
+                    currentItemIndex = localIndexOfPoemItem,
+                )
+            }
+        }
+    }
+
+    private fun onLastVisitedPoemChanged(action: (lastVisitedPoem: PoemItem) -> Unit) {
         viewModelScope.launch {
             getLastVisitedPoem()
-                .mapNotNull { it?.let(poemItemMapper::mapToPresentation) }
-                .collect { lastVisitedPoemItem ->
-                    (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
-                        val currentPoemIndex =
-                            poemList.indexOf(lastVisitedPoemItem).takeIf { it >= 0 } ?: 0
-                        _uiState.value = uiStateSnapshot.copy(currentItemIndex = currentPoemIndex)
-                        updateSearchState()
-                    }
+                .mapNotNull { lastVisitedPoem ->
+                    lastVisitedPoem?.let(poemItemMapper::mapToPresentation)
+                }.collect { lastVisitedPoemItem ->
+                    action(lastVisitedPoemItem)
                 }
         }
     }
 
     fun setCurrentPoemIndex(currentPoemIndex: Int) {
-        setLastVisitedPoemIndex(currentPoemIndex)
+        poemList.getOrNull(currentPoemIndex)?.let { correspondingPoemItem ->
+            setCurrentPoemItem(correspondingPoemItem)
+        }
     }
 
-    private fun setLastVisitedPoemIndex(currentPoemIndex: Int) {
+    private fun setCurrentPoemItem(poemItem: PoemItem) {
         val setLastVisitedPoemParams = SetLastVisitedPoemParams(
             lastVisitedPoem = poemItemMapper.mapToDomain(
-                poemList[currentPoemIndex]
+                poemItem
             )
         )
         viewModelScope.launch {
@@ -146,20 +166,16 @@ class PoemListViewModel @Inject constructor(
             searchManager.previousResult(uiStateSnapshot.currentItemIndex)?.let {
                 setCurrentPoemIndex(it)
             }
-
         }
     }
 
     fun sharePoemText() {
         (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
-            val shareIntent = Intent()
-            shareIntent.action = Intent.ACTION_SEND
-            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            shareIntent.type = "text/plain"
-            shareIntent.putExtra(
-                Intent.EXTRA_TEXT,
-                assemblePoem(poemList[uiStateSnapshot.currentItemIndex])
-            )
+            val shareIntent = shareIntentProvider.getShareTextIntent()
+                .putExtra(
+                    Intent.EXTRA_TEXT,
+                    assemblePoem(poemList[uiStateSnapshot.currentItemIndex])
+                )
             consumeEvent(Event.SharePoemText(shareIntent))
         }
     }
@@ -176,27 +192,17 @@ class PoemListViewModel @Inject constructor(
         setCurrentPoemIndex(Random.nextInt(poemList.size))
     }
 
-    fun sharePoemImage(bitmap: Bitmap, cacheDir: File) {
-
-        val cachePath = File(cacheDir, "images")
-        cachePath.mkdirs()
-
-        val stream =
-            FileOutputStream("$cachePath/image.png")
-
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-        stream.close()
-
-        val imagePath = File(cacheDir, "images")
-        consumeEvent(Event.SharePoemImage(File(imagePath, "image.png")))
+    fun sharePoemImage(bitmap: Bitmap) {
+        imageFileOutputStreamProvider.getOutputStream().use { fileOutputStream ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
+        }
+        consumeEvent(Event.SharePoemImage(imageFile))
     }
 
     fun sharePoemImageUri(poemUri: Uri) {
-        val shareIntent = Intent()
-        shareIntent.action = Intent.ACTION_SEND
-        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        shareIntent.setDataAndType(poemUri, "image/*")
-        shareIntent.putExtra(Intent.EXTRA_STREAM, poemUri)
+        val shareIntent = shareIntentProvider.getShareImageIntent()
+            .setData(poemUri)
+            .putExtra(Intent.EXTRA_STREAM, poemUri)
         consumeEvent(Event.SharePoemText(shareIntent))
     }
 
@@ -218,21 +224,27 @@ class PoemListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loadPoems(selectedPoemLocale: LocaleItem.CustomLocale) {
+    private suspend fun loadPoems(selectedPoemLocaleItem: LocaleItem.CustomLocale): List<PoemItem> {
         val params = GetPoemsParams(
-            locale = localeItemMapper.mapToDomain(selectedPoemLocale)
+            locale = localeItemMapper.mapToDomain(selectedPoemLocaleItem) as Locale.CustomLocale
         )
-        val poems = poemItemMapper.mapToPresentation(getPoems(params))
+        return poemItemMapper.mapToPresentation(getPoems(params))
+    }
+
+    private suspend fun setLoadedState(selectedLocaleItem: LocaleItem.CustomLocale) {
+        val poems = loadPoems(selectedLocaleItem)
+
         val lastVisitedPoemItem = getLastVisitedPoem()
             .firstOrNull()
             ?.let { poemItemMapper.mapToPresentation(it) }
+
         val initialPoemIndex = poems.indexOf(lastVisitedPoemItem).takeIf { it > 0 } ?: 0
+
         _uiState.value = UiState.Loaded(
             poems = poems,
             currentItemIndex = initialPoemIndex,
-            selectedLocaleItem = selectedPoemLocale
+            selectedLocaleItem = selectedLocaleItem
         )
-        listenToLastVisitedPoem()
     }
 
     private fun consumeEvent(

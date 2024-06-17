@@ -61,9 +61,15 @@ android {
     }
 }
 
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
 dependencies {
     implementation(project(":data"))
     implementation(project(":domain"))
+
+    implementation(Libs.Coroutines.kotlinxCoroutinesCore)
 
     implementation(platform(Libs.AndroidX.Compose.Bom))
     implementation (Libs.AndroidX.Compose.Material3)
@@ -82,4 +88,8 @@ dependencies {
     implementation(platform(Libs.Firebase.Bom))
     implementation(Libs.Firebase.analytics)
     implementation(Libs.Firebase.crashlytics)
+
+    testImplementation(Libs.Test.junit5)
+    testImplementation(Libs.Test.mockk)
+    testImplementation(Libs.Coroutines.kotlinxCoroutinesTest)
 }

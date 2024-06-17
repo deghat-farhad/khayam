@@ -1,5 +1,6 @@
 package com.vuxur.khayyam.pages.poemList.view.viewModel
 
+import com.vuxur.khayyam.domain.model.Locale
 import com.vuxur.khayyam.domain.usecase.findPoems.FindPoems
 import com.vuxur.khayyam.domain.usecase.findPoems.FindPoemsParams
 import com.vuxur.khayyam.mapper.LocaleItemMapper
@@ -53,7 +54,10 @@ class SearchManager @Inject constructor(
         searchResultSet.clear()
         if (searchPhrase.isNotBlank()) {
             val params =
-                FindPoemsParams(searchPhrase, localeItemMapper.mapToDomain(selectedPoemLocale))
+                FindPoemsParams(
+                    searchPhrase,
+                    localeItemMapper.mapToDomain(selectedPoemLocale) as Locale.CustomLocale
+                )
             searchResultSet.addAll(
                 poemItemMapper.mapToPresentation(findPoems(params)).map { indexOf(it) }
             )

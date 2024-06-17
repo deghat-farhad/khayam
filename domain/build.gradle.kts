@@ -8,5 +8,5 @@ java {
 }
 
 dependencies {
-    implementation(Libs.kotlinxCoroutinesCore)
+    implementation(Libs.Coroutines.kotlinxCoroutinesCore)
 }

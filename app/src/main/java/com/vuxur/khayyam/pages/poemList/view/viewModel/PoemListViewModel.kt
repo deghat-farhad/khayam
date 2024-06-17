@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vuxur.khayyam.di.UtilityModule
 import com.vuxur.khayyam.domain.model.Locale
 import com.vuxur.khayyam.domain.usecase.getLastVisitedPoem.GetLastVisitedPoem
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoems
@@ -27,8 +28,8 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import java.io.File
-import java.io.FileOutputStream
 import javax.inject.Inject
+import javax.inject.Named
 import kotlin.random.Random
 
 
@@ -41,6 +42,10 @@ class PoemListViewModel @Inject constructor(
     private val searchManager: SearchManager,
     private val setLastVisitedPoem: SetLastVisitedPoem,
     private val getLastVisitedPoem: GetLastVisitedPoem,
+    private val imageFileOutputStreamProvider: ImageFileOutputStreamProvider,
+    @Named(UtilityModule.DI_NAME_IMAGE_FILE)
+    private val imageFile: File,
+    private val shareIntentProvider: ShareIntentProvider,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading())
@@ -161,20 +166,16 @@ class PoemListViewModel @Inject constructor(
             searchManager.previousResult(uiStateSnapshot.currentItemIndex)?.let {
                 setCurrentPoemIndex(it)
             }
-
         }
     }
 
     fun sharePoemText() {
         (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
-            val shareIntent = Intent()
-            shareIntent.action = Intent.ACTION_SEND
-            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            shareIntent.type = "text/plain"
-            shareIntent.putExtra(
-                Intent.EXTRA_TEXT,
-                assemblePoem(poemList[uiStateSnapshot.currentItemIndex])
-            )
+            val shareIntent = shareIntentProvider.getShareTextIntent()
+                .putExtra(
+                    Intent.EXTRA_TEXT,
+                    assemblePoem(poemList[uiStateSnapshot.currentItemIndex])
+                )
             consumeEvent(Event.SharePoemText(shareIntent))
         }
     }
@@ -191,27 +192,17 @@ class PoemListViewModel @Inject constructor(
         setCurrentPoemIndex(Random.nextInt(poemList.size))
     }
 
-    fun sharePoemImage(bitmap: Bitmap, cacheDir: File) {
-
-        val cachePath = File(cacheDir, "images")
-        cachePath.mkdirs()
-
-        val stream =
-            FileOutputStream("$cachePath/image.png")
-
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-        stream.close()
-
-        val imagePath = File(cacheDir, "images")
-        consumeEvent(Event.SharePoemImage(File(imagePath, "image.png")))
+    fun sharePoemImage(bitmap: Bitmap) {
+        imageFileOutputStreamProvider.getOutputStream().use { fileOutputStream ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
+        }
+        consumeEvent(Event.SharePoemImage(imageFile))
     }
 
     fun sharePoemImageUri(poemUri: Uri) {
-        val shareIntent = Intent()
-        shareIntent.action = Intent.ACTION_SEND
-        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        shareIntent.setDataAndType(poemUri, "image/*")
-        shareIntent.putExtra(Intent.EXTRA_STREAM, poemUri)
+        val shareIntent = shareIntentProvider.getShareImageIntent()
+            .setData(poemUri)
+            .putExtra(Intent.EXTRA_STREAM, poemUri)
         consumeEvent(Event.SharePoemText(shareIntent))
     }
 

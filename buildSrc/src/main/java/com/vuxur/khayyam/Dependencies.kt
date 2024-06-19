@@ -1,12 +1,13 @@
 import Versions.hiltVersion
 
 object Versions {
-    const val kspVersion = "1.9.21-1.0.15"
-    const val hiltVersion = "2.49"
-    const val androidGradlePluginVersion = "8.2.0"
-    const val kotlinVersion = "1.9.21"
-    const val googleServiceVersion = "4.4.1"
-    const val crashlyticsVersion = "2.9.9"
+    const val kspVersion = "2.0.0-1.0.22"
+    const val hiltVersion = "2.51.1"
+    const val androidGradlePluginVersion = "8.5.0"
+    const val kotlinVersion = "2.0.0"
+    const val googleServiceVersion = "4.4.2"
+    const val crashlyticsVersion = "3.0.1"
+    const val jetbraninsComposeVersio = "1.7.0-dev1686"
 }
 
 object Plugins {
@@ -18,6 +19,8 @@ object Plugins {
     const val jetbrainsKotlinAndroid = "org.jetbrains.kotlin.android"
     const val googleService = "com.google.gms.google-services"
     const val crashlytics = "com.google.firebase.crashlytics"
+    const val jetbrainsCompose = "org.jetbrains.compose"
+    const val composeCompiler = "org.jetbrains.kotlin.plugin.compose"
 }
 
 object Libs {
@@ -30,10 +33,10 @@ object Libs {
             "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinxCoroutinesCoreVersion"
     }
     object AndroidX {
-        private const val hiltNavigationComposeVersion = "1.1.0"
-        private const val materialIconsExtendedVersion = "1.5.4"
-        private const val activityKtxVersion = "1.8.2"
-        private const val datastorePreferencesVersion = "1.0.0"
+        private const val hiltNavigationComposeVersion = "1.2.0"
+        private const val materialIconsExtendedVersion = "1.6.8"
+        private const val activityKtxVersion = "1.9.0"
+        private const val datastorePreferencesVersion = "1.1.1"
 
         const val hiltNavigationCompose = "androidx.hilt:hilt-navigation-compose:$hiltNavigationComposeVersion"
         const val materialIconExtended = "androidx.compose.material:material-icons-extended:$materialIconsExtendedVersion"
@@ -48,12 +51,11 @@ object Libs {
         }
 
         object Compose {
-            private const val composeBomVersion = "2023.10.01"
-            private const val composeUiVersion = "1.6.0-beta03"
+            private const val composeBomVersion = "2024.06.00"
 
             const val Bom = "androidx.compose:compose-bom:$composeBomVersion"
             const val Material3 = "androidx.compose.material3:material3"
-            const val ui = "androidx.compose.ui:ui:$composeUiVersion"
+            const val ui = "androidx.compose.ui:ui"
             const val uiTooling = "androidx.compose.ui:ui-tooling"
         }
     }
@@ -64,7 +66,7 @@ object Libs {
     }
 
     object Firebase {
-        private const val firebaseBomVersion = "32.8.0"
+        private const val firebaseBomVersion = "33.1.0"
 
         const val Bom = "com.google.firebase:firebase-bom:$firebaseBomVersion"
         const val analytics = "com.google.firebase:firebase-analytics"

@@ -59,6 +59,13 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.6"
     }
+    lint {
+        baseline = File("lint-baseline.xml")
+        warningsAsErrors = true
+        textReport = true
+        textOutput = File("stdout")
+        explainIssues = false
+    }
 }
 
 tasks.withType<Test> {

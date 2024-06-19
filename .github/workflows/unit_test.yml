@@ -16,17 +16,13 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # Step 3: Cache Gradle dependencies
       - name: Cache Gradle Dependencies
         uses: actions/cache@v4
         with:
-          # Paths to cache, including Gradle caches and wrapper
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          # Key used to identify the cache. This should change if dependencies change
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          # Fallback keys used to restore the cache if the exact key isn't found
           restore-keys: |
             ${{ runner.os }}-gradle-
 

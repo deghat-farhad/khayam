@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AnalysisUIOptions">
+    <option name="ANALYZE_INJECTED_CODE" value="false" />
+  </component>
+  <component name="AndroidLayouts">
+    <shared>
+      <config />
+    </shared>
+  </component>
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0c8c29e7-76cd-418b-a0d4-27e941e1600c" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buildSrc/src/main/java/com/vuxur/khayyam/ConfigurationData.kt" beforeDir="false" afterPath="$PROJECT_DIR$/buildSrc/src/main/java/com/vuxur/khayyam/ConfigurationData.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/buildSrc/src/main/java/com/vuxur/khayyam/Dependencies.kt" beforeDir="false" afterPath="$PROJECT_DIR$/buildSrc/src/main/java/com/vuxur/khayyam/Dependencies.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[DeviceId(pluginId=LocalEmulator, isTemplate=false, identifier=path=/home/smart8bits/.android/avd/Pixel_8_API_34.avd)]" />
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
+        <projects_view>
+          <tree_state>
+            <expand />
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+        <option value="Kotlin Data Class" />
+        <option value="Kotlin File" />
+        <option value="JUnit5 Test Class" />
+        <option value="Kotlin Interface" />
+        <option value="Kotlin Class" />
+      </list>
+    </option>
+  </component>
+  <component name="GenerateSignedApkSettings">
+    <option name="KEY_STORE_PATH" value="$PROJECT_DIR$/keystore/keystore.jks" />
+    <option name="KEY_ALIAS" value="key0" />
+    <option name="REMEMBER_PASSWORDS" value="true" />
+    <option name="BUILD_TARGET_KEY" value="apk" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.android.tools.build/gradle/8.2.0/db7cc70c2cdbfc5f49732fa816bbdcf1e7263e91/gradle-8.2.0.jar!/com/android/build/gradle/AndroidConfig.class" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="KotlinScriptingSettings">
+    <scriptDefinition className="org.jetbrains.kotlin.scripting.resolve.KotlinScriptDefinitionFromAnnotatedTemplate" definitionName="KotlinBuildScript">
+      <order>2147483647</order>
+    </scriptDefinition>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="2eWyi2bSuKcEZPj6r8WWlggIb7b" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Android App.app.executor": "Run",
+    "ApkExportedModule": "khayyam.app",
+    "BundleExportedModule": "khayyam.app",
+    "DEBUGGABLE_DEVICE": "Pixel_8_API_34 [emulator-5554]",
+    "DEBUGGABLE_PROCESS": "com.vuxur.khayyam",
+    "DEBUGGER_ID": "Auto",
+    "ExportApk.ApkPathForkhayyam.app": "/home/smart8bits/Android/projects/khayyam/app",
+    "ExportBundle.BundlePathForkhayyam.app": "/home/smart8bits/Android/projects/khayyam/app",
+    "Gradle.PoemListViewModelTest.copyPoem normal case.executor": "Coverage",
+    "Gradle.PoemListViewModelTest.executor": "Run",
+    "Gradle.PoemListViewModelTest.navigate to setting if selectedLocaleItem was NoLocale.executor": "Run",
+    "Gradle.PoemListViewModelTest.navigate to setting if selectedLocaleItem was Nolocale.executor": "Run",
+    "Gradle.PoemListViewModelTest.navigate to setting if selectedLocaleItem was SystemLocale.executor": "Run",
+    "Gradle.PoemListViewModelTest.navigateToNearestResult normal case.executor": "Coverage",
+    "Gradle.PoemListViewModelTest.navigateToNearestResult when the result is null.executor": "Run",
+    "Gradle.PoemListViewModelTest.navigateToNextResult normal case.executor": "Run",
+    "Gradle.PoemListViewModelTest.navigateToNextResult when next result is null.executor": "Run",
+    "Gradle.PoemListViewModelTest.navigateToPreviousResult normal case.executor": "Run",
+    "Gradle.PoemListViewModelTest.navigateToPreviousResult when next result is null.executor": "Run",
+    "Gradle.PoemListViewModelTest.onEventConsumed normal case loaded.executor": "Coverage",
+    "Gradle.PoemListViewModelTest.onEventConsumed normal case loading uiState.executor": "Coverage",
+    "Gradle.PoemListViewModelTest.onEventConsumed normal case.executor": "Run",
+    "Gradle.PoemListViewModelTest.onLastVisitedPoemChanged normal case.executor": "Run",
+    "Gradle.PoemListViewModelTest.randomPoem normal case.executor": "Coverage",
+    "Gradle.PoemListViewModelTest.setCurrentPoemIndex normal case.executor": "Run",
+    "Gradle.PoemListViewModelTest.setCurrentPoemIndex should update UI state with valid currentPoemIndex.executor": "Run",
+    "Gradle.PoemListViewModelTest.sharePoemImage normal case.executor": "Run",
+    "Gradle.PoemListViewModelTest.sharePoemImageUri normal case.executor": "Run",
+    "Gradle.PoemListViewModelTest.sharePoemText normal case.executor": "Run",
+    "Gradle.PoemListViewModelTest.test.executor": "Run",
+    "Gradle.PoemListViewModelTest.viewIsReady normal case.executor": "Run",
+    "Gradle.PoemListViewModelTest.viewIsReady using SystemLocale.executor": "Run",
+    "PROJECT_TRUSTED_KEY": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "SHOW_ALL_PROCESSES": "false",
+    "android.gradle.sync.needed": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "git-widget-placeholder": "117-check-lint-before-making-a-pr-able-to-merge",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/smart8bits/Android/projects/khayyam",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "settings.editor.selected.configurable": "Errors"
+  },
+  "keyToStringList": {
+    "ExportApk.BuildVariants": [
+      "release"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/data/src/main/assets/database" />
+      <recent name="$PROJECT_DIR$/app/src/main/res/font" />
+      <recent name="$PROJECT_DIR$/app" />
+    </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/data/src/main/assets/database" />
+      <recent name="$PROJECT_DIR$/data/src/main/assets/database.db" />
+    </key>
+    <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="com.vuxur.khayyam.utils.intentFactory" />
+      <recent name="com.vuxur.khayyam.pages.poemList.view.viewModel" />
+      <recent name="com.vuxur.khayyam" />
+      <recent name="com.vuxur.khayyam.setting.view" />
+      <recent name="com.vuxur.khayyam.domain.usecase.getSelectedPoemLocale" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="com.vuxur.khayyam.pages.poemList.view.viewModel" />
+      <recent name="com.vuxur.khayyam.pages.poemList" />
+    </key>
+    <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
+      <recent name="com.vuxur.khayyam.data.entity" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Android App.app">
+    <configuration name="app" type="AndroidRunConfigurationType" factoryName="Android App">
+      <module name="khayyam.app.main" />
+      <option name="DEPLOY" value="true" />
+      <option name="DEPLOY_APK_FROM_BUNDLE" value="false" />
+      <option name="DEPLOY_AS_INSTANT" value="false" />
+      <option name="ARTIFACT_NAME" value="" />
+      <option name="PM_INSTALL_OPTIONS" value="" />
+      <option name="ALL_USERS" value="false" />
+      <option name="ALWAYS_INSTALL_WITH_PM" value="false" />
+      <option name="CLEAR_APP_STORAGE" value="false" />
+      <option name="DYNAMIC_FEATURES_DISABLED_LIST" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
+      <option name="MODE" value="default_activity" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="false" />
+      <option name="INSPECTION_WITHOUT_ACTIVITY_RESTART" value="false" />
+      <option name="TARGET_SELECTION_MODE" value="DEVICE_AND_SNAPSHOT_COMBO_BOX" />
+      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="-1" />
+      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+      <option name="DEBUGGER_TYPE" value="Auto" />
+      <Auto>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Auto>
+      <Hybrid>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Hybrid>
+      <Java>
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Java>
+      <Native>
+        <option name="USE_JAVA_AWARE_DEBUGGER" value="false" />
+        <option name="SHOW_STATIC_VARS" value="true" />
+        <option name="WORKING_DIR" value="" />
+        <option name="TARGET_LOGGING_CHANNELS" value="lldb process:gdb-remote packets" />
+        <option name="SHOW_OPTIMIZED_WARNING" value="true" />
+        <option name="ATTACH_ON_WAIT_FOR_DEBUGGER" value="false" />
+        <option name="DEBUG_SANDBOX_SDK" value="false" />
+      </Native>
+      <Profilers>
+        <option name="ADVANCED_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_ENABLED" value="false" />
+        <option name="STARTUP_CPU_PROFILING_CONFIGURATION_NAME" value="Java/Kotlin Method Sample (legacy)" />
+        <option name="STARTUP_NATIVE_MEMORY_PROFILING_ENABLED" value="false" />
+        <option name="NATIVE_MEMORY_SAMPLE_RATE_BYTES" value="2048" />
+      </Profilers>
+      <option name="DEEP_LINK" value="" />
+      <option name="ACTIVITY_CLASS" value="" />
+      <option name="SEARCH_ACTIVITY_IN_GLOBAL_SCOPE" value="false" />
+      <option name="SKIP_ACTIVITY_VALIDATION" value="false" />
+      <method v="2">
+        <option name="Android.Gradle.BeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PoemListViewModelTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":app:testDebugUnitTest" />
+            <option value="--tests" />
+            <option value="&quot;com.vuxur.khayyam.pages.poemList.view.viewModel.PoemListViewModelTest&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="PoemListViewModelTest.onEventConsumed normal case loading uiState" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":app:testDebugUnitTest" />
+            <option value="--tests" />
+            <option value="&quot;com.vuxur.khayyam.pages.poemList.view.viewModel.PoemListViewModelTest.onEventConsumed normal case loading uiState&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="PoemListViewModelTest.sharePoemImage normal case" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":app:testDebugUnitTest" />
+            <option value="--tests" />
+            <option value="&quot;com.vuxur.khayyam.pages.poemList.view.viewModel.PoemListViewModelTest.sharePoemImage normal case&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="PoemListViewModelTest.sharePoemImageUri normal case" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":app:testDebugUnitTest" />
+            <option value="--tests" />
+            <option value="&quot;com.vuxur.khayyam.pages.poemList.view.viewModel.PoemListViewModelTest.sharePoemImageUri normal case&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <configuration name="PoemListViewModelTest.sharePoemText normal case" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":app:testDebugUnitTest" />
+            <option value="--tests" />
+            <option value="&quot;com.vuxur.khayyam.pages.poemList.view.viewModel.PoemListViewModelTest.sharePoemText normal case&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Gradle.PoemListViewModelTest" />
+        <item itemvalue="Gradle.PoemListViewModelTest.sharePoemText normal case" />
+        <item itemvalue="Gradle.PoemListViewModelTest.sharePoemImage normal case" />
+        <item itemvalue="Gradle.PoemListViewModelTest.sharePoemImageUri normal case" />
+        <item itemvalue="Gradle.PoemListViewModelTest.onEventConsumed normal case loading uiState" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0c8c29e7-76cd-418b-a0d4-27e941e1600c" name="Changes" comment="" />
+      <created>1712034753258</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1712034753258</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/app/src/main/java/com/vuxur/khayyam/pages/poemList/view/viewModel/PoemListViewModel.kt</url>
+          <line>202</line>
+          <option name="timeStamp" value="16" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="AndroidRunConfigurationType">
+        <watch expression="locale.toLanguageTag()" language="kotlin" />
+      </configuration>
+      <configuration name="GradleRunConfiguration">
+        <watch expression="cacheDir.parent" language="kotlin" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/khayyam$PoemListViewModelTest_sharePoemImageUri_normal_case.ic" NAME="PoemListViewModelTest.sharePoemImageUri normal case Coverage Results" MODIFIED="1718375541923" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/khayyam$PoemListViewModelTest_setCurrentPoemIndex_normal_case.ic" NAME="PoemListViewModelTest.setCurrentPoemIndex normal case Coverage Results" MODIFIED="1718174291652" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/khayyam$PoemListViewModelTest_copyPoem_normal_case.ic" NAME="PoemListViewModelTest.copyPoem normal case Coverage Results" MODIFIED="1718372145944" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/khayyam$PoemListViewModelTest_onEventConsumed_normal_case_loading_uiState.ic" NAME="PoemListViewModelTest.onEventConsumed normal case loading uiState Coverage Results" MODIFIED="1718609887960" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/khayyam$PoemListViewModelTest_onLastVisitedPoemChanged_normal_case.ic" NAME="PoemListViewModelTest.onLastVisitedPoemChanged normal case Coverage Results" MODIFIED="1718174901943" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/khayyam$PoemListViewModelTest_onEventConsumed_normal_case_loaded.ic" NAME="PoemListViewModelTest.onEventConsumed normal case loaded Coverage Results" MODIFIED="1718609670482" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/khayyam$PoemListViewModelTest_sharePoemImage_normal_case.ic" NAME="PoemListViewModelTest.sharePoemImage normal case Coverage Results" MODIFIED="1718644928493" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/khayyam$PoemListViewModelTest_test.ic" NAME="PoemListViewModelTest.test Coverage Results" MODIFIED="1717579805595" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/khayyam$PoemListViewModelTest_viewIsReady_normal_case.ic" NAME="PoemListViewModelTest.viewIsReady normal case Coverage Results" MODIFIED="1717590242059" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/khayyam$PoemListViewModelTest_navigateToNearestResult_normal_case.ic" NAME="PoemListViewModelTest.navigateToNearestResult normal case Coverage Results" MODIFIED="1718280762349" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/khayyam$PoemListViewModelTest_randomPoem_normal_case.ic" NAME="PoemListViewModelTest.randomPoem normal case Coverage Results" MODIFIED="1718373562672" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/khayyam$PoemListViewModelTest_sharePoemText_normal_case.ic" NAME="PoemListViewModelTest.sharePoemText normal case Coverage Results" MODIFIED="1718645685659" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/khayyam$PoemListViewModelTest.ic" NAME="PoemListViewModelTest Coverage Results" MODIFIED="1718686885304" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+  </component>
+</project>

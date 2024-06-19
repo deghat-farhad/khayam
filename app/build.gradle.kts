@@ -5,6 +5,7 @@ plugins {
     id(Plugins.jetbrainsKotlinAndroid)
     id(Plugins.googleService)
     id(Plugins.crashlytics)
+    id(Plugins.composeCompiler)
 }
 
 android {
@@ -56,9 +57,6 @@ android {
     buildFeatures {
         compose = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.6"
-    }
     lint {
         baseline = File("lint-baseline.xml")
         warningsAsErrors = true
@@ -80,7 +78,6 @@ dependencies {
 
     implementation(platform(Libs.AndroidX.Compose.Bom))
     implementation (Libs.AndroidX.Compose.Material3)
-    //TODO: remove compose ui after compose bom update.
     implementation (Libs.AndroidX.Compose.ui)
     implementation (Libs.AndroidX.Compose.uiTooling)
 

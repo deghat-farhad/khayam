@@ -5,4 +5,5 @@ plugins {
     id(Plugins.jetbrainsKotlinAndroid) version Versions.kotlinVersion apply false
     id(Plugins.googleService) version Versions.googleServiceVersion apply false
     id(Plugins.crashlytics) version Versions.crashlyticsVersion apply false
+    id(Plugins.composeCompiler) version Versions.kotlinVersion apply false
 }

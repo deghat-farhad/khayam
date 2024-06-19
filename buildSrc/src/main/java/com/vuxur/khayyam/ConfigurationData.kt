@@ -2,10 +2,10 @@ import org.gradle.api.JavaVersion
 
 object ConfigurationData {
     const val applicationId = "com.vuxur.khayyam"
-    const val compileSdk = 34
+    const val compileSdk = 35
     const val buildToolsVersion = "34.0.0"
     const val minSdk = 21
-    const val targetSdk= 34
+    const val targetSdk= 35
     const val versionCode = 5
     const val versionName = "1.1.1"
     const val useSupportLibrary = true

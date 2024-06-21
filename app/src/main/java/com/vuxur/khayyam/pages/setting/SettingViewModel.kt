@@ -9,10 +9,10 @@ import com.vuxur.khayyam.domain.usecase.setSelectedPoemLocale.SetSelectedPoemLoc
 import com.vuxur.khayyam.mapper.LocaleItemMapper
 import com.vuxur.khayyam.model.LocaleItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
@@ -39,7 +39,7 @@ class SettingViewModel @Inject constructor(
                 locale = localeItemMapper.mapToDomain(localeItem)
             )
             setSelectedPoemLocale(params)
-            consumeEvent(eventToConsume = Event.popBack)
+            consumeEvent(eventToConsume = Event.PopBack)
         }
     }
 
@@ -47,7 +47,7 @@ class SettingViewModel @Inject constructor(
         eventConsumed: Event,
     ) {
         (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
-            uiStateSnapshot.copy(
+            _uiState.value = uiStateSnapshot.copy(
                 events = uiStateSnapshot.events.filterNot { event ->
                     event == eventConsumed
                 },
@@ -87,6 +87,6 @@ class SettingViewModel @Inject constructor(
     }
 
     sealed class Event {
-        data object popBack : Event()
+        data object PopBack : Event()
     }
 }

@@ -23,7 +23,7 @@ fun SettingRoute(
                 is SettingViewModel.UiState.Loaded -> {
                     uiStateSnapshot.events.forEach { event ->
                         when (event) {
-                            SettingViewModel.Event.popBack -> popBack()
+                            SettingViewModel.Event.PopBack -> popBack()
                         }
                         viewModel.onEventConsumed(event)
                     }

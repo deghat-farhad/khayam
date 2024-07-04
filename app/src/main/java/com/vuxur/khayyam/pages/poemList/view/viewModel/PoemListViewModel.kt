@@ -32,7 +32,6 @@ import javax.inject.Inject
 import javax.inject.Named
 import kotlin.random.Random
 
-
 @HiltViewModel
 class PoemListViewModel @Inject constructor(
     private val getPoems: GetPoems,
@@ -74,6 +73,7 @@ class PoemListViewModel @Inject constructor(
                 consumeEvent(Event.NavigateToLanguageSetting)
                 selectedLocaleItem
             }
+
             LocaleItem.SystemLocale -> LocaleItem.CustomLocale(getCurrentLocale(Resources.getSystem()))
         }
     }
@@ -147,8 +147,7 @@ class PoemListViewModel @Inject constructor(
                 }
                 if (nearestResult != null)
                     setCurrentPoemIndex(nearestResult)
-                else
-                    updateSearchState()
+                updateSearchState()
             }
         }
     }
@@ -277,10 +276,11 @@ class PoemListViewModel @Inject constructor(
         val hasPrevious: Boolean,
     )
 
-    sealed class UiState{
+    sealed class UiState {
         data class Loading(
             val events: List<Event> = emptyList(),
         ) : UiState()
+
         data class Loaded(
             val poems: List<PoemItem>,
             val currentItemIndex: Int = 0,

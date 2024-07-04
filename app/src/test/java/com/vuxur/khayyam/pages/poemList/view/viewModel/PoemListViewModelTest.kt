@@ -22,6 +22,7 @@ import com.vuxur.khayyam.utils.getCurrentLocale
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.coVerifySequence
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
@@ -43,6 +44,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.io.FileOutputStream
+import kotlin.random.Random
+import org.junit.jupiter.api.Assertions.assertSame
 
 class PoemListViewModelTest {
 
@@ -234,7 +237,6 @@ class PoemListViewModelTest {
         }
     }
 
-
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `onLastVisitedPoemChanged normal case`() = runTest {
@@ -267,6 +269,16 @@ class PoemListViewModelTest {
 
         // Mock data
         val searchPhrase = "searchPhrase"
+        val mockSearchState1 = PoemListViewModel.SearchState(
+            Random.nextBoolean(),
+            Random.nextBoolean(),
+            Random.nextBoolean(),
+        )
+        val mockSearchState2 = PoemListViewModel.SearchState(
+            mockSearchState1.hasResult.not(),
+            mockSearchState1.hasNext.not(),
+            mockSearchState1.hasPrevious.not(),
+        )
 
         val lambdaCapture = slot<(PoemItem) -> Int>()
         coEvery {
@@ -277,6 +289,7 @@ class PoemListViewModelTest {
                 capture(lambdaCapture)
             )
         } returns poems.indexOf(poems.last())
+        every { searchManager.checkSearchState(0) } returns mockSearchState1 andThen mockSearchState2
 
         // Call the function under test
         viewModel.viewIsReady()
@@ -284,25 +297,16 @@ class PoemListViewModelTest {
         // Verify the UI state
         assertTrue(viewModel.uiState.value is PoemListViewModel.UiState.Loaded)
 
-        val uiState = viewModel.uiState.value as PoemListViewModel.UiState.Loaded
-
         viewModel.navigateToNearestResult(searchPhrase)
+
+        val uiState = viewModel.uiState.value as PoemListViewModel.UiState.Loaded
 
         // Check lambda behavior
         poemItems.forEachIndexed { index, poemItem ->
             assertEquals(index, lambdaCapture.captured(poemItem))
         }
 
-
         // Verify that the correct functions were called
-        coVerify {
-            searchManager.nearestSearchResultIndex(
-                searchPhrase,
-                uiState.selectedLocaleItem,
-                uiState.currentItemIndex,
-                any()
-            )
-        }
         coVerify {
             setLastVisitedPoem(
                 SetLastVisitedPoemParams(
@@ -310,6 +314,17 @@ class PoemListViewModelTest {
                 )
             )
         }
+        coVerifySequence {
+            searchManager.checkSearchState(0)
+            searchManager.nearestSearchResultIndex(
+                searchPhrase,
+                uiState.selectedLocaleItem,
+                uiState.currentItemIndex,
+                any()
+            )
+            searchManager.checkSearchState(0)
+        }
+        assertEquals(mockSearchState2, uiState.searchState)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -320,15 +335,27 @@ class PoemListViewModelTest {
 
         // Mock data
         val searchPhrase = "searchPhrase"
+        val mockSearchState1 = PoemListViewModel.SearchState(
+            Random.nextBoolean(),
+            Random.nextBoolean(),
+            Random.nextBoolean(),
+        )
+        val mockSearchState2 = PoemListViewModel.SearchState(
+            mockSearchState1.hasResult.not(),
+            mockSearchState1.hasNext.not(),
+            mockSearchState1.hasPrevious.not(),
+        )
 
+        val lambdaCapture = slot<(PoemItem) -> Int>()
         coEvery {
             searchManager.nearestSearchResultIndex(
                 any(),
                 any(),
                 any(),
-                any()
+                any(),
             )
         } returns null
+        every { searchManager.checkSearchState(0) } returns mockSearchState1 andThen mockSearchState2
 
         // Call the function under test
         viewModel.viewIsReady()
@@ -336,20 +363,27 @@ class PoemListViewModelTest {
         // Verify the UI state
         assertTrue(viewModel.uiState.value is PoemListViewModel.UiState.Loaded)
 
-        val uiState = viewModel.uiState.value as PoemListViewModel.UiState.Loaded
-
         viewModel.navigateToNearestResult(searchPhrase)
 
+        val uiState = viewModel.uiState.value as PoemListViewModel.UiState.Loaded
+
         // Verify that the correct functions were called
-        coVerify {
+        coVerify(exactly = 0) {
+            setLastVisitedPoem(
+                any()
+            )
+        }
+        coVerifySequence {
+            searchManager.checkSearchState(0)
             searchManager.nearestSearchResultIndex(
                 searchPhrase,
                 uiState.selectedLocaleItem,
                 uiState.currentItemIndex,
                 any()
             )
+            searchManager.checkSearchState(0)
         }
-        coVerify { searchManager.checkSearchState(uiState.currentItemIndex) }
+        assertEquals(mockSearchState2, uiState.searchState)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -599,7 +633,6 @@ class PoemListViewModelTest {
         // Call the function under test
         viewModel.viewIsReady()
 
-
         val mockedBitmap: Bitmap = mockk()
         val outputStream: FileOutputStream = mockk()
 
@@ -681,7 +714,7 @@ class PoemListViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @AfterEach
-    fun tearDown(){
+    fun tearDown() {
         Dispatchers.resetMain()
     }
 }

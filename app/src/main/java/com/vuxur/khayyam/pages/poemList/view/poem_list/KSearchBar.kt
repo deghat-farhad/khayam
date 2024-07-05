@@ -1,10 +1,12 @@
 package com.vuxur.khayyam.pages.poemList.view.poem_list
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -36,6 +38,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.vuxur.khayyam.R
@@ -81,63 +84,71 @@ fun KSearchBar(
                 contentScale = ContentScale.Crop
             ),
     ) {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextField(
-                isError = isError,
-                modifier = Modifier.weight(0.1f),
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    errorIndicatorColor = Color.Transparent,
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    disabledContainerColor = Color.Transparent,
-                    errorContainerColor = Color.Transparent,
-                ),
-                value = searchPhrase,
-                onValueChange = {
-                    searchPhrase = it
-                    onChange?.invoke(it)
-                },
-                leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = stringResource(id = R.string.search)) },
-                placeholder = { Text(text = stringResource(id = R.string.search)) },
-                maxLines = 1,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                textStyle = LocalTextStyle.current.copy(
-                    fontFamily = fontFamily,
-                    fontSize = fontSize,
-                    color = if (isError) {
-                        MaterialTheme.colorScheme.error
-                    } else {
-                        LocalTextStyle.current.color
-                    }
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextField(
+                    isError = isError,
+                    modifier = Modifier.weight(0.1f),
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                        errorIndicatorColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        errorContainerColor = Color.Transparent,
+                    ),
+                    value = searchPhrase,
+                    onValueChange = {
+                        searchPhrase = it
+                        onChange?.invoke(it)
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = stringResource(id = R.string.search)
+                        )
+                    },
+                    placeholder = { Text(text = stringResource(id = R.string.search)) },
+                    maxLines = 1,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    textStyle = LocalTextStyle.current.copy(
+                        fontFamily = fontFamily,
+                        fontSize = fontSize,
+                        color = if (isError) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            LocalTextStyle.current.color
+                        }
+                    )
                 )
-            )
-            CompositionLocalProvider(LocalLayoutDirection provides localeItem.locale.toLayoutDirection()) {
-                Row {
-                    NavigationIconButton(
-                        onClick = onPreviousResult,
-                        enabled = isTherePreviousResult,
-                        contentDescription = stringResource(R.string.previous_result),
-                        icon = if (LocalLayoutDirection.current == LayoutDirection.Rtl)
-                            Icons.Filled.KeyboardArrowRight
-                        else
-                            Icons.Filled.KeyboardArrowLeft
-                    )
 
-                    NavigationIconButton(
-                        onClick = onNextResult,
-                        enabled = isThereNextResult,
-                        contentDescription = stringResource(R.string.next_result),
-                        icon = if (LocalLayoutDirection.current == LayoutDirection.Rtl)
-                            Icons.Filled.KeyboardArrowLeft
-                        else
-                            Icons.Filled.KeyboardArrowRight
-                    )
+                CompositionLocalProvider(LocalLayoutDirection provides localeItem.locale.toLayoutDirection()) {
+                    Row {
+                        NavigationIconButton(
+                            onClick = onPreviousResult,
+                            enabled = isTherePreviousResult,
+                            contentDescription = stringResource(R.string.previous_result),
+                            icon = if (LocalLayoutDirection.current == LayoutDirection.Rtl)
+                                Icons.Filled.KeyboardArrowRight
+                            else
+                                Icons.Filled.KeyboardArrowLeft
+                        )
+
+                        NavigationIconButton(
+                            onClick = onNextResult,
+                            enabled = isThereNextResult,
+                            contentDescription = stringResource(R.string.next_result),
+                            icon = if (LocalLayoutDirection.current == LayoutDirection.Rtl)
+                                Icons.Filled.KeyboardArrowLeft
+                            else
+                                Icons.Filled.KeyboardArrowRight
+                        )
+                    }
                 }
             }
         }

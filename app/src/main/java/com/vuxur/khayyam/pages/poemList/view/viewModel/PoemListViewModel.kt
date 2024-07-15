@@ -90,7 +90,7 @@ class PoemListViewModel @Inject constructor(
     private fun navigateToPoem(poemItem: PoemItem) {
         (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
             val localIndexOfPoemItem = poemList.indexOf(poemItem)
-            if (localIndexOfPoemItem > 0) {
+            if (localIndexOfPoemItem >= 0) {
                 _uiState.value = uiStateSnapshot.copy(
                     currentItemIndex = localIndexOfPoemItem,
                 )

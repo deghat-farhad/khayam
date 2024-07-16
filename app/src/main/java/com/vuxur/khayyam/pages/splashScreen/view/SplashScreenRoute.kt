@@ -23,8 +23,8 @@ fun SplashScreenRoute(
             (uiStateSnapshot as? SplashScreenViewModel.UiState.Initialized)?.let {
                 uiStateSnapshot.events.forEach { event ->
                     when (event) {
-                        SplashScreenViewModel.Event.NavigateToLanguageSetting -> navigateToSetting()
-                        SplashScreenViewModel.Event.NavigateToPoemList -> navigateToPoemList()
+                        SplashScreenViewModel.Event.Navigate.ToLanguageSetting -> navigateToSetting()
+                        SplashScreenViewModel.Event.Navigate.ToPoemList -> navigateToPoemList()
                     }
                     viewModel.onEventConsumed(event)
                 }

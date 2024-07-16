@@ -20,21 +20,27 @@ class SplashScreenViewModel @Inject constructor(
     private val localeItemMapper: LocaleItemMapper,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<UiState>(UiState.Initializing)
+    private val _uiState = MutableStateFlow<UiState>(UiState.Initialized())
     val uiState: StateFlow<UiState> = _uiState
 
     fun viewIsReady() {
+        navigateToNextScreen()
+    }
+
+    private fun navigateToNextScreen() {
         viewModelScope.launch {
-            val selectedPoemLocaleItem = localeItemMapper.mapToPresentation(
-                getSelectedPoemLocale().first()
-            )
-            val event = if (selectedPoemLocaleItem is LocaleItem.NoLocale) {
-                Event.NavigateToLanguageSetting
-            } else {
-                Event.NavigateToPoemList
-            }
-            _uiState.value = UiState.Initialized()
-            consumeEvent(event)
+            consumeEvent(whereToNavigate())
+        }
+    }
+
+    private suspend fun whereToNavigate(): Event.Navigate {
+        val selectedPoemLocaleItem = localeItemMapper.mapToPresentation(
+            getSelectedPoemLocale().first()
+        )
+        return if (selectedPoemLocaleItem is LocaleItem.NoLocale) {
+            Event.Navigate.ToLanguageSetting
+        } else {
+            Event.Navigate.ToPoemList
         }
     }
 
@@ -61,14 +67,15 @@ class SplashScreenViewModel @Inject constructor(
     }
 
     sealed class UiState {
-        data object Initializing : UiState()
         data class Initialized(
             val events: List<Event> = emptyList(),
         ) : UiState()
     }
 
     sealed class Event {
-        data object NavigateToLanguageSetting : Event()
-        data object NavigateToPoemList : Event()
+        sealed class Navigate : Event() {
+            data object ToLanguageSetting : Navigate()
+            data object ToPoemList : Navigate()
+        }
     }
 }

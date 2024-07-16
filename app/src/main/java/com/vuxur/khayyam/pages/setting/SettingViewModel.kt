@@ -39,7 +39,7 @@ class SettingViewModel @Inject constructor(
                 locale = localeItemMapper.mapToDomain(localeItem)
             )
             setSelectedPoemLocale(params)
-            consumeEvent(eventToConsume = Event.PopBack)
+            consumeEvent(eventToConsume = Event.NavigateToPoemList)
         }
     }
 
@@ -87,6 +87,6 @@ class SettingViewModel @Inject constructor(
     }
 
     sealed class Event {
-        data object PopBack : Event()
+        data object NavigateToPoemList : Event()
     }
 }

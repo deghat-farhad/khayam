@@ -1,4 +1,4 @@
-package com.vuxur.khayyam.pages.poemList.view.poem_list
+package com.vuxur.khayyam.pages.splashScreen.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -8,34 +8,30 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.vuxur.khayyam.pages.setting.view.navigateToSetting
+import com.vuxur.khayyam.pages.poemList.view.poem_list.navigateToPoemListSingleTop
+import com.vuxur.khayyam.pages.setting.view.navigateToSettingPopBackStack
 
-const val ROUTE_POEM_LIST = "poem_list_route"
+const val SPLASH_SCREEN_ROUTE = "splash_screen_route"
 
-fun NavController.navigateToPoemListSingleTop() {
-    val navOptions = NavOptions.Builder()
-        .apply {
-            setLaunchSingleTop(true)
-            popBackStack()
-        }
-        .build()
-    this.navigate(ROUTE_POEM_LIST, navOptions)
+fun NavController.navigateToSplashScreen() {
+    this.navigate(SPLASH_SCREEN_ROUTE)
 }
 
-fun NavGraphBuilder.poemList(
+fun NavGraphBuilder.splashScreen(
     navController: NavController
 ) {
-    composable(ROUTE_POEM_LIST) {
+    composable(SPLASH_SCREEN_ROUTE) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            PoemListRoute(
+            SplashScreenRoute(
                 viewModel = hiltViewModel(),
-                navController::navigateToSetting,
+                navigateToSetting = navController::navigateToSettingPopBackStack,
+                navigateToPoemList = navController::navigateToPoemListSingleTop,
+                navController::popBackStack
             )
         }
     }

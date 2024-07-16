@@ -10,7 +10,7 @@ import com.vuxur.khayyam.pages.setting.SettingViewModel
 @Composable
 fun SettingRoute(
     viewModel: SettingViewModel,
-    popBack: () -> Unit,
+    navigateToPoemListSingleTop: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     LaunchedEffect(key1 = true) {
@@ -23,7 +23,7 @@ fun SettingRoute(
                 is SettingViewModel.UiState.Loaded -> {
                     uiStateSnapshot.events.forEach { event ->
                         when (event) {
-                            SettingViewModel.Event.PopBack -> popBack()
+                            SettingViewModel.Event.NavigateToPoemList -> navigateToPoemListSingleTop()
                         }
                         viewModel.onEventConsumed(event)
                     }

@@ -47,14 +47,19 @@ class PoemListViewModel @Inject constructor(
     private val shareIntentProvider: ShareIntentProvider,
 ) : ViewModel() {
 
-    private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading())
+    private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
     val uiState: StateFlow<UiState> = _uiState
     private val poemList get() = (_uiState.value as UiState.Loaded).poems
 
     fun viewIsReady() {
         if (uiState.value is UiState.Loading) {
             onSelectedPoemLocaleChange { selectedLocaleItem ->
-                setLoadedState(getAppropriateLocaleItem(selectedLocaleItem))
+                try {
+                    val appropriateLocaleItem = getAppropriateLocaleItem(selectedLocaleItem)
+                    setLoadedState(appropriateLocaleItem)
+                } catch (exception: IllegalStateException) {
+                    setErrorState(exception)
+                }
             }
             onLastVisitedPoemChanged { lastVisitedPoemItem ->
                 navigateToPoem(lastVisitedPoemItem)
@@ -191,6 +196,10 @@ class PoemListViewModel @Inject constructor(
         consumeEvent(Event.SharePoemImage(imageFile))
     }
 
+    fun navigateToSetting() {
+        consumeEvent(Event.NavigateToLanguageSetting)
+    }
+
     fun sharePoemImageUri(poemUri: Uri) {
         val shareIntent = shareIntentProvider.getShareImageIntent()
             .setData(poemUri)
@@ -201,14 +210,8 @@ class PoemListViewModel @Inject constructor(
     fun onEventConsumed(
         eventConsumed: Event,
     ) {
-        when (val uiStateSnapshot = _uiState.value) {
-            is UiState.Loaded -> _uiState.value = uiStateSnapshot.copy(
-                events = uiStateSnapshot.events.filterNot { event ->
-                    event == eventConsumed
-                },
-            )
-
-            is UiState.Loading -> _uiState.value = uiStateSnapshot.copy(
+        (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+            _uiState.value = uiStateSnapshot.copy(
                 events = uiStateSnapshot.events.filterNot { event ->
                     event == eventConsumed
                 },
@@ -221,6 +224,10 @@ class PoemListViewModel @Inject constructor(
             locale = localeItemMapper.mapToDomain(selectedPoemLocaleItem) as Locale.CustomLocale
         )
         return poemItemMapper.mapToPresentation(getPoems(params))
+    }
+
+    private fun setErrorState(exception: Exception) {
+        _uiState.value = UiState.Error(exception)
     }
 
     private suspend fun setLoadedState(selectedLocaleItem: LocaleItem.CustomLocale) {
@@ -242,12 +249,8 @@ class PoemListViewModel @Inject constructor(
     private fun consumeEvent(
         eventToConsume: Event,
     ) {
-        when (val uiStateSnapshot = _uiState.value) {
-            is UiState.Loaded -> _uiState.value = uiStateSnapshot.copy(
-                events = (uiStateSnapshot.events + eventToConsume)
-            )
-
-            is UiState.Loading -> _uiState.value = uiStateSnapshot.copy(
+        (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+            _uiState.value = uiStateSnapshot.copy(
                 events = (uiStateSnapshot.events + eventToConsume)
             )
         }
@@ -270,9 +273,7 @@ class PoemListViewModel @Inject constructor(
     )
 
     sealed class UiState {
-        data class Loading(
-            val events: List<Event> = emptyList(),
-        ) : UiState()
+        data object Loading : UiState()
 
         data class Loaded(
             val poems: List<PoemItem>,
@@ -284,6 +285,10 @@ class PoemListViewModel @Inject constructor(
             ),
             val events: List<Event> = emptyList(),
             val selectedLocaleItem: LocaleItem.CustomLocale,
+        ) : UiState()
+
+        data class Error(
+            val exception: Exception
         ) : UiState()
     }
 

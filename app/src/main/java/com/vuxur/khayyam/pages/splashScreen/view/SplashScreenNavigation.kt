@@ -14,10 +14,6 @@ import com.vuxur.khayyam.pages.setting.view.navigateToSettingPopBackStack
 
 const val SPLASH_SCREEN_ROUTE = "splash_screen_route"
 
-fun NavController.navigateToSplashScreen() {
-    this.navigate(SPLASH_SCREEN_ROUTE)
-}
-
 fun NavGraphBuilder.splashScreen(
     navController: NavController
 ) {
@@ -31,7 +27,6 @@ fun NavGraphBuilder.splashScreen(
                 viewModel = hiltViewModel(),
                 navigateToSetting = navController::navigateToSettingPopBackStack,
                 navigateToPoemList = navController::navigateToPoemListSingleTop,
-                navController::popBackStack
             )
         }
     }

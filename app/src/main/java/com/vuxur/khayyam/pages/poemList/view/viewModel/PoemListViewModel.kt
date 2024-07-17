@@ -16,21 +16,23 @@ import com.vuxur.khayyam.domain.usecase.getPoems.GetPoemsParams
 import com.vuxur.khayyam.domain.usecase.getSelectedPoemLocale.GetSelectedPoemLocale
 import com.vuxur.khayyam.domain.usecase.setLastVisitedPoem.SetLastVisitedPoem
 import com.vuxur.khayyam.domain.usecase.setLastVisitedPoem.SetLastVisitedPoemParams
+import com.vuxur.khayyam.domain.usecase.setSelectedPoemLocale.SetSelectedPoemLocale
+import com.vuxur.khayyam.domain.usecase.setSelectedPoemLocale.SetSelectedPoemLocaleParams
 import com.vuxur.khayyam.mapper.LocaleItemMapper
 import com.vuxur.khayyam.mapper.PoemItemMapper
 import com.vuxur.khayyam.model.LocaleItem
 import com.vuxur.khayyam.model.PoemItem
 import com.vuxur.khayyam.utils.getCurrentLocale
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.File
+import javax.inject.Inject
+import javax.inject.Named
+import kotlin.random.Random
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
-import java.io.File
-import javax.inject.Inject
-import javax.inject.Named
-import kotlin.random.Random
 
 @HiltViewModel
 class PoemListViewModel @Inject constructor(
@@ -45,9 +47,11 @@ class PoemListViewModel @Inject constructor(
     @Named(UtilityModule.DI_NAME_IMAGE_FILE)
     private val imageFile: File,
     private val shareIntentProvider: ShareIntentProvider,
+    private val setSelectedPoemLocale: SetSelectedPoemLocale,
 ) : ViewModel() {
 
-    private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading())
+    private val _uiState: MutableStateFlow<UiState> =
+        MutableStateFlow(UiState.Loading(showLanguageSettingDialog = false))
     val uiState: StateFlow<UiState> = _uiState
     private val poemList get() = (_uiState.value as UiState.Loaded).poems
 
@@ -56,8 +60,9 @@ class PoemListViewModel @Inject constructor(
             onSelectedPoemLocaleChange { selectedLocaleItem ->
                 val appropriateLocaleItem =
                     getAppropriateLocaleItemOrNavigateToSetting(selectedLocaleItem)
-                if (appropriateLocaleItem is LocaleItem.CustomLocale)
+                (appropriateLocaleItem as? LocaleItem.CustomLocale)?.let {
                     setLoadedState(appropriateLocaleItem)
+                }
             }
             onLastVisitedPoemChanged { lastVisitedPoemItem ->
                 navigateToPoem(lastVisitedPoemItem)
@@ -69,8 +74,14 @@ class PoemListViewModel @Inject constructor(
     private fun getAppropriateLocaleItemOrNavigateToSetting(selectedLocaleItem: LocaleItem): LocaleItem {
         return when (selectedLocaleItem) {
             is LocaleItem.CustomLocale -> selectedLocaleItem
-            LocaleItem.SystemLocale, LocaleItem.NoLocale ->
-                LocaleItem.CustomLocale(getCurrentLocale(Resources.getSystem()))
+            LocaleItem.SystemLocale -> LocaleItem.CustomLocale(getCurrentLocale(Resources.getSystem()))
+
+            LocaleItem.NoLocale -> {
+                (_uiState.value as? UiState.Loading)?.let { uiStateSnapshot ->
+                    _uiState.value = uiStateSnapshot.copy(showLanguageSettingDialog = true)
+                }
+                LocaleItem.NoLocale
+            }
         }
     }
 
@@ -219,6 +230,20 @@ class PoemListViewModel @Inject constructor(
         }
     }
 
+    fun useSystemLanguage() {
+        val systemLocaleItem = LocaleItem.SystemLocale
+        val setSelectedPoemLocaleParams = SetSelectedPoemLocaleParams(
+            localeItemMapper.mapToDomain(systemLocaleItem)
+        )
+        viewModelScope.launch {
+            setSelectedPoemLocale(setSelectedPoemLocaleParams)
+        }
+    }
+
+    fun navigateToSetting() {
+        consumeEvent(Event.NavigateToLanguageSetting)
+    }
+
     private suspend fun loadPoems(selectedPoemLocaleItem: LocaleItem.CustomLocale): List<PoemItem> {
         val params = GetPoemsParams(
             locale = localeItemMapper.mapToDomain(selectedPoemLocaleItem) as Locale.CustomLocale
@@ -275,6 +300,7 @@ class PoemListViewModel @Inject constructor(
     sealed class UiState {
         data class Loading(
             val events: List<Event> = emptyList(),
+            val showLanguageSettingDialog: Boolean,
         ) : UiState()
 
         data class Loaded(

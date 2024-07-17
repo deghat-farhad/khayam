@@ -21,4 +21,8 @@
     <string name="no_translation_selected">No translation selected</string>
     <string name="select_language">Select Language</string>
     <string name="selected_title">Selected: %1$s</string>
+    <string name="choose_poem_language">Choose Poem Language</string>
+    <string name="please_select_your_preferred_language_for_reading_the_poems_in_the_app">Please select your preferred language for reading the poems in the app.</string>
+    <string name="use_system_language">Use System Language</string>
+    <string name="set_language">Set Language</string>
 </resources>

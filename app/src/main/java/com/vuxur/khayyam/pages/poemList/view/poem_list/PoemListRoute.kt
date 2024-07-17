@@ -3,6 +3,8 @@ package com.vuxur.khayyam.pages.poemList.view.poem_list
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Translate
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -10,8 +12,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
+import com.vuxur.khayyam.R
 import com.vuxur.khayyam.pages.poemList.view.viewModel.PoemListViewModel
 import java.io.File
 
@@ -115,7 +119,19 @@ fun PoemListRoute(
             )
         }
 
-        is PoemListViewModel.UiState.Loading -> {}
+        is PoemListViewModel.UiState.Loading -> {
+            if (state.showLanguageSettingDialog) {
+                KAlertDialog(
+                    onDismissRequest = viewModel::useSystemLanguage,
+                    onConfirmation = viewModel::navigateToSetting,
+                    dialogTitle = stringResource(R.string.choose_poem_language),
+                    dialogText = stringResource(R.string.please_select_your_preferred_language_for_reading_the_poems_in_the_app),
+                    icon = Icons.Default.Translate,
+                    dismissButtonText = stringResource(R.string.use_system_language),
+                    confirmButtonText = stringResource(R.string.set_language),
+                )
+            }
+        }
     }
 }
 

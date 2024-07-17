@@ -29,33 +29,63 @@ fun PoemListRoute(
     }
 
     DisposableEffect(uiState) {
-        (uiState as? PoemListViewModel.UiState.Loaded)?.let { uiStateSnapshot ->
-            uiStateSnapshot.events.forEach { event ->
-                when (event) {
-                    is PoemListViewModel.Event.CopyPoemText -> {
-                        Toast.makeText(
-                            context,
-                            "poem copied to clipboard.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+        uiState.let { uiStateSnapshot ->
+            when (uiStateSnapshot) {
+                is PoemListViewModel.UiState.Loaded -> {
+                    uiStateSnapshot.events.forEach { event ->
+                        when (event) {
+                            is PoemListViewModel.Event.CopyPoemText -> {
+                                Toast.makeText(
+                                    context,
+                                    "poem copied to clipboard.",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
+                            }
 
-                    is PoemListViewModel.Event.SharePoemImage -> {
-                        viewModel.sharePoemImageUri(getUriOf(context, event.imageToShare))
-                    }
+                            is PoemListViewModel.Event.SharePoemImage -> {
+                                viewModel.sharePoemImageUri(getUriOf(context, event.imageToShare))
+                            }
 
-                    is PoemListViewModel.Event.SharePoemText -> {
-                        startActivity(
-                            context,
-                            Intent.createChooser(event.shareIntent, "choose an app"),
-                            null
-                        )
-                    }
+                            is PoemListViewModel.Event.SharePoemText -> {
+                                startActivity(
+                                    context,
+                                    Intent.createChooser(event.shareIntent, "choose an app"),
+                                    null
+                                )
+                            }
 
-                    PoemListViewModel.Event.NavigateToLanguageSetting -> navigateToSetting()
+                            PoemListViewModel.Event.NavigateToLanguageSetting -> navigateToSetting()
+                        }
+                        viewModel.onEventConsumed(event)
+                    }
                 }
-                viewModel.onEventConsumed(event)
+
+                is PoemListViewModel.UiState.Loading -> {
+                    uiStateSnapshot.events.forEach { event ->
+                        when (event) {
+                            is PoemListViewModel.Event.CopyPoemText -> {
+                                throw (IllegalStateException("there is no poem to copy in \"PreLoad\" state."))
+                            }
+
+                            is PoemListViewModel.Event.SharePoemImage -> {
+                                throw (IllegalStateException("there is no poem to share in \"PreLoad\" state."))
+                            }
+
+                            is PoemListViewModel.Event.SharePoemText -> {
+                                throw (IllegalStateException("there is no poem to share in \"PreLoad\" state."))
+                            }
+
+                            PoemListViewModel.Event.NavigateToLanguageSetting -> navigateToSetting()
+                        }
+                        viewModel.onEventConsumed(event)
+                    }
+                }
             }
+        }
+        val uiStateSnapshot = uiState
+        if (uiStateSnapshot is PoemListViewModel.UiState.Loaded) {
+
         }
         onDispose { }
     }
@@ -80,17 +110,12 @@ fun PoemListRoute(
                 onSharePoemImage = { bitmap ->
                     viewModel.sharePoemImage(bitmap)
                 },
-                onNavigateToSetting = viewModel::navigateToSetting,
+                onNavigateToSetting = navigateToSetting,
                 localeItem = state.selectedLocaleItem,
             )
         }
 
         is PoemListViewModel.UiState.Loading -> {}
-        is PoemListViewModel.UiState.Error -> Toast.makeText(
-            context,
-            "something went wrong: ${state.exception.localizedMessage}",
-            Toast.LENGTH_SHORT
-        ).show()
     }
 }
 

@@ -101,6 +101,10 @@ class SettingViewModelTest() {
 
         coVerify { setSelectedPoemLocale(capture(setSelectedPoemLocaleParamsSlot)) }
         assertEquals(poemLocale, setSelectedPoemLocaleParamsSlot.captured.locale)
+<<<<<<< HEAD
+=======
+        assertTrue(uiState.events.contains(SettingViewModel.Event.PopBack))
+>>>>>>> 2d5deb0 (Revert "SplashScreen Implemented")
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -109,7 +113,11 @@ class SettingViewModelTest() {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
+<<<<<<< HEAD
         val event = SettingViewModel.Event.popBack
+=======
+        val event = SettingViewModel.Event.PopBack
+>>>>>>> 2d5deb0 (Revert "SplashScreen Implemented")
         settingViewModel.viewIsReady()
         settingViewModel.popBack()
         settingViewModel.onEventConsumed(event)

@@ -32,22 +32,17 @@ object Libs {
         const val kotlinxCoroutinesTest =
             "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinxCoroutinesCoreVersion"
     }
-
     object AndroidX {
         private const val hiltNavigationComposeVersion = "1.2.0"
         private const val materialIconsExtendedVersion = "1.6.8"
         private const val activityKtxVersion = "1.9.0"
         private const val datastorePreferencesVersion = "1.1.1"
-        private const val coreSplashscreenVersion = "1.0.1"
 
-        const val hiltNavigationCompose =
-            "androidx.hilt:hilt-navigation-compose:$hiltNavigationComposeVersion"
-        const val materialIconExtended =
-            "androidx.compose.material:material-icons-extended:$materialIconsExtendedVersion"
+        const val hiltNavigationCompose = "androidx.hilt:hilt-navigation-compose:$hiltNavigationComposeVersion"
+        const val materialIconExtended = "androidx.compose.material:material-icons-extended:$materialIconsExtendedVersion"
         const val activityKtx = "androidx.activity:activity-ktx:$activityKtxVersion"
         const val datastorePreferences =
             "androidx.datastore:datastore-preferences:$datastorePreferencesVersion"
-        const val coreSplashscreen = "androidx.core:core-splashscreen:$coreSplashscreenVersion"
 
         object Room {
             private const val roomVersion = "2.6.1"

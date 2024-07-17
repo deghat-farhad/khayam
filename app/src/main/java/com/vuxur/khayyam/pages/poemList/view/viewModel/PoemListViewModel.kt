@@ -71,8 +71,8 @@ class PoemListViewModel @Inject constructor(
     private fun getAppropriateLocaleItem(selectedLocaleItem: LocaleItem): LocaleItem.CustomLocale {
         return when (selectedLocaleItem) {
             is LocaleItem.CustomLocale -> selectedLocaleItem
-            LocaleItem.NoLocale -> throw IllegalStateException("no locale selected")
-            LocaleItem.SystemLocale -> LocaleItem.CustomLocale(getCurrentLocale(Resources.getSystem()))
+            LocaleItem.SystemLocale, LocaleItem.NoLocale ->
+                LocaleItem.CustomLocale(getCurrentLocale(Resources.getSystem()))
         }
     }
 

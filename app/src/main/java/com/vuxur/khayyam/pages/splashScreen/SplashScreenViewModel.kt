@@ -29,7 +29,7 @@ class SplashScreenViewModel @Inject constructor(
 
     private fun navigateToNextScreen() {
         viewModelScope.launch {
-            consumeEvent(whereToNavigate())
+            consumeEvent(Event.Navigate.ToPoemList)
         }
     }
 

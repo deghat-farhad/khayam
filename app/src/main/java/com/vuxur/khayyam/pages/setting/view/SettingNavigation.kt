@@ -9,8 +9,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.vuxur.khayyam.pages.poemList.view.poem_list.navigateToPoemListSingleTop
 
 const val ROUTE_SETTING = "setting_route"
+
+fun NavController.navigateToSettingPopBackStack() {
+    this.navigate(ROUTE_SETTING) {
+        popBackStack()
+    }
+}
 
 fun NavController.navigateToSetting() {
     this.navigate(ROUTE_SETTING)
@@ -27,7 +34,7 @@ fun NavGraphBuilder.setting(
         ) {
             SettingRoute(
                 viewModel = hiltViewModel(),
-                navController::popBackStack
+                navigateToPoemListSingleTop = navController::navigateToPoemListSingleTop,
             )
         }
     }

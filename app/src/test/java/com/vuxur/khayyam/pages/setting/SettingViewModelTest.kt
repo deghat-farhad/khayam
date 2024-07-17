@@ -86,7 +86,7 @@ class SettingViewModelTest() {
 
         coVerify { setSelectedPoemLocale(capture(setSelectedPoemLocaleParamsSlot)) }
         assertEquals(poemLocale, setSelectedPoemLocaleParamsSlot.captured.locale)
-        assertTrue(uiState.events.contains(SettingViewModel.Event.PopBack))
+        assertTrue(uiState.events.contains(SettingViewModel.Event.NavigateToPoemList))
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -95,7 +95,7 @@ class SettingViewModelTest() {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
-        val event = SettingViewModel.Event.PopBack
+        val event = SettingViewModel.Event.NavigateToPoemList
         settingViewModel.viewIsReady()
         settingViewModel.setSelectedPoemLocale(poemLocaleItem)
         settingViewModel.onEventConsumed(event)

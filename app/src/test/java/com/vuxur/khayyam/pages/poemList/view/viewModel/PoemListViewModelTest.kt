@@ -14,6 +14,8 @@ import com.vuxur.khayyam.domain.usecase.getPoems.GetPoemsParams
 import com.vuxur.khayyam.domain.usecase.getSelectedPoemLocale.GetSelectedPoemLocale
 import com.vuxur.khayyam.domain.usecase.setLastVisitedPoem.SetLastVisitedPoem
 import com.vuxur.khayyam.domain.usecase.setLastVisitedPoem.SetLastVisitedPoemParams
+import com.vuxur.khayyam.domain.usecase.setSelectedPoemLocale.SetSelectedPoemLocale
+import com.vuxur.khayyam.domain.usecase.setSelectedPoemLocale.SetSelectedPoemLocaleParams
 import com.vuxur.khayyam.mapper.LocaleItemMapper
 import com.vuxur.khayyam.mapper.PoemItemMapper
 import com.vuxur.khayyam.model.LocaleItem
@@ -29,6 +31,9 @@ import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.verify
+import java.io.File
+import java.io.FileOutputStream
+import kotlin.random.Random
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,10 +47,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.io.File
-import java.io.FileOutputStream
-import kotlin.random.Random
-import org.junit.jupiter.api.Assertions.assertSame
 
 class PoemListViewModelTest {
 
@@ -53,6 +54,7 @@ class PoemListViewModelTest {
     private val getPoems: GetPoems = mockk()
     private val poemItemMapper: PoemItemMapper = mockk()
     private val getSelectedPoemLocale: GetSelectedPoemLocale = mockk()
+    private val setSelectedPoemLocale: SetSelectedPoemLocale = mockk()
     private val localeItemMapper: LocaleItemMapper = mockk()
     private val searchManager: SearchManager = mockk()
     private val setLastVisitedPoem: SetLastVisitedPoem = mockk()
@@ -85,6 +87,7 @@ class PoemListViewModelTest {
             imageFileOutputStreamProvider,
             imageFile,
             shareIntentProvider,
+            setSelectedPoemLocale,
         )
 
         // Mock interactions
@@ -100,6 +103,7 @@ class PoemListViewModelTest {
         coEvery { getLastVisitedPoem() } returns flowOf(poems.first())
         every { localeItemMapper.mapToPresentation(selectedPoemLocale) } returns selectedPoemLocaleItem
         every { localeItemMapper.mapToDomain(selectedPoemLocaleItem) } returns selectedPoemLocale
+        every { localeItemMapper.mapToDomain(LocaleItem.SystemLocale) } returns Locale.SystemLocale
         every { searchManager.checkSearchState(any()) } returns mockk()
         coEvery { setLastVisitedPoem(any()) } just Runs
         every { shareIntentProvider.getShareTextIntent() } returns mockIntent
@@ -108,6 +112,7 @@ class PoemListViewModelTest {
         every { mockIntent.putExtra(any(), any<String>()) } returns mockIntent
         every { mockIntent.putExtra(any(), any<Uri>()) } returns mockIntent
         every { mockIntent.setData(any()) } returns mockIntent
+        coEvery { setSelectedPoemLocale(any()) } just Runs
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -141,7 +146,7 @@ class PoemListViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `navigate to setting if selectedLocaleItem was NoLocale`() = runTest {
+    fun `show language setting dialog if selectedLocaleItem was NoLocale`() = runTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
@@ -161,7 +166,7 @@ class PoemListViewModelTest {
 
         // Check the UiState content
         val uiState = viewModel.uiState.value as PoemListViewModel.UiState.Loading
-        assertEquals(listOf(PoemListViewModel.Event.NavigateToLanguageSetting), uiState.events)
+        assertTrue(uiState.showLanguageSettingDialog)
 
         // Verify that the correct functions were called
         coVerify { getSelectedPoemLocale() }
@@ -703,6 +708,7 @@ class PoemListViewModelTest {
 
         // Verify the UI state
         assertTrue(viewModel.uiState.value is PoemListViewModel.UiState.Loading)
+        viewModel.navigateToSetting()
 
         val consumedEvent =
             (viewModel.uiState.value as PoemListViewModel.UiState.Loading).events.first()
@@ -710,6 +716,16 @@ class PoemListViewModelTest {
         val uiStateEvents = (viewModel.uiState.value as PoemListViewModel.UiState.Loading).events
 
         assertTrue(!uiStateEvents.contains(consumedEvent))
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `useSystemLanguage normal case`() = runTest {
+        val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+        Dispatchers.setMain(testDispatcher)
+
+        viewModel.useSystemLanguage()
+        coVerify { setSelectedPoemLocale(SetSelectedPoemLocaleParams(Locale.SystemLocale)) }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

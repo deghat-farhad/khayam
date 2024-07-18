@@ -46,7 +46,7 @@ class SettingViewModel @Inject constructor(
     }
 
     fun popBack() {
-        consumeEvent(Event.popBack)
+        consumeEvent(Event.PopBack)
     }
 
     fun onEventConsumed(
@@ -107,6 +107,6 @@ class SettingViewModel @Inject constructor(
     }
 
     sealed class Event {
-        data object popBack : Event()
+        data object PopBack : Event()
     }
 }

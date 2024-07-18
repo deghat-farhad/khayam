@@ -28,7 +28,9 @@ class SettingViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = UiState.Loaded(
                 supportedLocales =
-                localeItemMapper.mapToPresentation(getSupportedLocale()).filterNot { it.isOriginal }
+                localeItemMapper.mapToPresentation(getSupportedLocale())
+                    .filterIsInstance<LocaleItem.CustomLocale>()
+                    .filterNot { it.isOriginal }
             )
             collectSelectedPoemLocale()
         }
@@ -40,7 +42,6 @@ class SettingViewModel @Inject constructor(
                 locale = localeItemMapper.mapToDomain(localeItem)
             )
             setSelectedPoemLocale(params)
-            //consumeEvent(eventToConsume = Event.popBack)
         }
     }
 
@@ -63,7 +64,9 @@ class SettingViewModel @Inject constructor(
     fun selectOriginalLanguage() {
         viewModelScope.launch {
             val originalLanguage =
-                localeItemMapper.mapToPresentation(getSupportedLocale()).first { it.isOriginal }
+                localeItemMapper.mapToPresentation(getSupportedLocale())
+                    .filterIsInstance<LocaleItem.CustomLocale>()
+                    .first { it.isOriginal }
             setSelectedPoemLocale(originalLanguage)
         }
     }

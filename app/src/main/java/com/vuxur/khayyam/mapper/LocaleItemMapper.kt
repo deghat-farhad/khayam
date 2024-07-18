@@ -23,6 +23,6 @@ class LocaleItemMapper @Inject constructor() {
     private fun mapToPresentation(customLocale: Locale.CustomLocale) =
         LocaleItem.CustomLocale(customLocale.locale)
 
-    fun mapToPresentation(locales: List<Locale.CustomLocale>) =
+    fun mapToPresentation(locales: List<Locale>) =
         locales.map { locale -> mapToPresentation(locale) }
 }

@@ -10,6 +10,7 @@ import com.vuxur.khayyam.model.LocaleItem
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
@@ -37,8 +38,19 @@ class SettingViewModelTest() {
     private val setSelectedPoemLocale: SetSelectedPoemLocale = mockk()
     private val poemLocale: Locale = mockk()
     private val poemLocaleItem: LocaleItem = mockk()
-    private val supportedLocale: List<Locale> = mockk()
-    private val supportedLocaleItem: List<LocaleItem> = mockk()
+    private val originalLocale = Locale.CustomLocale(java.util.Locale.forLanguageTag("fa-IR"))
+    private val originalLocaleItem =
+        LocaleItem.CustomLocale(java.util.Locale.forLanguageTag("fa-IR"))
+    private val supportedLocale: List<Locale.CustomLocale> = listOf(
+        originalLocale,
+        Locale.CustomLocale(java.util.Locale.ENGLISH),
+        Locale.CustomLocale(java.util.Locale.FRANCE),
+    )
+    private val supportedLocaleItem: List<LocaleItem> = listOf(
+        originalLocaleItem,
+        LocaleItem.CustomLocale(java.util.Locale.ENGLISH),
+        LocaleItem.CustomLocale(java.util.Locale.FRANCE),
+    )
     private val setSelectedPoemLocaleParamsSlot = slot<SetSelectedPoemLocaleParams>()
 
     @BeforeEach
@@ -52,9 +64,11 @@ class SettingViewModelTest() {
 
         coEvery { getSelectedPoemLocale() } returns flowOf(poemLocale)
         coEvery { getSupportedLocale() } returns supportedLocale
-        coEvery { localeItemMapper.mapToPresentation(poemLocale) } returns poemLocaleItem
-        coEvery { localeItemMapper.mapToPresentation(any<List<Locale>>()) } returns supportedLocaleItem
-        coEvery { localeItemMapper.mapToDomain(poemLocaleItem) } returns poemLocale
+        every { localeItemMapper.mapToPresentation(poemLocale) } returns poemLocaleItem
+        every { localeItemMapper.mapToPresentation(supportedLocale) } returns supportedLocaleItem
+        every { localeItemMapper.mapToDomain(poemLocaleItem) } returns poemLocale
+        every { localeItemMapper.mapToDomain(originalLocaleItem) } returns originalLocale
+        every { localeItemMapper.mapToDomain(LocaleItem.SystemLocale) } returns Locale.SystemLocale
         coEvery { setSelectedPoemLocale(capture(setSelectedPoemLocaleParamsSlot)) } just Runs
     }
 
@@ -71,7 +85,9 @@ class SettingViewModelTest() {
 
         coVerify { getSupportedLocale() }
         verify { localeItemMapper.mapToPresentation(supportedLocale) }
-        assertEquals(uiState.supportedLocales, supportedLocaleItem)
+        assertEquals(
+            uiState.supportedLocales,
+            supportedLocaleItem.filterNot { it == originalLocaleItem })
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -82,11 +98,9 @@ class SettingViewModelTest() {
 
         settingViewModel.viewIsReady()
         settingViewModel.setSelectedPoemLocale(poemLocaleItem)
-        val uiState = settingViewModel.uiState.value as SettingViewModel.UiState.Loaded
 
         coVerify { setSelectedPoemLocale(capture(setSelectedPoemLocaleParamsSlot)) }
         assertEquals(poemLocale, setSelectedPoemLocaleParamsSlot.captured.locale)
-        assertTrue(uiState.events.contains(SettingViewModel.Event.popBack))
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -97,11 +111,61 @@ class SettingViewModelTest() {
 
         val event = SettingViewModel.Event.popBack
         settingViewModel.viewIsReady()
-        settingViewModel.setSelectedPoemLocale(poemLocaleItem)
+        settingViewModel.popBack()
         settingViewModel.onEventConsumed(event)
         val uiState = settingViewModel.uiState.value as SettingViewModel.UiState.Loaded
 
         assertFalse(uiState.events.contains(event))
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `popBack normal case`() = runTest {
+        val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+        Dispatchers.setMain(testDispatcher)
+
+        settingViewModel.viewIsReady()
+        settingViewModel.popBack()
+
+        val uiState = settingViewModel.uiState.value as SettingViewModel.UiState.Loaded
+
+        assertTrue(uiState.events.contains(SettingViewModel.Event.popBack))
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `selectOriginalLanguage normal case`() = runTest {
+        val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+        Dispatchers.setMain(testDispatcher)
+
+        settingViewModel.viewIsReady()
+        settingViewModel.selectOriginalLanguage()
+
+        coVerify {
+            setSelectedPoemLocale(
+                SetSelectedPoemLocaleParams(
+                    originalLocale
+                )
+            )
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `selectSystemLanguage normal case`() = runTest {
+        val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+        Dispatchers.setMain(testDispatcher)
+
+        settingViewModel.viewIsReady()
+        settingViewModel.selectSystemLanguage()
+
+        coVerify {
+            setSelectedPoemLocale(
+                SetSelectedPoemLocaleParams(
+                    Locale.SystemLocale
+                )
+            )
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

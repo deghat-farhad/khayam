@@ -8,6 +8,6 @@ sealed class LocaleItem {
     data class CustomLocale(
         val locale: Locale
     ) : LocaleItem() {
-        val isOriginal = locale.toLanguageTag() == "fa-IR"
+        val isOriginal = locale == Locale.forLanguageTag("fa-IR")
     }
 }

@@ -4,11 +4,21 @@
     <string name="copyText">Copy text</string>
     <string name="shareText">Share text</string>
     <string name="shareImage">Share image</string>
-    <string name="system_language">System Language</string>
-    <string name="poems_language">Poems Language</string>
     <string name="settings">Settings</string>
     <string name="previous_result">Previous result</string>
     <string name="next_result">Next result</string>
     <string name="random_poem">Random poem</string>
     <string name="share">Share</string>
+    <string name="back">Back</string>
+    <string name="translation_settings">Translation Settings</string>
+    <string name="translation_setting_caption">Configure your preferred translations of Omar Khayyam\'s poems.</string>
+    <string name="original_persian_language">Original Persian Language</string>
+    <string name="original_language_caption">"Read the poems in their original Persian language.   "</string>
+    <string name="system_default">System Default</string>
+    <string name="system_default_language_caption">Use the language set in your device\'s settings.</string>
+    <string name="authentic_translations">Authentic Translations</string>
+    <string name="authentic_translation_caption">Select from authentic translations of Omar Khayyam’s poems.</string>
+    <string name="no_translation_selected">No translation selected</string>
+    <string name="select_language">Select Language</string>
+    <string name="selected_title">Selected: %1$s</string>
 </resources>

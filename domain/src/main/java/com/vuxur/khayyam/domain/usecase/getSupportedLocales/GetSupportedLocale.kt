@@ -6,10 +6,9 @@ import com.vuxur.khayyam.domain.usecase.base.UseCase
 
 class GetSupportedLocale(
     private val localeRepository: LocaleRepository
-) : UseCase<List<Locale>> {
-    override suspend fun invoke(): List<Locale> {
+) : UseCase<List<Locale.CustomLocale>> {
+    override suspend fun invoke(): List<Locale.CustomLocale> {
         val supportedLocales = localeRepository.getSupportedLanguages().toMutableList()
-        supportedLocales.add(Locale.SystemLocale)
         return supportedLocales
     }
 }

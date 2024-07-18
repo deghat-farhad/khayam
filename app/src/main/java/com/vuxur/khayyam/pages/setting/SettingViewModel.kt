@@ -27,7 +27,10 @@ class SettingViewModel @Inject constructor(
     fun viewIsReady() {
         viewModelScope.launch {
             _uiState.value = UiState.Loaded(
-                supportedLocales = localeItemMapper.mapToPresentation(getSupportedLocale())
+                supportedLocales =
+                localeItemMapper.mapToPresentation(getSupportedLocale())
+                    .filterIsInstance<LocaleItem.CustomLocale>()
+                    .filterNot { it.isOriginal }
             )
             collectSelectedPoemLocale()
         }
@@ -39,8 +42,11 @@ class SettingViewModel @Inject constructor(
                 locale = localeItemMapper.mapToDomain(localeItem)
             )
             setSelectedPoemLocale(params)
-            consumeEvent(eventToConsume = Event.NavigateToPoemList)
         }
+    }
+
+    fun popBack() {
+        consumeEvent(Event.popBack)
     }
 
     fun onEventConsumed(
@@ -53,6 +59,20 @@ class SettingViewModel @Inject constructor(
                 },
             )
         }
+    }
+
+    fun selectOriginalLanguage() {
+        viewModelScope.launch {
+            val originalLanguage =
+                localeItemMapper.mapToPresentation(getSupportedLocale())
+                    .filterIsInstance<LocaleItem.CustomLocale>()
+                    .first { it.isOriginal }
+            setSelectedPoemLocale(originalLanguage)
+        }
+    }
+
+    fun selectSystemLanguage() {
+        setSelectedPoemLocale(LocaleItem.SystemLocale)
     }
 
     private fun consumeEvent(
@@ -80,13 +100,13 @@ class SettingViewModel @Inject constructor(
     sealed class UiState {
         data object Loading : UiState()
         data class Loaded(
-            val supportedLocales: List<LocaleItem>,
+            val supportedLocales: List<LocaleItem.CustomLocale>,
             val selectedPoemLocale: LocaleItem? = null,
             val events: List<Event> = emptyList(),
         ) : UiState()
     }
 
     sealed class Event {
-        data object NavigateToPoemList : Event()
+        data object popBack : Event()
     }
 }

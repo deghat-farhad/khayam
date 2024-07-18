@@ -38,7 +38,7 @@ fun PoemListRoute(
                 is PoemListViewModel.UiState.Loaded -> {
                     uiStateSnapshot.events.forEach { event ->
                         when (event) {
-                            is PoemListViewModel.Event.CopyPoemText -> {
+                            is PoemListViewModel.Event.Loaded.CopyPoemText -> {
                                 Toast.makeText(
                                     context,
                                     "poem copied to clipboard.",
@@ -47,11 +47,11 @@ fun PoemListRoute(
                                     .show()
                             }
 
-                            is PoemListViewModel.Event.SharePoemImage -> {
+                            is PoemListViewModel.Event.Loaded.SharePoemImage -> {
                                 viewModel.sharePoemImageUri(getUriOf(context, event.imageToShare))
                             }
 
-                            is PoemListViewModel.Event.SharePoemText -> {
+                            is PoemListViewModel.Event.Loaded.SharePoemText -> {
                                 startActivity(
                                     context,
                                     Intent.createChooser(event.shareIntent, "choose an app"),
@@ -59,7 +59,7 @@ fun PoemListRoute(
                                 )
                             }
 
-                            PoemListViewModel.Event.NavigateToLanguageSetting -> navigateToSetting()
+                            PoemListViewModel.Event.Loaded.NavigateToLanguageSetting -> navigateToSetting()
                         }
                         viewModel.onEventConsumed(event)
                     }
@@ -68,19 +68,7 @@ fun PoemListRoute(
                 is PoemListViewModel.UiState.Loading -> {
                     uiStateSnapshot.events.forEach { event ->
                         when (event) {
-                            is PoemListViewModel.Event.CopyPoemText -> {
-                                throw (IllegalStateException("there is no poem to copy in \"PreLoad\" state."))
-                            }
-
-                            is PoemListViewModel.Event.SharePoemImage -> {
-                                throw (IllegalStateException("there is no poem to share in \"PreLoad\" state."))
-                            }
-
-                            is PoemListViewModel.Event.SharePoemText -> {
-                                throw (IllegalStateException("there is no poem to share in \"PreLoad\" state."))
-                            }
-
-                            PoemListViewModel.Event.NavigateToLanguageSetting -> navigateToSetting()
+                            PoemListViewModel.Event.Loading.NavigateToLanguageSetting -> navigateToSetting()
                         }
                         viewModel.onEventConsumed(event)
                     }

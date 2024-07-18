@@ -182,7 +182,7 @@ class PoemListViewModel @Inject constructor(
                     Intent.EXTRA_TEXT,
                     assemblePoem(poemList[uiStateSnapshot.currentItemIndex])
                 )
-            consumeEvent(Event.SharePoemText(shareIntent))
+            consumeEvent(Event.Loaded.SharePoemText(shareIntent))
         }
     }
 
@@ -190,7 +190,7 @@ class PoemListViewModel @Inject constructor(
         (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
             val poemText = assemblePoem(poemList[uiStateSnapshot.currentItemIndex])
             clipboard.setText(AnnotatedString(poemText))
-            consumeEvent(Event.CopyPoemText(poemText))
+            consumeEvent(Event.Loaded.CopyPoemText(poemText))
         }
     }
 
@@ -202,14 +202,14 @@ class PoemListViewModel @Inject constructor(
         imageFileOutputStreamProvider.getOutputStream().use { fileOutputStream ->
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
         }
-        consumeEvent(Event.SharePoemImage(imageFile))
+        consumeEvent(Event.Loaded.SharePoemImage(imageFile))
     }
 
     fun sharePoemImageUri(poemUri: Uri) {
         val shareIntent = shareIntentProvider.getShareImageIntent()
             .setData(poemUri)
             .putExtra(Intent.EXTRA_STREAM, poemUri)
-        consumeEvent(Event.SharePoemText(shareIntent))
+        consumeEvent(Event.Loaded.SharePoemText(shareIntent))
     }
 
     fun onEventConsumed(
@@ -241,7 +241,12 @@ class PoemListViewModel @Inject constructor(
     }
 
     fun navigateToSetting() {
-        consumeEvent(Event.NavigateToLanguageSetting)
+        consumeEvent(
+            when (_uiState.value) {
+                is UiState.Loaded -> Event.Loaded.NavigateToLanguageSetting
+                is UiState.Loading -> Event.Loading.NavigateToLanguageSetting
+            }
+        )
     }
 
     private suspend fun loadPoems(selectedPoemLocaleItem: LocaleItem.CustomLocale): List<PoemItem> {
@@ -271,13 +276,19 @@ class PoemListViewModel @Inject constructor(
         eventToConsume: Event,
     ) {
         when (val uiStateSnapshot = _uiState.value) {
-            is UiState.Loaded -> _uiState.value = uiStateSnapshot.copy(
-                events = (uiStateSnapshot.events + eventToConsume)
-            )
+            is UiState.Loaded ->
+                (eventToConsume as? Event.Loaded)?.let {
+                    _uiState.value = uiStateSnapshot.copy(
+                        events = (uiStateSnapshot.events + eventToConsume)
+                    )
+                }
 
-            is UiState.Loading -> _uiState.value = uiStateSnapshot.copy(
-                events = (uiStateSnapshot.events + eventToConsume)
-            )
+            is UiState.Loading ->
+                (eventToConsume as? Event.Loading)?.let {
+                    _uiState.value = uiStateSnapshot.copy(
+                        events = (uiStateSnapshot.events + eventToConsume)
+                    )
+                }
         }
     }
 
@@ -299,7 +310,7 @@ class PoemListViewModel @Inject constructor(
 
     sealed class UiState {
         data class Loading(
-            val events: List<Event> = emptyList(),
+            val events: List<Event.Loading> = emptyList(),
             val showLanguageSettingDialog: Boolean,
         ) : UiState()
 
@@ -311,24 +322,30 @@ class PoemListViewModel @Inject constructor(
                 hasNext = false,
                 hasPrevious = false
             ),
-            val events: List<Event> = emptyList(),
+            val events: List<Event.Loaded> = emptyList(),
             val selectedLocaleItem: LocaleItem.CustomLocale,
         ) : UiState()
     }
 
     sealed class Event {
-        data class SharePoemImage(
-            val imageToShare: File,
-        ) : Event()
+        sealed class Loading : Event() {
+            data object NavigateToLanguageSetting : Loading()
+        }
 
-        data class SharePoemText(
-            val shareIntent: Intent,
-        ) : Event()
+        sealed class Loaded : Event() {
+            data class SharePoemImage(
+                val imageToShare: File,
+            ) : Loaded()
 
-        data class CopyPoemText(
-            val copiedPoem: String,
-        ) : Event()
+            data class SharePoemText(
+                val shareIntent: Intent,
+            ) : Loaded()
 
-        data object NavigateToLanguageSetting : Event()
+            data class CopyPoemText(
+                val copiedPoem: String,
+            ) : Loaded()
+
+            data object NavigateToLanguageSetting : Loaded()
+        }
     }
 }

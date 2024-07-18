@@ -21,7 +21,7 @@ fun SettingRoute(
         (uiState as? SettingViewModel.UiState.Loaded)?.let { uiStateSnapshot ->
             uiStateSnapshot.events.forEach { event ->
                 when (event) {
-                    SettingViewModel.Event.popBack -> popBack()
+                    SettingViewModel.Event.PopBack -> popBack()
                 }
                 viewModel.onEventConsumed(event)
             }

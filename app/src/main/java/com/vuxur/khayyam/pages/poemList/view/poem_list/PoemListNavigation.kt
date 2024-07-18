@@ -8,22 +8,10 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.vuxur.khayyam.pages.setting.view.navigateToSetting
 
 const val ROUTE_POEM_LIST = "poem_list_route"
-
-fun NavController.navigateToPoemListSingleTop() {
-    val navOptions = NavOptions.Builder()
-        .apply {
-            setLaunchSingleTop(true)
-            popBackStack()
-        }
-        .build()
-    this.navigate(ROUTE_POEM_LIST, navOptions)
-}
-
 fun NavGraphBuilder.poemList(
     navController: NavController
 ) {

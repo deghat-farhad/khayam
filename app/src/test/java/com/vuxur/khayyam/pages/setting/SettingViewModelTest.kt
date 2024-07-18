@@ -109,7 +109,7 @@ class SettingViewModelTest() {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
-        val event = SettingViewModel.Event.popBack
+        val event = SettingViewModel.Event.PopBack
         settingViewModel.viewIsReady()
         settingViewModel.popBack()
         settingViewModel.onEventConsumed(event)
@@ -129,7 +129,7 @@ class SettingViewModelTest() {
 
         val uiState = settingViewModel.uiState.value as SettingViewModel.UiState.Loaded
 
-        assertTrue(uiState.events.contains(SettingViewModel.Event.popBack))
+        assertTrue(uiState.events.contains(SettingViewModel.Event.PopBack))
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

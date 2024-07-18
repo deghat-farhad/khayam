@@ -22,5 +22,9 @@
     <string name="no_translation_selected">هیچ ترجمه‌ای انتخاب نشده است</string>
     <string name="select_language">انتخاب زبان</string>
     <string name="selected_title">انتخاب شده: %1$s</string>
+    <string name="choose_poem_language">انتخاب زبان شعر</string>
+    <string name="please_select_your_preferred_language_for_reading_the_poems_in_the_app">لطفاً زبان مورد نظر برای شعرها در اپلیکیشن را انتخاب <کنید class=""></کنید></string>
+    <string name="use_system_language">استفاده از زبان سیستم</string>
+    <string name="set_language">تنظیم زبان</string>
 
 </resources>

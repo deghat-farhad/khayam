@@ -16,6 +16,8 @@ import com.vuxur.khayyam.domain.usecase.getPoems.GetPoemsParams
 import com.vuxur.khayyam.domain.usecase.getSelectedPoemLocale.GetSelectedPoemLocale
 import com.vuxur.khayyam.domain.usecase.setLastVisitedPoem.SetLastVisitedPoem
 import com.vuxur.khayyam.domain.usecase.setLastVisitedPoem.SetLastVisitedPoemParams
+import com.vuxur.khayyam.domain.usecase.setSelectedPoemLocale.SetSelectedPoemLocale
+import com.vuxur.khayyam.domain.usecase.setSelectedPoemLocale.SetSelectedPoemLocaleParams
 import com.vuxur.khayyam.mapper.LocaleItemMapper
 import com.vuxur.khayyam.mapper.PoemItemMapper
 import com.vuxur.khayyam.model.LocaleItem
@@ -45,20 +47,21 @@ class PoemListViewModel @Inject constructor(
     @Named(UtilityModule.DI_NAME_IMAGE_FILE)
     private val imageFile: File,
     private val shareIntentProvider: ShareIntentProvider,
+    private val setSelectedPoemLocale: SetSelectedPoemLocale,
 ) : ViewModel() {
 
-    private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
+    private val _uiState: MutableStateFlow<UiState> =
+        MutableStateFlow(UiState.Loading(showLanguageSettingDialog = false))
     val uiState: StateFlow<UiState> = _uiState
     private val poemList get() = (_uiState.value as UiState.Loaded).poems
 
     fun viewIsReady() {
         if (uiState.value is UiState.Loading) {
             onSelectedPoemLocaleChange { selectedLocaleItem ->
-                try {
-                    val appropriateLocaleItem = getAppropriateLocaleItem(selectedLocaleItem)
+                val appropriateLocaleItem =
+                    getAppropriateLocaleItemOrNavigateToSetting(selectedLocaleItem)
+                (appropriateLocaleItem as? LocaleItem.CustomLocale)?.let {
                     setLoadedState(appropriateLocaleItem)
-                } catch (exception: IllegalStateException) {
-                    setErrorState(exception)
                 }
             }
             onLastVisitedPoemChanged { lastVisitedPoemItem ->
@@ -68,11 +71,17 @@ class PoemListViewModel @Inject constructor(
         }
     }
 
-    private fun getAppropriateLocaleItem(selectedLocaleItem: LocaleItem): LocaleItem.CustomLocale {
+    private fun getAppropriateLocaleItemOrNavigateToSetting(selectedLocaleItem: LocaleItem): LocaleItem {
         return when (selectedLocaleItem) {
             is LocaleItem.CustomLocale -> selectedLocaleItem
-            LocaleItem.NoLocale -> throw IllegalStateException("no locale selected")
             LocaleItem.SystemLocale -> LocaleItem.CustomLocale(getCurrentLocale(Resources.getSystem()))
+
+            LocaleItem.NoLocale -> {
+                (_uiState.value as? UiState.Loading)?.let { uiStateSnapshot ->
+                    _uiState.value = uiStateSnapshot.copy(showLanguageSettingDialog = true)
+                }
+                LocaleItem.NoLocale
+            }
         }
     }
 
@@ -173,7 +182,7 @@ class PoemListViewModel @Inject constructor(
                     Intent.EXTRA_TEXT,
                     assemblePoem(poemList[uiStateSnapshot.currentItemIndex])
                 )
-            consumeEvent(Event.SharePoemText(shareIntent))
+            consumeEvent(Event.Loaded.SharePoemText(shareIntent))
         }
     }
 
@@ -181,7 +190,7 @@ class PoemListViewModel @Inject constructor(
         (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
             val poemText = assemblePoem(poemList[uiStateSnapshot.currentItemIndex])
             clipboard.setText(AnnotatedString(poemText))
-            consumeEvent(Event.CopyPoemText(poemText))
+            consumeEvent(Event.Loaded.CopyPoemText(poemText))
         }
     }
 
@@ -193,25 +202,27 @@ class PoemListViewModel @Inject constructor(
         imageFileOutputStreamProvider.getOutputStream().use { fileOutputStream ->
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
         }
-        consumeEvent(Event.SharePoemImage(imageFile))
-    }
-
-    fun navigateToSetting() {
-        consumeEvent(Event.NavigateToLanguageSetting)
+        consumeEvent(Event.Loaded.SharePoemImage(imageFile))
     }
 
     fun sharePoemImageUri(poemUri: Uri) {
         val shareIntent = shareIntentProvider.getShareImageIntent()
             .setData(poemUri)
             .putExtra(Intent.EXTRA_STREAM, poemUri)
-        consumeEvent(Event.SharePoemText(shareIntent))
+        consumeEvent(Event.Loaded.SharePoemText(shareIntent))
     }
 
     fun onEventConsumed(
         eventConsumed: Event,
     ) {
-        (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
-            _uiState.value = uiStateSnapshot.copy(
+        when (val uiStateSnapshot = _uiState.value) {
+            is UiState.Loaded -> _uiState.value = uiStateSnapshot.copy(
+                events = uiStateSnapshot.events.filterNot { event ->
+                    event == eventConsumed
+                },
+            )
+
+            is UiState.Loading -> _uiState.value = uiStateSnapshot.copy(
                 events = uiStateSnapshot.events.filterNot { event ->
                     event == eventConsumed
                 },
@@ -219,15 +230,30 @@ class PoemListViewModel @Inject constructor(
         }
     }
 
+    fun useSystemLanguage() {
+        val systemLocaleItem = LocaleItem.SystemLocale
+        val setSelectedPoemLocaleParams = SetSelectedPoemLocaleParams(
+            localeItemMapper.mapToDomain(systemLocaleItem)
+        )
+        viewModelScope.launch {
+            setSelectedPoemLocale(setSelectedPoemLocaleParams)
+        }
+    }
+
+    fun navigateToSetting() {
+        consumeEvent(
+            when (_uiState.value) {
+                is UiState.Loaded -> Event.Loaded.NavigateToLanguageSetting
+                is UiState.Loading -> Event.Loading.NavigateToLanguageSetting
+            }
+        )
+    }
+
     private suspend fun loadPoems(selectedPoemLocaleItem: LocaleItem.CustomLocale): List<PoemItem> {
         val params = GetPoemsParams(
             locale = localeItemMapper.mapToDomain(selectedPoemLocaleItem) as Locale.CustomLocale
         )
         return poemItemMapper.mapToPresentation(getPoems(params))
-    }
-
-    private fun setErrorState(exception: Exception) {
-        _uiState.value = UiState.Error(exception)
     }
 
     private suspend fun setLoadedState(selectedLocaleItem: LocaleItem.CustomLocale) {
@@ -249,10 +275,20 @@ class PoemListViewModel @Inject constructor(
     private fun consumeEvent(
         eventToConsume: Event,
     ) {
-        (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
-            _uiState.value = uiStateSnapshot.copy(
-                events = (uiStateSnapshot.events + eventToConsume)
-            )
+        when (val uiStateSnapshot = _uiState.value) {
+            is UiState.Loaded ->
+                (eventToConsume as? Event.Loaded)?.let {
+                    _uiState.value = uiStateSnapshot.copy(
+                        events = (uiStateSnapshot.events + eventToConsume)
+                    )
+                }
+
+            is UiState.Loading ->
+                (eventToConsume as? Event.Loading)?.let {
+                    _uiState.value = uiStateSnapshot.copy(
+                        events = (uiStateSnapshot.events + eventToConsume)
+                    )
+                }
         }
     }
 
@@ -273,7 +309,10 @@ class PoemListViewModel @Inject constructor(
     )
 
     sealed class UiState {
-        data object Loading : UiState()
+        data class Loading(
+            val events: List<Event.Loading> = emptyList(),
+            val showLanguageSettingDialog: Boolean,
+        ) : UiState()
 
         data class Loaded(
             val poems: List<PoemItem>,
@@ -283,28 +322,30 @@ class PoemListViewModel @Inject constructor(
                 hasNext = false,
                 hasPrevious = false
             ),
-            val events: List<Event> = emptyList(),
+            val events: List<Event.Loaded> = emptyList(),
             val selectedLocaleItem: LocaleItem.CustomLocale,
-        ) : UiState()
-
-        data class Error(
-            val exception: Exception
         ) : UiState()
     }
 
     sealed class Event {
-        data class SharePoemImage(
-            val imageToShare: File,
-        ) : Event()
+        sealed class Loading : Event() {
+            data object NavigateToLanguageSetting : Loading()
+        }
 
-        data class SharePoemText(
-            val shareIntent: Intent,
-        ) : Event()
+        sealed class Loaded : Event() {
+            data class SharePoemImage(
+                val imageToShare: File,
+            ) : Loaded()
 
-        data class CopyPoemText(
-            val copiedPoem: String,
-        ) : Event()
+            data class SharePoemText(
+                val shareIntent: Intent,
+            ) : Loaded()
 
-        data object NavigateToLanguageSetting : Event()
+            data class CopyPoemText(
+                val copiedPoem: String,
+            ) : Loaded()
+
+            data object NavigateToLanguageSetting : Loaded()
+        }
     }
 }

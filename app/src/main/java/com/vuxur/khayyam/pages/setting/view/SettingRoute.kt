@@ -10,7 +10,7 @@ import com.vuxur.khayyam.pages.setting.SettingViewModel
 @Composable
 fun SettingRoute(
     viewModel: SettingViewModel,
-    navigateToPoemListSingleTop: () -> Unit,
+    popBack: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     LaunchedEffect(key1 = true) {
@@ -18,31 +18,26 @@ fun SettingRoute(
     }
 
     DisposableEffect(uiState) {
-        uiState.let { uiStateSnapshot ->
-            when (uiStateSnapshot) {
-                is SettingViewModel.UiState.Loaded -> {
-                    uiStateSnapshot.events.forEach { event ->
-                        when (event) {
-                            SettingViewModel.Event.NavigateToPoemList -> navigateToPoemListSingleTop()
-                        }
-                        viewModel.onEventConsumed(event)
-                    }
+        (uiState as? SettingViewModel.UiState.Loaded)?.let { uiStateSnapshot ->
+            uiStateSnapshot.events.forEach { event ->
+                when (event) {
+                    SettingViewModel.Event.popBack -> popBack()
                 }
-
-                SettingViewModel.UiState.Loading -> {}
+                viewModel.onEventConsumed(event)
             }
         }
         onDispose { }
     }
-    when (val uiStateSnapshot = uiState) {
-        is SettingViewModel.UiState.Loaded ->
-            SettingScreen(
-                supportedLocales = uiStateSnapshot.supportedLocales,
-                currentLocale = uiStateSnapshot.selectedPoemLocale,
-            ) { selectedLocaleItem ->
+    (uiState as? SettingViewModel.UiState.Loaded)?.let { uiStateSnapshot ->
+        SettingScreen(
+            supportedLocales = uiStateSnapshot.supportedLocales,
+            currentLocale = uiStateSnapshot.selectedPoemLocale,
+            onPopBack = viewModel::popBack,
+            onLanguageSelected = { selectedLocaleItem ->
                 viewModel.setSelectedPoemLocale(selectedLocaleItem)
-            }
-
-        SettingViewModel.UiState.Loading -> {}
+            },
+            onOriginalLanguageSelected = viewModel::selectOriginalLanguage,
+            onSystemLanguageSelected = viewModel::selectSystemLanguage,
+        )
     }
 }

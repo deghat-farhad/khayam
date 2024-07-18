@@ -7,5 +7,7 @@ sealed class LocaleItem {
     data object SystemLocale : LocaleItem()
     data class CustomLocale(
         val locale: Locale
-    ) : LocaleItem()
+    ) : LocaleItem() {
+        val isOriginal = locale.toLanguageTag() == "fa-IR"
+    }
 }

@@ -12,5 +12,17 @@
     <string name="next_result">نتیجه بعدی</string>
     <string name="random_poem">شعر تصادفی</string>
     <string name="share">اشتراک‌گذاری</string>
+    <string name="back">بازگشت</string>
+    <string name="translation_settings">تنظیمات ترجمه</string>
+    <string name="translation_setting_caption">ترجمه مورد علاقه خود از اشعار عمر خیام را انتخاب کنید.</string>
+    <string name="original_persian_language">زبان فارسی اصلی</string>
+    <string name="original_language_caption">اشعار را به زبان اصلی فارسی بخوانید.</string>
+    <string name="system_default">پیش‌فرض سیستم</string>
+    <string name="system_default_language_caption">از زبانی که در تنظیمات دستگاه شما تنظیم شده است استفاده کنید.</string>
+    <string name="authentic_translations">ترجمه‌های معتبر</string>
+    <string name="authentic_translation_caption">از ترجمه‌های معتبر اشعار عمر خیام انتخاب کنید.</string>
+    <string name="no_translation_selected">هیچ ترجمه‌ای انتخاب نشده است</string>
+    <string name="select_language">انتخاب زبان</string>
+    <string name="selected_title">انتخاب شده: %1$s</string>
 
 </resources>

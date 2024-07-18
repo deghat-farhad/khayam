@@ -220,6 +220,31 @@ class PoemListViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
+    fun `viewIsReady lastVisitedPoem doesn't exist`() = runTest {
+        val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+        Dispatchers.setMain(testDispatcher)
+
+        val mockPoem: Poem = mockk()
+        val mockLastVisitedPoemFlow = MutableStateFlow(poems.last())
+
+        coEvery { getLastVisitedPoem() } returns mockLastVisitedPoemFlow
+        every { poemItemMapper.mapToPresentation(mockPoem) } returns mockk()
+
+        viewModel.viewIsReady()
+
+        assertTrue(viewModel.uiState.value is PoemListViewModel.UiState.Loaded)
+
+        val uiState = viewModel.uiState.value as PoemListViewModel.UiState.Loaded
+        assertEquals(2, uiState.currentItemIndex)
+
+        mockLastVisitedPoemFlow.value = mockPoem
+        assertEquals(2, uiState.currentItemIndex)
+
+        coVerify { getLastVisitedPoem() }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
     fun `setCurrentPoemIndex normal case`() = runTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)

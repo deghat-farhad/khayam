@@ -2,12 +2,16 @@ package com.vuxur.khayyam.pages.setting
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vuxur.khayyam.domain.usecase.getSelectedPoemLocale.GetSelectedPoemLocale
-import com.vuxur.khayyam.domain.usecase.getSupportedLocales.GetSupportedLocale
-import com.vuxur.khayyam.domain.usecase.setSelectedPoemLocale.SetSelectedPoemLocale
-import com.vuxur.khayyam.domain.usecase.setSelectedPoemLocale.SetSelectedPoemLocaleParams
-import com.vuxur.khayyam.mapper.LocaleItemMapper
-import com.vuxur.khayyam.model.LocaleItem
+import com.vuxur.khayyam.domain.usecase.getSelectedTranslationOption.GetSelectedTranslationOption
+import com.vuxur.khayyam.domain.usecase.getTranslations.GetAvailableTranslations
+import com.vuxur.khayyam.domain.usecase.useMatchingSystemLanguageTranslation.UseMatchSystemLanguageTranslation
+import com.vuxur.khayyam.domain.usecase.useSpecificTranslation.UseSpecificTranslation
+import com.vuxur.khayyam.domain.usecase.useSpecificTranslation.UseSpecificTranslationParams
+import com.vuxur.khayyam.domain.usecase.useUntranslated.UseUntranslated
+import com.vuxur.khayyam.mapper.TranslationItemMapper
+import com.vuxur.khayyam.mapper.TranslationOptionsItemMapper
+import com.vuxur.khayyam.model.TranslationItem
+import com.vuxur.khayyam.model.TranslationOptionsItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,10 +20,13 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
-    private val getSelectedPoemLocale: GetSelectedPoemLocale,
-    private val getSupportedLocale: GetSupportedLocale,
-    private val localeItemMapper: LocaleItemMapper,
-    private val setSelectedPoemLocale: SetSelectedPoemLocale,
+    private val getSelectedTranslationOption: GetSelectedTranslationOption,
+    private val getAvailableTranslations: GetAvailableTranslations,
+    private val translationOptionsItemMapper: TranslationOptionsItemMapper,
+    private val useSpecificTranslation: UseSpecificTranslation,
+    private val translationItemMapper: TranslationItemMapper,
+    private val useMatchSystemLanguageTranslation: UseMatchSystemLanguageTranslation,
+    private val useUntranslated: UseUntranslated,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
     val uiState: StateFlow<UiState> = _uiState
@@ -27,21 +34,21 @@ class SettingViewModel @Inject constructor(
     fun viewIsReady() {
         viewModelScope.launch {
             _uiState.value = UiState.Loaded(
-                supportedLocales =
-                localeItemMapper.mapToPresentation(getSupportedLocale())
-                    .filterIsInstance<LocaleItem.CustomLocale>()
-                    .filterNot { it.isOriginal }
+                availableTranslations =
+                translationItemMapper.mapToPresentation(getAvailableTranslations())
+                    .filterNot { it.isUntranslated() }
             )
-            collectSelectedPoemLocale()
+            onSelectedTranslationOptionChange()
         }
     }
 
-    fun setSelectedPoemLocale(localeItem: LocaleItem) {
+    fun setSpecificTranslation(translationOptionsItem: TranslationOptionsItem.Specific) {
         viewModelScope.launch {
-            val params = SetSelectedPoemLocaleParams(
-                locale = localeItemMapper.mapToDomain(localeItem)
+            useSpecificTranslation(
+                UseSpecificTranslationParams(
+                    translationOptionsItemMapper.mapToDomain(translationOptionsItem)
+                )
             )
-            setSelectedPoemLocale(params)
         }
     }
 
@@ -61,18 +68,16 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    fun selectOriginalLanguage() {
+    fun setToUseUntranslated() {
         viewModelScope.launch {
-            val originalLanguage =
-                localeItemMapper.mapToPresentation(getSupportedLocale())
-                    .filterIsInstance<LocaleItem.CustomLocale>()
-                    .first { it.isOriginal }
-            setSelectedPoemLocale(originalLanguage)
+            useUntranslated()
         }
     }
 
-    fun selectSystemLanguage() {
-        setSelectedPoemLocale(LocaleItem.SystemLocale)
+    fun setToUseMatchSystemLanguageTranslation() {
+        viewModelScope.launch {
+            useMatchSystemLanguageTranslation()
+        }
     }
 
     private fun consumeEvent(
@@ -85,12 +90,13 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    private fun collectSelectedPoemLocale() {
+    private fun onSelectedTranslationOptionChange() {
         (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
             viewModelScope.launch {
-                getSelectedPoemLocale().collect { selectedLocale ->
+                getSelectedTranslationOption().collect { translationOption ->
                     _uiState.value = uiStateSnapshot.copy(
-                        selectedPoemLocale = localeItemMapper.mapToPresentation(selectedLocale)
+                        selectedTranslationOption =
+                        translationOptionsItemMapper.mapToPresentation(translationOption)
                     )
                 }
             }
@@ -100,8 +106,8 @@ class SettingViewModel @Inject constructor(
     sealed class UiState {
         data object Loading : UiState()
         data class Loaded(
-            val supportedLocales: List<LocaleItem.CustomLocale>,
-            val selectedPoemLocale: LocaleItem? = null,
+            val availableTranslations: List<TranslationItem>,
+            val selectedTranslationOption: TranslationOptionsItem? = null,
             val events: List<Event> = emptyList(),
         ) : UiState()
     }

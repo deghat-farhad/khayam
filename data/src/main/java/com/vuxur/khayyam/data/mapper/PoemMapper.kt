@@ -1,33 +1,40 @@
 package com.vuxur.khayyam.data.mapper
 
 import com.vuxur.khayyam.data.entity.PoemEntity
+import com.vuxur.khayyam.data.entity.PoemWithTranslationEntity
 import com.vuxur.khayyam.domain.model.Poem
 import javax.inject.Inject
 
-class PoemMapper @Inject constructor() {
-    fun mapToDomain(poemEntity: PoemEntity) =
+class PoemMapper @Inject constructor(
+    private val translationEntityMapper: TranslationEntityMapper
+) {
+    fun mapToDomain(poemWithTranslationEntity: PoemWithTranslationEntity) =
         Poem(
-            poemEntity.id,
-            poemEntity.index,
-            poemEntity.hemistich1,
-            poemEntity.hemistich2,
-            poemEntity.hemistich3,
-            poemEntity.hemistich4,
-            poemEntity.isSuspicious,
-            poemEntity.language
+            poemWithTranslationEntity.poem.id,
+            poemWithTranslationEntity.poem.index,
+            poemWithTranslationEntity.poem.hemistich1,
+            poemWithTranslationEntity.poem.hemistich2,
+            poemWithTranslationEntity.poem.hemistich3,
+            poemWithTranslationEntity.poem.hemistich4,
+            poemWithTranslationEntity.poem.isSuspicious,
+            translationEntityMapper.mapToDomain(poemWithTranslationEntity.translation),
         )
 
-    fun mapToDomain(poemEntityList: List<PoemEntity>) = poemEntityList.map { mapToDomain(it) }
+    fun mapToDomain(poemWithTranslationEntityList: List<PoemWithTranslationEntity>) =
+        poemWithTranslationEntityList.map { mapToDomain(it) }
 
     fun mapToData(poem: Poem) =
-        PoemEntity(
-            poem.id,
-            poem.index,
-            poem.hemistich1,
-            poem.hemistich2,
-            poem.hemistich3,
-            poem.hemistich4,
-            poem.isSuspicious,
-            poem.language,
+        PoemWithTranslationEntity(
+            PoemEntity(
+                poem.id,
+                poem.index,
+                poem.hemistich1,
+                poem.hemistich2,
+                poem.hemistich3,
+                poem.hemistich4,
+                poem.isSuspicious,
+                poem.translation.id,
+            ),
+            translationEntityMapper.mapToData(poem.translation)
         )
 }

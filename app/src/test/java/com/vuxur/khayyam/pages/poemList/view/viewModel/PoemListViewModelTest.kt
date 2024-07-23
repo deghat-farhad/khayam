@@ -6,20 +6,20 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.text.AnnotatedString
-import com.vuxur.khayyam.domain.model.Locale
 import com.vuxur.khayyam.domain.model.Poem
+import com.vuxur.khayyam.domain.model.TranslationOptions
 import com.vuxur.khayyam.domain.usecase.getLastVisitedPoem.GetLastVisitedPoem
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoems
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoemsParams
-import com.vuxur.khayyam.domain.usecase.getSelectedPoemLocale.GetSelectedPoemLocale
+import com.vuxur.khayyam.domain.usecase.getSelectedTranslationOption.GetSelectedTranslationOption
 import com.vuxur.khayyam.domain.usecase.setLastVisitedPoem.SetLastVisitedPoem
 import com.vuxur.khayyam.domain.usecase.setLastVisitedPoem.SetLastVisitedPoemParams
-import com.vuxur.khayyam.domain.usecase.setSelectedPoemLocale.SetSelectedPoemLocale
-import com.vuxur.khayyam.domain.usecase.setSelectedPoemLocale.SetSelectedPoemLocaleParams
-import com.vuxur.khayyam.mapper.LocaleItemMapper
+import com.vuxur.khayyam.domain.usecase.useSpecificTranslation.UseSpecificTranslation
+import com.vuxur.khayyam.domain.usecase.useSpecificTranslation.UseSpecificTranslationParams
 import com.vuxur.khayyam.mapper.PoemItemMapper
-import com.vuxur.khayyam.model.LocaleItem
+import com.vuxur.khayyam.mapper.TranslationOptionsItemMapper
 import com.vuxur.khayyam.model.PoemItem
+import com.vuxur.khayyam.model.TranslationOptionsItem
 import com.vuxur.khayyam.utils.getCurrentLocale
 import io.mockk.Runs
 import io.mockk.coEvery
@@ -53,9 +53,9 @@ class PoemListViewModelTest {
     private lateinit var viewModel: PoemListViewModel
     private val getPoems: GetPoems = mockk()
     private val poemItemMapper: PoemItemMapper = mockk()
-    private val getSelectedPoemLocale: GetSelectedPoemLocale = mockk()
-    private val setSelectedPoemLocale: SetSelectedPoemLocale = mockk()
-    private val localeItemMapper: LocaleItemMapper = mockk()
+    private val getSelectedTranslationOption: GetSelectedTranslationOption = mockk()
+    private val useSpecificTranslation: UseSpecificTranslation = mockk()
+    private val translationOptionsItemMapper: TranslationOptionsItemMapper = mockk()
     private val searchManager: SearchManager = mockk()
     private val setLastVisitedPoem: SetLastVisitedPoem = mockk()
     private val getLastVisitedPoem: GetLastVisitedPoem = mockk()
@@ -67,8 +67,9 @@ class PoemListViewModelTest {
         mockk<Poem>(relaxed = true),
     )
     private val poemItems = poems.map { mockk<PoemItem>(relaxed = true) }
-    private val selectedPoemLocale: Locale.CustomLocale = mockk()
-    private val selectedPoemLocaleItem: LocaleItem.CustomLocale = mockk()
+    private val selectedPoemLocale: TranslationOptions.Specific = mockk()
+    private val selectedPoemTranslationOptionsItem: TranslationOptionsItem.CustomTranslationOptions =
+        mockk()
     private val imageFileOutputStreamProvider: ImageFileOutputStreamProviderImpl = mockk()
     private val imageFile: File = mockk()
     private val shareIntentProvider: ShareIntentProvider = mockk()
@@ -79,19 +80,19 @@ class PoemListViewModelTest {
         viewModel = PoemListViewModel(
             getPoems,
             poemItemMapper,
-            getSelectedPoemLocale,
-            localeItemMapper,
+            getSelectedTranslationOption,
+            translationOptionsItemMapper,
             searchManager,
             setLastVisitedPoem,
             getLastVisitedPoem,
             imageFileOutputStreamProvider,
             imageFile,
             shareIntentProvider,
-            setSelectedPoemLocale,
+            useSpecificTranslation,
         )
 
         // Mock interactions
-        coEvery { getSelectedPoemLocale() } returns flowOf(selectedPoemLocale)
+        coEvery { getSelectedTranslationOption() } returns flowOf(selectedPoemLocale)
         coEvery { getPoems(any()) } returns poems
         every { poemItemMapper.mapToPresentation(any<List<Poem>>()) } returns poemItems
         poemItems.forEachIndexed { index, poemItem ->
@@ -101,9 +102,9 @@ class PoemListViewModelTest {
             every { poemItemMapper.mapToPresentation(poem) } returns poemItems[index]
         }
         coEvery { getLastVisitedPoem() } returns flowOf(poems.first())
-        every { localeItemMapper.mapToPresentation(selectedPoemLocale) } returns selectedPoemLocaleItem
-        every { localeItemMapper.mapToDomain(selectedPoemLocaleItem) } returns selectedPoemLocale
-        every { localeItemMapper.mapToDomain(LocaleItem.SystemLocale) } returns Locale.SystemLocale
+        every { translationOptionsItemMapper.mapToPresentation(selectedPoemLocale) } returns selectedPoemTranslationOptionsItem
+        every { translationOptionsItemMapper.mapToDomain(selectedPoemTranslationOptionsItem) } returns selectedPoemLocale
+        every { translationOptionsItemMapper.mapToDomain(TranslationOptionsItem.SystemTranslationOptions) } returns TranslationOptions.SystemLocale
         every { searchManager.checkSearchState(any()) } returns mockk()
         coEvery { setLastVisitedPoem(any()) } just Runs
         every { shareIntentProvider.getShareTextIntent() } returns mockIntent
@@ -112,7 +113,7 @@ class PoemListViewModelTest {
         every { mockIntent.putExtra(any(), any<String>()) } returns mockIntent
         every { mockIntent.putExtra(any(), any<Uri>()) } returns mockIntent
         every { mockIntent.setData(any()) } returns mockIntent
-        coEvery { setSelectedPoemLocale(any()) } just Runs
+        coEvery { useSpecificTranslation(any()) } just Runs
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -131,16 +132,16 @@ class PoemListViewModelTest {
         val uiState = viewModel.uiState.value as PoemListViewModel.UiState.Loaded
         assertEquals(poemItems, uiState.poems)
         assertEquals(0, uiState.currentItemIndex)
-        assertEquals(selectedPoemLocaleItem, uiState.selectedLocaleItem)
+        assertEquals(selectedPoemTranslationOptionsItem, uiState.selectedTranslationOptionsItem)
 
         // Verify that the correct functions were called
-        coVerify { getSelectedPoemLocale() }
+        coVerify { getSelectedTranslationOption() }
         coVerify { getPoems(any()) }
         coVerify { getLastVisitedPoem() }
         verify { poemItemMapper.mapToPresentation(any<List<Poem>>()) }
         verify { poemItemMapper.mapToPresentation(poems.first()) }
-        verify { localeItemMapper.mapToPresentation(selectedPoemLocale) }
-        verify { localeItemMapper.mapToDomain(selectedPoemLocaleItem) }
+        verify { translationOptionsItemMapper.mapToPresentation(selectedPoemLocale) }
+        verify { translationOptionsItemMapper.mapToDomain(selectedPoemTranslationOptionsItem) }
         verify { searchManager.checkSearchState(0) }
     }
 
@@ -150,13 +151,14 @@ class PoemListViewModelTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
-        val selectedPoemLocale: Locale = Locale.NoLocale
-        val selectedPoemLocaleItem: LocaleItem = LocaleItem.NoLocale
+        val selectedPoemLocale: TranslationOptions = TranslationOptions.None
+        val selectedPoemTranslationOptionsItem: TranslationOptionsItem =
+            TranslationOptionsItem.NoTranslationOptions
 
         // Mock interactions
-        coEvery { getSelectedPoemLocale() } returns flowOf(selectedPoemLocale)
+        coEvery { getSelectedTranslationOption() } returns flowOf(selectedPoemLocale)
         coEvery { getLastVisitedPoem() } returns flowOf(null)
-        every { localeItemMapper.mapToPresentation(selectedPoemLocale) } returns selectedPoemLocaleItem
+        every { translationOptionsItemMapper.mapToPresentation(selectedPoemLocale) } returns selectedPoemTranslationOptionsItem
 
         // Call the function under test
         viewModel.viewIsReady()
@@ -169,8 +171,8 @@ class PoemListViewModelTest {
         assertTrue(uiState.showLanguageSettingDialog)
 
         // Verify that the correct functions were called
-        coVerify { getSelectedPoemLocale() }
-        verify { localeItemMapper.mapToPresentation(selectedPoemLocale) }
+        coVerify { getSelectedTranslationOption() }
+        verify { translationOptionsItemMapper.mapToPresentation(selectedPoemLocale) }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -179,20 +181,22 @@ class PoemListViewModelTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
-        val selectedPoemLocale: Locale = Locale.SystemLocale
-        val selectedPoemLocaleItem: LocaleItem = LocaleItem.SystemLocale
-        val systemLocale: Locale = Locale.CustomLocale(java.util.Locale.US)
-        val systemLocaleItem: LocaleItem = LocaleItem.CustomLocale(java.util.Locale.US)
+        val selectedPoemLocale: TranslationOptions = TranslationOptions.SystemLocale
+        val selectedPoemTranslationOptionsItem: TranslationOptionsItem =
+            TranslationOptionsItem.SystemTranslationOptions
+        val systemLocale: TranslationOptions = TranslationOptions.Specific(java.util.Locale.US)
+        val systemTranslationOptionsItem: TranslationOptionsItem =
+            TranslationOptionsItem.CustomTranslationOptions(java.util.Locale.US)
         val resources = mockk<Resources>(relaxed = true)
 
         mockkStatic(Resources::class)
         mockkStatic(::getCurrentLocale)
 
         // Mock interactions
-        coEvery { getSelectedPoemLocale() } returns flowOf(selectedPoemLocale)
-        every { localeItemMapper.mapToPresentation(selectedPoemLocale) } returns selectedPoemLocaleItem
-        every { localeItemMapper.mapToDomain(systemLocaleItem) } returns systemLocale
-        every { getCurrentLocale(resources) } returns (systemLocale as Locale.CustomLocale).locale
+        coEvery { getSelectedTranslationOption() } returns flowOf(selectedPoemLocale)
+        every { translationOptionsItemMapper.mapToPresentation(selectedPoemLocale) } returns selectedPoemTranslationOptionsItem
+        every { translationOptionsItemMapper.mapToDomain(systemTranslationOptionsItem) } returns systemLocale
+        every { getCurrentLocale(resources) } returns (systemLocale as TranslationOptions.Specific).locale
         every { Resources.getSystem() } returns resources
 
         // Call the function under test
@@ -205,16 +209,16 @@ class PoemListViewModelTest {
         val uiState = viewModel.uiState.value as PoemListViewModel.UiState.Loaded
         assertEquals(poemItems, uiState.poems)
         assertEquals(0, uiState.currentItemIndex)
-        assertEquals(systemLocaleItem, uiState.selectedLocaleItem)
+        assertEquals(systemTranslationOptionsItem, uiState.selectedTranslationOptionsItem)
 
         // Verify that the correct functions were called
-        coVerify { getSelectedPoemLocale() }
-        coVerify { getPoems(GetPoemsParams(locale = systemLocale)) }
+        coVerify { getSelectedTranslationOption() }
+        coVerify { getPoems(GetPoemsParams(translationOptions = systemLocale)) }
         coVerify { getLastVisitedPoem() }
         verify { poemItemMapper.mapToPresentation(any<List<Poem>>()) }
         verify { poemItemMapper.mapToPresentation(poems.first()) }
-        verify { localeItemMapper.mapToPresentation(selectedPoemLocale) }
-        verify { localeItemMapper.mapToDomain(systemLocaleItem) }
+        verify { translationOptionsItemMapper.mapToPresentation(selectedPoemLocale) }
+        verify { translationOptionsItemMapper.mapToDomain(systemTranslationOptionsItem) }
         verify { searchManager.checkSearchState(0) }
     }
 
@@ -348,7 +352,7 @@ class PoemListViewModelTest {
             searchManager.checkSearchState(0)
             searchManager.nearestSearchResultIndex(
                 searchPhrase,
-                uiState.selectedLocaleItem,
+                uiState.selectedTranslationOptionsItem,
                 uiState.currentItemIndex,
                 any()
             )
@@ -407,7 +411,7 @@ class PoemListViewModelTest {
             searchManager.checkSearchState(0)
             searchManager.nearestSearchResultIndex(
                 searchPhrase,
-                uiState.selectedLocaleItem,
+                uiState.selectedTranslationOptionsItem,
                 uiState.currentItemIndex,
                 any()
             )
@@ -719,12 +723,13 @@ class PoemListViewModelTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
-        val selectedPoemLocale: Locale = Locale.NoLocale
-        val selectedPoemLocaleItem: LocaleItem = LocaleItem.NoLocale
+        val selectedPoemLocale: TranslationOptions = TranslationOptions.None
+        val selectedPoemTranslationOptionsItem: TranslationOptionsItem =
+            TranslationOptionsItem.NoTranslationOptions
 
         // Mock interactions
-        coEvery { getSelectedPoemLocale() } returns flowOf(selectedPoemLocale)
-        every { localeItemMapper.mapToPresentation(selectedPoemLocale) } returns selectedPoemLocaleItem
+        coEvery { getSelectedTranslationOption() } returns flowOf(selectedPoemLocale)
+        every { translationOptionsItemMapper.mapToPresentation(selectedPoemLocale) } returns selectedPoemTranslationOptionsItem
 
         // Call the function under test
         viewModel.viewIsReady()
@@ -760,12 +765,13 @@ class PoemListViewModelTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
-        val selectedPoemLocale: Locale = Locale.NoLocale
-        val selectedPoemLocaleItem: LocaleItem = LocaleItem.NoLocale
+        val selectedPoemLocale: TranslationOptions = TranslationOptions.None
+        val selectedPoemTranslationOptionsItem: TranslationOptionsItem =
+            TranslationOptionsItem.NoTranslationOptions
 
         // Mock interactions
-        coEvery { getSelectedPoemLocale() } returns flowOf(selectedPoemLocale)
-        every { localeItemMapper.mapToPresentation(selectedPoemLocale) } returns selectedPoemLocaleItem
+        coEvery { getSelectedTranslationOption() } returns flowOf(selectedPoemLocale)
+        every { translationOptionsItemMapper.mapToPresentation(selectedPoemLocale) } returns selectedPoemTranslationOptionsItem
 
         viewModel.viewIsReady()
         viewModel.navigateToSetting()
@@ -780,8 +786,8 @@ class PoemListViewModelTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
-        viewModel.useSystemLanguage()
-        coVerify { setSelectedPoemLocale(SetSelectedPoemLocaleParams(Locale.SystemLocale)) }
+        viewModel.setToUseMatchingSystemLanguageTranslation()
+        coVerify { useSpecificTranslation(UseSpecificTranslationParams(TranslationOptions.SystemLocale)) }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

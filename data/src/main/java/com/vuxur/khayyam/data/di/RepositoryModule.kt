@@ -3,14 +3,15 @@ package com.vuxur.khayyam.data.di
 import android.content.Context
 import com.vuxur.khayyam.data.local.Local
 import com.vuxur.khayyam.data.local.database.PoemDatabase
-import com.vuxur.khayyam.data.mapper.LocaleMapper
 import com.vuxur.khayyam.data.mapper.PoemMapper
-import com.vuxur.khayyam.data.repository.LocaleRepositoryImpl
+import com.vuxur.khayyam.data.mapper.TranslationEntityMapper
+import com.vuxur.khayyam.data.mapper.TranslationOptionsEntityMapper
 import com.vuxur.khayyam.data.repository.PoemRepositoryImpl
 import com.vuxur.khayyam.data.repository.SettingRepositoryImpl
-import com.vuxur.khayyam.domain.repository.LocaleRepository
+import com.vuxur.khayyam.data.repository.TranslationRepositoryImp
 import com.vuxur.khayyam.domain.repository.PoemRepository
 import com.vuxur.khayyam.domain.repository.SettingRepository
+import com.vuxur.khayyam.domain.repository.TranslationRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,33 +30,33 @@ class RepositoryModule {
     fun providePoemRepository(
         local: Local,
         poemMapper: PoemMapper,
-        localeMapper: LocaleMapper,
+        translationEntityMapper: TranslationEntityMapper,
     ): PoemRepository =
         PoemRepositoryImpl(
             local,
             poemMapper,
-            localeMapper,
+            translationEntityMapper,
         )
 
     @Provides
     fun provideSettingRepository(
         local: Local,
-        localeMapper: LocaleMapper,
+        translationOptionsEntityMapper: TranslationOptionsEntityMapper,
         poemMapper: PoemMapper,
     ): SettingRepository =
         SettingRepositoryImpl(
             local,
-            localeMapper,
+            translationOptionsEntityMapper,
             poemMapper,
         )
 
     @Provides
-    fun provideLocaleRepository(
+    fun provideTranslationRepository(
         local: Local,
-        localeMapper: LocaleMapper,
-    ):LocaleRepository =
-        LocaleRepositoryImpl(
+        translationEntityMapper: TranslationEntityMapper,
+    ): TranslationRepository =
+        TranslationRepositoryImp(
             local,
-            localeMapper,
+            translationEntityMapper,
         )
 }

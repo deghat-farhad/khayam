@@ -4,12 +4,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.vuxur.khayyam.data.entity.LanguageTagEntity
 import com.vuxur.khayyam.data.entity.PoemEntity
+import com.vuxur.khayyam.data.entity.TranslationEntity
 
 @Database(
-    entities = [PoemEntity::class, LanguageTagEntity::class],
-    version = 5,
+    entities = [PoemEntity::class, TranslationEntity::class],
+    version = 6,
     exportSchema = false
 )
 abstract class PoemDatabase : RoomDatabase() {

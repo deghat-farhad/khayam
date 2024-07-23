@@ -4,7 +4,9 @@ import com.vuxur.khayyam.domain.model.Poem
 import com.vuxur.khayyam.model.PoemItem
 import javax.inject.Inject
 
-class PoemItemMapper @Inject constructor() {
+class PoemItemMapper @Inject constructor(
+    private val translationItemMapper: TranslationItemMapper
+) {
     fun mapToPresentation(poem: Poem) = PoemItem(
         poem.id,
         poem.index,
@@ -13,7 +15,7 @@ class PoemItemMapper @Inject constructor() {
         poem.hemistich3,
         poem.hemistich4,
         poem.isSuspicious,
-        poem.language,
+        translationItemMapper.mapToPresentation(poem.translation),
     )
 
     fun mapToPresentation(poemList: List<Poem>) = poemList.map { mapToPresentation(it) }
@@ -25,6 +27,6 @@ class PoemItemMapper @Inject constructor() {
         poemItem.hemistich3,
         poemItem.hemistich4,
         poemItem.isSuspicious,
-        poemItem.language,
+        translationItemMapper.mapToDomain(poemItem.translation)
     )
 }

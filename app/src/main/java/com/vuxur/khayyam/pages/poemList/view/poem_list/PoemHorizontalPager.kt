@@ -35,8 +35,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.vuxur.khayyam.R
-import com.vuxur.khayyam.model.LocaleItem
 import com.vuxur.khayyam.model.PoemItem
+import com.vuxur.khayyam.model.TranslationItem
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -47,7 +47,7 @@ fun PoemHorizontalPager(
     currentPoemIndex: Int,
     setCurrentPoemIndex: (Int) -> Unit,
     captureCurrentPage: (Bitmap) -> Unit,
-    localeItem: LocaleItem.CustomLocale,
+    translationItem: TranslationItem,
 ) {
     val pagerState = rememberPagerState(
         pageCount = {
@@ -110,7 +110,7 @@ fun PoemHorizontalPager(
                     thisPageIndex = page,
                     currentPageOffsetFraction = pagerState.currentPageOffsetFraction,
                     poemItem = poemList[page],
-                    localeItem = localeItem,
+                    translationItem = translationItem,
                 )
             }
         }
@@ -124,7 +124,7 @@ private fun AnimatedPoemView(
     currentPageIndex: Int,
     thisPageIndex: Int,
     currentPageOffsetFraction: Float,
-    localeItem: LocaleItem.CustomLocale,
+    translationItem: TranslationItem,
 ) {
     val direction = LocalLayoutDirection.current
     PoemView(
@@ -143,7 +143,7 @@ private fun AnimatedPoemView(
                 )
             },
         poemItem = poemItem,
-        localeItem = localeItem,
+        translationItem = translationItem,
     )
 }
 

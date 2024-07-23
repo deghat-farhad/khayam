@@ -1,12 +1,12 @@
 package com.vuxur.khayyam.pages.setting
 
-import com.vuxur.khayyam.domain.model.Locale
-import com.vuxur.khayyam.domain.usecase.getSelectedPoemLocale.GetSelectedPoemLocale
-import com.vuxur.khayyam.domain.usecase.getSupportedLocales.GetSupportedLocale
-import com.vuxur.khayyam.domain.usecase.setSelectedPoemLocale.SetSelectedPoemLocale
-import com.vuxur.khayyam.domain.usecase.setSelectedPoemLocale.SetSelectedPoemLocaleParams
-import com.vuxur.khayyam.mapper.LocaleItemMapper
-import com.vuxur.khayyam.model.LocaleItem
+import com.vuxur.khayyam.domain.model.TranslationOptions
+import com.vuxur.khayyam.domain.usecase.getSelectedTranslationOption.GetSelectedTranslationOption
+import com.vuxur.khayyam.domain.usecase.getTranslations.GetAvailableTranslations
+import com.vuxur.khayyam.domain.usecase.useSpecificTranslation.UseSpecificTranslation
+import com.vuxur.khayyam.domain.usecase.useSpecificTranslation.UseSpecificTranslationParams
+import com.vuxur.khayyam.mapper.TranslationOptionsItemMapper
+import com.vuxur.khayyam.model.TranslationOptionsItem
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -32,44 +32,45 @@ import org.junit.jupiter.api.Test
 class SettingViewModelTest() {
 
     private lateinit var settingViewModel: SettingViewModel
-    private val getSelectedPoemLocale: GetSelectedPoemLocale = mockk()
-    private val getSupportedLocale: GetSupportedLocale = mockk()
-    private val localeItemMapper: LocaleItemMapper = mockk()
-    private val setSelectedPoemLocale: SetSelectedPoemLocale = mockk()
-    private val poemLocale: Locale = mockk()
-    private val poemLocaleItem: LocaleItem = mockk()
-    private val originalLocale = Locale.CustomLocale(java.util.Locale.forLanguageTag("fa-IR"))
-    private val originalLocaleItem =
-        LocaleItem.CustomLocale(java.util.Locale.forLanguageTag("fa-IR"))
-    private val supportedLocale: List<Locale.CustomLocale> = listOf(
+    private val getSelectedTranslationOption: GetSelectedTranslationOption = mockk()
+    private val getAvailableTranslations: GetAvailableTranslations = mockk()
+    private val translationOptionsItemMapper: TranslationOptionsItemMapper = mockk()
+    private val useSpecificTranslation: UseSpecificTranslation = mockk()
+    private val poemLocale: TranslationOptions = mockk()
+    private val poemTranslationOptionsItem: TranslationOptionsItem = mockk()
+    private val originalLocale =
+        TranslationOptions.Specific(java.util.Locale.forLanguageTag("fa-IR"))
+    private val originalTranslationOptionsItem =
+        TranslationOptionsItem.CustomTranslationOptions(java.util.Locale.forLanguageTag("fa-IR"))
+    private val supportedLocale: List<TranslationOptions.Specific> = listOf(
         originalLocale,
-        Locale.CustomLocale(java.util.Locale.ENGLISH),
-        Locale.CustomLocale(java.util.Locale.FRANCE),
+        TranslationOptions.Specific(java.util.Locale.ENGLISH),
+        TranslationOptions.Specific(java.util.Locale.FRANCE),
     )
-    private val supportedLocaleItem: List<LocaleItem> = listOf(
-        originalLocaleItem,
-        LocaleItem.CustomLocale(java.util.Locale.ENGLISH),
-        LocaleItem.CustomLocale(java.util.Locale.FRANCE),
+    private val supportedTranslationOptionsItems: List<TranslationOptionsItem> = listOf(
+        originalTranslationOptionsItem,
+        TranslationOptionsItem.CustomTranslationOptions(java.util.Locale.ENGLISH),
+        TranslationOptionsItem.CustomTranslationOptions(java.util.Locale.FRANCE),
     )
-    private val setSelectedPoemLocaleParamsSlot = slot<SetSelectedPoemLocaleParams>()
+    private val useSpecificTranslationParamsSlot = slot<UseSpecificTranslationParams>()
 
     @BeforeEach
     fun setUp() {
         settingViewModel = SettingViewModel(
-            getSelectedPoemLocale,
-            getSupportedLocale,
-            localeItemMapper,
-            setSelectedPoemLocale,
+            getSelectedTranslationOption,
+            getAvailableTranslations,
+            translationOptionsItemMapper,
+            useSpecificTranslation,
         )
 
-        coEvery { getSelectedPoemLocale() } returns flowOf(poemLocale)
-        coEvery { getSupportedLocale() } returns supportedLocale
-        every { localeItemMapper.mapToPresentation(poemLocale) } returns poemLocaleItem
-        every { localeItemMapper.mapToPresentation(supportedLocale) } returns supportedLocaleItem
-        every { localeItemMapper.mapToDomain(poemLocaleItem) } returns poemLocale
-        every { localeItemMapper.mapToDomain(originalLocaleItem) } returns originalLocale
-        every { localeItemMapper.mapToDomain(LocaleItem.SystemLocale) } returns Locale.SystemLocale
-        coEvery { setSelectedPoemLocale(capture(setSelectedPoemLocaleParamsSlot)) } just Runs
+        coEvery { getSelectedTranslationOption() } returns flowOf(poemLocale)
+        coEvery { getAvailableTranslations() } returns supportedLocale
+        every { translationOptionsItemMapper.mapToPresentation(poemLocale) } returns poemTranslationOptionsItem
+        every { translationOptionsItemMapper.mapToPresentation(supportedLocale) } returns supportedTranslationOptionsItems
+        every { translationOptionsItemMapper.mapToDomain(poemTranslationOptionsItem) } returns poemLocale
+        every { translationOptionsItemMapper.mapToDomain(originalTranslationOptionsItem) } returns originalLocale
+        every { translationOptionsItemMapper.mapToDomain(TranslationOptionsItem.SystemTranslationOptions) } returns TranslationOptions.SystemLocale
+        coEvery { useSpecificTranslation(capture(useSpecificTranslationParamsSlot)) } just Runs
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -83,11 +84,11 @@ class SettingViewModelTest() {
         assertTrue(settingViewModel.uiState.value is SettingViewModel.UiState.Loaded)
         val uiState = settingViewModel.uiState.value as SettingViewModel.UiState.Loaded
 
-        coVerify { getSupportedLocale() }
-        verify { localeItemMapper.mapToPresentation(supportedLocale) }
+        coVerify { getAvailableTranslations() }
+        verify { translationOptionsItemMapper.mapToPresentation(supportedLocale) }
         assertEquals(
-            uiState.supportedLocales,
-            supportedLocaleItem.filterNot { it == originalLocaleItem })
+            uiState.availableTranslations,
+            supportedTranslationOptionsItems.filterNot { it == originalTranslationOptionsItem })
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -97,10 +98,10 @@ class SettingViewModelTest() {
         Dispatchers.setMain(testDispatcher)
 
         settingViewModel.viewIsReady()
-        settingViewModel.setSelectedPoemLocale(poemLocaleItem)
+        settingViewModel.setSpecificTranslation(poemTranslationOptionsItem)
 
-        coVerify { setSelectedPoemLocale(capture(setSelectedPoemLocaleParamsSlot)) }
-        assertEquals(poemLocale, setSelectedPoemLocaleParamsSlot.captured.locale)
+        coVerify { useSpecificTranslation(capture(useSpecificTranslationParamsSlot)) }
+        assertEquals(poemLocale, useSpecificTranslationParamsSlot.captured.translationOptions)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -139,11 +140,11 @@ class SettingViewModelTest() {
         Dispatchers.setMain(testDispatcher)
 
         settingViewModel.viewIsReady()
-        settingViewModel.selectOriginalLanguage()
+        settingViewModel.setToUseUntranslated()
 
         coVerify {
-            setSelectedPoemLocale(
-                SetSelectedPoemLocaleParams(
+            useSpecificTranslation(
+                UseSpecificTranslationParams(
                     originalLocale
                 )
             )
@@ -157,12 +158,12 @@ class SettingViewModelTest() {
         Dispatchers.setMain(testDispatcher)
 
         settingViewModel.viewIsReady()
-        settingViewModel.selectSystemLanguage()
+        settingViewModel.setToUseMatchSystemLanguageTranslation()
 
         coVerify {
-            setSelectedPoemLocale(
-                SetSelectedPoemLocaleParams(
-                    Locale.SystemLocale
+            useSpecificTranslation(
+                UseSpecificTranslationParams(
+                    TranslationOptions.SystemLocale
                 )
             )
         }

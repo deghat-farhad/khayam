@@ -30,14 +30,14 @@ fun SettingRoute(
     }
     (uiState as? SettingViewModel.UiState.Loaded)?.let { uiStateSnapshot ->
         SettingScreen(
-            supportedLocales = uiStateSnapshot.supportedLocales,
-            currentLocale = uiStateSnapshot.selectedPoemLocale,
+            availableTranslations = uiStateSnapshot.availableTranslations,
+            selectedTranslationOptionItem = uiStateSnapshot.selectedTranslationOption,
             onPopBack = viewModel::popBack,
-            onLanguageSelected = { selectedLocaleItem ->
-                viewModel.setSelectedPoemLocale(selectedLocaleItem)
+            onSpesificTranslationSelection = { specificTranslationItem ->
+                viewModel.setSpecificTranslation(specificTranslationItem)
             },
-            onOriginalLanguageSelected = viewModel::selectOriginalLanguage,
-            onSystemLanguageSelected = viewModel::selectSystemLanguage,
+            onUseUntranslated = viewModel::setToUseUntranslated,
+            onUseMatchSystemLanguageTranslation = viewModel::setToUseMatchSystemLanguageTranslation,
         )
     }
 }

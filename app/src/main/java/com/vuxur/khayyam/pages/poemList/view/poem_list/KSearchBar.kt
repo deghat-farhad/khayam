@@ -1,12 +1,10 @@
 package com.vuxur.khayyam.pages.poemList.view.poem_list
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -38,11 +36,10 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.vuxur.khayyam.R
-import com.vuxur.khayyam.model.LocaleItem
+import com.vuxur.khayyam.model.TranslationItem
 import com.vuxur.khayyam.utils.getPoemsFontFamily
 import com.vuxur.khayyam.utils.getPoemsFontSize
 import com.vuxur.khayyam.utils.toLayoutDirection
@@ -56,17 +53,17 @@ fun KSearchBar(
     isThereAnyResult: Boolean,
     isThereNextResult: Boolean,
     isTherePreviousResult: Boolean,
-    localeItem: LocaleItem.CustomLocale,
+    translationItem: TranslationItem,
 ) {
     var searchPhrase by remember { mutableStateOf("") }
     val isError = searchPhrase.isNotEmpty() && !isThereAnyResult
 
-    val fontFamily = remember(localeItem) {
-        getPoemsFontFamily(localeItem)
+    val fontFamily = remember(translationItem) {
+        getPoemsFontFamily(translationItem)
     }
 
-    val fontSize = remember(localeItem) {
-        getPoemsFontSize(localeItem)
+    val fontSize = remember(translationItem) {
+        getPoemsFontSize(translationItem)
     }
 
     Box(
@@ -127,7 +124,7 @@ fun KSearchBar(
                     )
                 )
 
-                CompositionLocalProvider(LocalLayoutDirection provides localeItem.locale.toLayoutDirection()) {
+                CompositionLocalProvider(LocalLayoutDirection provides translationItem.locale.toLayoutDirection()) {
                     Row {
                         NavigationIconButton(
                             onClick = onPreviousResult,

@@ -1,7 +1,6 @@
 package com.vuxur.khayyam.pages.poemList.view.viewModel
 
 import android.content.Intent
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.ui.platform.ClipboardManager
@@ -9,20 +8,19 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vuxur.khayyam.di.UtilityModule
-import com.vuxur.khayyam.domain.model.Locale
 import com.vuxur.khayyam.domain.usecase.getLastVisitedPoem.GetLastVisitedPoem
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoems
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoemsParams
-import com.vuxur.khayyam.domain.usecase.getSelectedPoemLocale.GetSelectedPoemLocale
+import com.vuxur.khayyam.domain.usecase.getSelectedTranslationOption.GetSelectedTranslationOption
 import com.vuxur.khayyam.domain.usecase.setLastVisitedPoem.SetLastVisitedPoem
 import com.vuxur.khayyam.domain.usecase.setLastVisitedPoem.SetLastVisitedPoemParams
-import com.vuxur.khayyam.domain.usecase.setSelectedPoemLocale.SetSelectedPoemLocale
-import com.vuxur.khayyam.domain.usecase.setSelectedPoemLocale.SetSelectedPoemLocaleParams
-import com.vuxur.khayyam.mapper.LocaleItemMapper
+import com.vuxur.khayyam.domain.usecase.useMatchingSystemLanguageTranslation.UseMatchSystemLanguageTranslation
+import com.vuxur.khayyam.domain.usecase.useUntranslated.UseUntranslated
 import com.vuxur.khayyam.mapper.PoemItemMapper
-import com.vuxur.khayyam.model.LocaleItem
+import com.vuxur.khayyam.mapper.TranslationOptionsItemMapper
 import com.vuxur.khayyam.model.PoemItem
-import com.vuxur.khayyam.utils.getCurrentLocale
+import com.vuxur.khayyam.model.TranslationItem
+import com.vuxur.khayyam.model.TranslationOptionsItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.File
 import javax.inject.Inject
@@ -38,8 +36,8 @@ import kotlinx.coroutines.launch
 class PoemListViewModel @Inject constructor(
     private val getPoems: GetPoems,
     private val poemItemMapper: PoemItemMapper,
-    private val getSelectedPoemLocale: GetSelectedPoemLocale,
-    private val localeItemMapper: LocaleItemMapper,
+    private val getSelectedTranslationOption: GetSelectedTranslationOption,
+    private val translationOptionsItemMapper: TranslationOptionsItemMapper,
     private val searchManager: SearchManager,
     private val setLastVisitedPoem: SetLastVisitedPoem,
     private val getLastVisitedPoem: GetLastVisitedPoem,
@@ -47,21 +45,23 @@ class PoemListViewModel @Inject constructor(
     @Named(UtilityModule.DI_NAME_IMAGE_FILE)
     private val imageFile: File,
     private val shareIntentProvider: ShareIntentProvider,
-    private val setSelectedPoemLocale: SetSelectedPoemLocale,
+    private val useMatchSystemLanguageTranslation: UseMatchSystemLanguageTranslation,
+    private val useUntranslated: UseUntranslated,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<UiState> =
-        MutableStateFlow(UiState.Loading(showLanguageSettingDialog = false))
+        MutableStateFlow(UiState.Loading(isTranslationOptionSelected = true))
     val uiState: StateFlow<UiState> = _uiState
     private val poemList get() = (_uiState.value as UiState.Loaded).poems
 
     fun viewIsReady() {
-        if (uiState.value is UiState.Loading) {
-            onSelectedPoemLocaleChange { selectedLocaleItem ->
-                val appropriateLocaleItem =
-                    getAppropriateLocaleItemOrNavigateToSetting(selectedLocaleItem)
-                (appropriateLocaleItem as? LocaleItem.CustomLocale)?.let {
-                    setLoadedState(appropriateLocaleItem)
+        if (_uiState.value is UiState.Loading) {
+            onSelectedTranslationOptionChange { translationOptionsItem ->
+                if (translationOptionsItem is TranslationOptionsItem.None) {
+                    setIsTranslationOptionSelected()
+                    setToUseMatchingSystemLanguageTranslation()
+                } else {
+                    setLoadedState(translationOptionsItem)
                 }
             }
             onLastVisitedPoemChanged { lastVisitedPoemItem ->
@@ -71,25 +71,20 @@ class PoemListViewModel @Inject constructor(
         }
     }
 
-    private fun getAppropriateLocaleItemOrNavigateToSetting(selectedLocaleItem: LocaleItem): LocaleItem {
-        return when (selectedLocaleItem) {
-            is LocaleItem.CustomLocale -> selectedLocaleItem
-            LocaleItem.SystemLocale -> LocaleItem.CustomLocale(getCurrentLocale(Resources.getSystem()))
+    private fun setIsTranslationOptionSelected() {
+        _uiState.value = when (val uiStateSnapshot = _uiState.value) {
+            is UiState.Loaded -> UiState.Loading(isTranslationOptionSelected = false)
 
-            LocaleItem.NoLocale -> {
-                (_uiState.value as? UiState.Loading)?.let { uiStateSnapshot ->
-                    _uiState.value = uiStateSnapshot.copy(showLanguageSettingDialog = true)
-                }
-                LocaleItem.NoLocale
-            }
+            is UiState.Loading -> uiStateSnapshot.copy(isTranslationOptionSelected = false)
         }
     }
 
-    private fun onSelectedPoemLocaleChange(action: suspend (selectedPoemLocaleItem: LocaleItem) -> Unit) {
+    private fun onSelectedTranslationOptionChange(action: suspend (selectedPoemTranslationOptionsItem: TranslationOptionsItem) -> Unit) {
         viewModelScope.launch {
-            getSelectedPoemLocale().collect { selectedPoemLocale ->
-                val selectedLocaleItem = localeItemMapper.mapToPresentation(selectedPoemLocale)
-                action(selectedLocaleItem)
+            getSelectedTranslationOption().collect { selectedTranslationOption ->
+                val selectedTranslationOptionItem =
+                    translationOptionsItemMapper.mapToPresentation(selectedTranslationOption)
+                action(selectedTranslationOptionItem)
             }
         }
     }
@@ -147,7 +142,7 @@ class PoemListViewModel @Inject constructor(
             viewModelScope.launch {
                 val nearestResult = searchManager.nearestSearchResultIndex(
                     searchPhrase,
-                    uiStateSnapshot.selectedLocaleItem,
+                    uiStateSnapshot.translation,
                     uiStateSnapshot.currentItemIndex
                 ) {
                     poemList.indexOf(it)
@@ -230,13 +225,16 @@ class PoemListViewModel @Inject constructor(
         }
     }
 
-    fun useSystemLanguage() {
-        val systemLocaleItem = LocaleItem.SystemLocale
-        val setSelectedPoemLocaleParams = SetSelectedPoemLocaleParams(
-            localeItemMapper.mapToDomain(systemLocaleItem)
-        )
+    fun setToUseMatchingSystemLanguageTranslation() {
         viewModelScope.launch {
-            setSelectedPoemLocale(setSelectedPoemLocaleParams)
+            useMatchSystemLanguageTranslation()
+        }
+    }
+
+    fun setToUseUntranslated() {
+        viewModelScope.launch {
+            useUntranslated()
+            translationDecisionMade()
         }
     }
 
@@ -249,27 +247,34 @@ class PoemListViewModel @Inject constructor(
         )
     }
 
-    private suspend fun loadPoems(selectedPoemLocaleItem: LocaleItem.CustomLocale): List<PoemItem> {
+    private suspend fun loadPoems(translationOptionsItem: TranslationOptionsItem): Result<List<PoemItem>> {
         val params = GetPoemsParams(
-            locale = localeItemMapper.mapToDomain(selectedPoemLocaleItem) as Locale.CustomLocale
+            translationOptions = translationOptionsItemMapper.mapToDomain(translationOptionsItem)
         )
-        return poemItemMapper.mapToPresentation(getPoems(params))
+        return getPoems(params).map { poemItemMapper.mapToPresentation(it) }
     }
 
-    private suspend fun setLoadedState(selectedLocaleItem: LocaleItem.CustomLocale) {
-        val poems = loadPoems(selectedLocaleItem)
+    private suspend fun setLoadedState(selectedTranslationOptionsItem: TranslationOptionsItem) {
+        val isTranslationOptionSelected =
+            (_uiState.value as? UiState.Loading)?.isTranslationOptionSelected ?: true
+        loadPoems(selectedTranslationOptionsItem)
+            .onSuccess { poems ->
+                val lastVisitedPoemItem = getLastVisitedPoem()
+                    .firstOrNull()
+                    ?.let { poemItemMapper.mapToPresentation(it) }
 
-        val lastVisitedPoemItem = getLastVisitedPoem()
-            .firstOrNull()
-            ?.let { poemItemMapper.mapToPresentation(it) }
+                val initialPoemIndex = poems.indexOf(lastVisitedPoemItem).takeIf { it > 0 } ?: 0
 
-        val initialPoemIndex = poems.indexOf(lastVisitedPoemItem).takeIf { it > 0 } ?: 0
-
-        _uiState.value = UiState.Loaded(
-            poems = poems,
-            currentItemIndex = initialPoemIndex,
-            selectedLocaleItem = selectedLocaleItem
-        )
+                _uiState.value = UiState.Loaded(
+                    poems = poems,
+                    currentItemIndex = initialPoemIndex,
+                    translation = poems.first().translation,
+                    showTranslationDecision = !isTranslationOptionSelected,
+                )
+            }
+            .onFailure {
+                //todo: set some error state
+            }
     }
 
     private fun consumeEvent(
@@ -302,6 +307,12 @@ class PoemListViewModel @Inject constructor(
         )
     }
 
+    fun translationDecisionMade() {
+        (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+            _uiState.value = uiStateSnapshot.copy(showTranslationDecision = false)
+        }
+    }
+
     data class SearchState(
         val hasResult: Boolean,
         val hasNext: Boolean,
@@ -311,7 +322,7 @@ class PoemListViewModel @Inject constructor(
     sealed class UiState {
         data class Loading(
             val events: List<Event.Loading> = emptyList(),
-            val showLanguageSettingDialog: Boolean,
+            val isTranslationOptionSelected: Boolean,
         ) : UiState()
 
         data class Loaded(
@@ -323,7 +334,8 @@ class PoemListViewModel @Inject constructor(
                 hasPrevious = false
             ),
             val events: List<Event.Loaded> = emptyList(),
-            val selectedLocaleItem: LocaleItem.CustomLocale,
+            val translation: TranslationItem,
+            val showTranslationDecision: Boolean = false,
         ) : UiState()
     }
 

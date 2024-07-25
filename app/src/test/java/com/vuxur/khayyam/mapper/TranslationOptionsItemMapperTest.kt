@@ -1,74 +1,89 @@
 package com.vuxur.khayyam.mapper
 
+import com.vuxur.khayyam.domain.model.Translation
 import com.vuxur.khayyam.domain.model.TranslationOptions
+import com.vuxur.khayyam.model.TranslationItem
 import com.vuxur.khayyam.model.TranslationOptionsItem
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class TranslationOptionsItemMapperTest() {
+class TranslationOptionsItemMapperTest {
 
-    private val translationOptionsItemMapper = TranslationOptionsItemMapper()
+    private val translationItemMapper: TranslationItemMapper = mockk()
+    private val translationOptionsItemMapper = TranslationOptionsItemMapper(translationItemMapper)
 
-    private val dummyNoLocale = TranslationOptions.None
-    private val dummySystemLocale = TranslationOptions.SystemLocale
-    private val dummyCustomLocale = TranslationOptions.Specific(
-        java.util.Locale.ENGLISH
+    private val dummyTranslation = Translation(
+        1,
+        "deviceLanguageTag",
+        "translator"
     )
-    private val dummyNoTranslationOptionsItem = TranslationOptionsItem.NoTranslationOptions
-    private val dummySystemTranslationOptionsItem = TranslationOptionsItem.SystemTranslationOptions
-    private val dummyCustomTranslationOptionsItem = TranslationOptionsItem.CustomTranslationOptions(
-        dummyCustomLocale.locale
-    )
-    private val dummyLocaleList = listOf(
-        dummyNoLocale,
-        dummySystemLocale,
-        dummyCustomLocale
-    )
-    private val dummyLocaleItemList = listOf(
-        dummyNoTranslationOptionsItem,
-        dummySystemTranslationOptionsItem,
-        dummyCustomTranslationOptionsItem,
+    private val dummyTranslationItem = TranslationItem(
+        1,
+        "deviceLanguageTag",
+        "translator"
     )
 
-    @Test
-    fun `mapToPresentation NoLocale`() {
-        val localeItem = translationOptionsItemMapper.mapToPresentation(dummyNoLocale)
-        assertEquals(dummyNoTranslationOptionsItem, localeItem)
+    private val dummyNoneTranslationOption = TranslationOptions.None
+    private val dummyUntranslatedOption = TranslationOptions.Untranslated
+    private val dummyMatchSystemTranslationOption = TranslationOptions.MatchDeviceLanguage(
+        dummyTranslation
+    )
+    private val dummySpecificTranslationOption = TranslationOptions.Specific(
+        dummyTranslation
+    )
+    private val dummyNoneTranslationOptionItem = TranslationOptionsItem.None
+    private val dummyUntranslatedOptionItem = TranslationOptionsItem.Untranslated
+    private val dummyMatchSystemTranslationOptionItem = TranslationOptionsItem.MatchDeviceLanguage(
+        dummyTranslationItem
+    )
+    private val dummySpecificTranslationOptionItem = TranslationOptionsItem.Specific(
+        dummyTranslationItem
+    )
+
+    @BeforeEach
+    fun setup() {
+        every { translationItemMapper.mapToDomain(dummyTranslationItem) } returns dummyTranslation
+        every { translationItemMapper.mapToPresentation(dummyTranslation) } returns dummyTranslationItem
     }
 
     @Test
-    fun `mapToPresentation SystemLocale`() {
-        val localeItem = translationOptionsItemMapper.mapToPresentation(dummySystemLocale)
-        assertEquals(dummySystemTranslationOptionsItem, localeItem)
+    fun `mapToPresentation NoneTranslationOption`() {
+        val localeItem = translationOptionsItemMapper.mapToPresentation(dummyNoneTranslationOption)
+        assertEquals(dummyNoneTranslationOptionItem, localeItem)
     }
 
     @Test
-    fun `mapToPresentation CustomLocale`() {
-        val localeItem = translationOptionsItemMapper.mapToPresentation(dummyCustomLocale)
-        assertEquals(dummyCustomTranslationOptionsItem, localeItem)
+    fun `mapToPresentation MatchSystemTranslationOption`() {
+        val localeItem =
+            translationOptionsItemMapper.mapToPresentation(dummyMatchSystemTranslationOption)
+        assertEquals(dummyMatchSystemTranslationOptionItem, localeItem)
     }
 
     @Test
-    fun `mapToDomain NoLocale`() {
-        val locale = translationOptionsItemMapper.mapToDomain(dummyNoTranslationOptionsItem)
-        assertEquals(dummyNoLocale, locale)
+    fun `mapToPresentation SpecificTranslationOption`() {
+        val localeItem =
+            translationOptionsItemMapper.mapToPresentation(dummySpecificTranslationOption)
+        assertEquals(dummySpecificTranslationOptionItem, localeItem)
     }
 
     @Test
-    fun `mapToDomain SystemLocale`() {
-        val locale = translationOptionsItemMapper.mapToDomain(dummySystemTranslationOptionsItem)
-        assertEquals(dummySystemLocale, locale)
+    fun `mapToDomain NoneTranslationOption`() {
+        val locale = translationOptionsItemMapper.mapToDomain(dummyNoneTranslationOptionItem)
+        assertEquals(dummyNoneTranslationOption, locale)
     }
 
     @Test
-    fun `mapToDomain CustomLocale`() {
-        val locale = translationOptionsItemMapper.mapToDomain(dummyCustomTranslationOptionsItem)
-        assertEquals(dummyCustomLocale, locale)
+    fun `mapToDomain MatchSystemTranslationOption`() {
+        val locale = translationOptionsItemMapper.mapToDomain(dummyMatchSystemTranslationOptionItem)
+        assertEquals(dummyMatchSystemTranslationOption, locale)
     }
 
     @Test
-    fun `mapToPresentation localeList`() {
-        val localeList = translationOptionsItemMapper.mapToPresentation(dummyLocaleList)
-        assertEquals(dummyLocaleItemList, localeList)
+    fun `mapToDomain SpecificTranslationOption`() {
+        val locale = translationOptionsItemMapper.mapToDomain(dummySpecificTranslationOptionItem)
+        assertEquals(dummySpecificTranslationOption, locale)
     }
 }

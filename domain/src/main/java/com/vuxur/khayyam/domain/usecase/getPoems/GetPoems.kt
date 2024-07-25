@@ -13,54 +13,37 @@ const val FALLBACK_LANGUAGE_TAG = "en-US"
 class GetPoems(
     private val poemRepository: PoemRepository,
     private val getAvailableTranslations: GetAvailableTranslations,
-) : UseCaseWithParams<Result<List<Poem>>, GetPoemsParams> {
-    override suspend fun invoke(params: GetPoemsParams): Result<List<Poem>> {
+) : UseCaseWithParams<List<Poem>, GetPoemsParams> {
+    override suspend fun invoke(params: GetPoemsParams): List<Poem> {
         val translations = getAvailableTranslations()
         val fallBackTranslation =
-            translations.first { it.languageTag == FALLBACK_LANGUAGE_TAG }
-
-        val untranslated = translations.first { it.languageTag == UNTRANSLATED_LANGUAGE_TAG }
+            translations.firstOrNull { it.languageTag == FALLBACK_LANGUAGE_TAG }
+                ?: throw NoSuchElementException("Fallback translation not found.")
+        val untranslated = translations.firstOrNull { it.languageTag == UNTRANSLATED_LANGUAGE_TAG }
+            ?: throw NoSuchElementException("Untranslated option not found.")
 
         return (
-            when (params.translationOptions) {
-                is TranslationOptions.MatchDeviceLanguage ->
-                    Result.success(
-                        poemRepository.getPoems(
-                            if (params.translationOptions.translation.isAvailable())
-                                params.translationOptions.translation
-                            else
-                                fallBackTranslation
-                        )
-                    )
+            poemRepository.getPoems(
+                when (params.translationOptions) {
+                    is TranslationOptions.MatchDeviceLanguage ->
+                        if (params.translationOptions.translation.isAvailable())
+                            params.translationOptions.translation
+                        else
+                            fallBackTranslation
 
-                TranslationOptions.None ->
-                    Result.failure(
-                        exception = IllegalArgumentException(
-                            "\"params.translationOption\" should not be \"TranslationOptions.None\"."
-                        )
-                    )
+                    TranslationOptions.None ->
+                        throw IllegalArgumentException("\"params.translationOption\" should not be \"TranslationOptions.None\".")
 
-                is TranslationOptions.Specific ->
-                    if (params.translationOptions.translation.isAvailable())
-                        Result.success(
-                            poemRepository.getPoems(
-                                params.translationOptions.translation
-                            )
-                        )
-                    else
-                        Result.failure(
-                            exception = NoSuchElementException(
-                                "the translation ${params.translationOptions.translation} is not available."
-                            )
-                        )
+                    is TranslationOptions.Specific ->
+                        if (params.translationOptions.translation.isAvailable())
+                            params.translationOptions.translation
+                        else
+                            throw NoSuchElementException("the translation ${params.translationOptions.translation} is not available.")
 
-                TranslationOptions.Untranslated ->
-                    Result.success(
-                        poemRepository.getPoems(
-                            untranslated
-                        )
-                    )
-            }
+                    TranslationOptions.Untranslated ->
+                        untranslated
+                }
+            )
             )
     }
 

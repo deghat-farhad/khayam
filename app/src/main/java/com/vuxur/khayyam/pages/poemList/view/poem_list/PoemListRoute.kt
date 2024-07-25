@@ -29,46 +29,33 @@ fun PoemListRoute(
     }
 
     DisposableEffect(uiState) {
-        uiState.let { uiStateSnapshot ->
-            when (uiStateSnapshot) {
-                is PoemListViewModel.UiState.Loaded -> {
-                    uiStateSnapshot.events.forEach { event ->
-                        when (event) {
-                            is PoemListViewModel.Event.Loaded.CopyPoemText -> {
-                                Toast.makeText(
-                                    context,
-                                    "poem copied to clipboard.",
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-                            }
-
-                            is PoemListViewModel.Event.Loaded.SharePoemImage -> {
-                                viewModel.sharePoemImageUri(getUriOf(context, event.imageToShare))
-                            }
-
-                            is PoemListViewModel.Event.Loaded.SharePoemText -> {
-                                startActivity(
-                                    context,
-                                    Intent.createChooser(event.shareIntent, "choose an app"),
-                                    null
-                                )
-                            }
-
-                            PoemListViewModel.Event.Loaded.NavigateToLanguageSetting -> navigateToSetting()
-                        }
-                        viewModel.onEventConsumed(event)
+        (uiState as? PoemListViewModel.UiState.Loaded)?.let { uiStateSnapshot ->
+            uiStateSnapshot.events.forEach { event ->
+                when (event) {
+                    is PoemListViewModel.Event.CopyPoemText -> {
+                        Toast.makeText(
+                            context,
+                            "poem copied to clipboard.",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
                     }
-                }
 
-                is PoemListViewModel.UiState.Loading -> {
-                    uiStateSnapshot.events.forEach { event ->
-                        when (event) {
-                            PoemListViewModel.Event.Loading.NavigateToLanguageSetting -> navigateToSetting()
-                        }
-                        viewModel.onEventConsumed(event)
+                    is PoemListViewModel.Event.SharePoemImage -> {
+                        viewModel.sharePoemImageUri(getUriOf(context, event.imageToShare))
                     }
+
+                    is PoemListViewModel.Event.SharePoemText -> {
+                        startActivity(
+                            context,
+                            Intent.createChooser(event.shareIntent, "choose an app"),
+                            null
+                        )
+                    }
+
+                    PoemListViewModel.Event.NavigateToLanguageSetting -> navigateToSetting()
                 }
+                viewModel.onEventConsumed(event)
             }
         }
         val uiStateSnapshot = uiState

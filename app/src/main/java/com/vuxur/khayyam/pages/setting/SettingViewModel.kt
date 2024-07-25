@@ -2,6 +2,7 @@ package com.vuxur.khayyam.pages.setting
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.vuxur.khayyam.domain.model.TranslationOptions
 import com.vuxur.khayyam.domain.usecase.getSelectedTranslationOption.GetSelectedTranslationOption
 import com.vuxur.khayyam.domain.usecase.getTranslations.GetAvailableTranslations
 import com.vuxur.khayyam.domain.usecase.useMatchingSystemLanguageTranslation.UseMatchSystemLanguageTranslation
@@ -43,12 +44,16 @@ class SettingViewModel @Inject constructor(
     }
 
     fun setSpecificTranslation(translationOptionsItem: TranslationOptionsItem.Specific) {
-        viewModelScope.launch {
-            useSpecificTranslation(
-                UseSpecificTranslationParams(
-                    translationOptionsItemMapper.mapToDomain(translationOptionsItem)
+        val translationOption =
+            translationOptionsItemMapper.mapToDomain(translationOptionsItem) as? TranslationOptions.Specific
+        translationOption?.let {
+            viewModelScope.launch {
+                useSpecificTranslation(
+                    UseSpecificTranslationParams(
+                        translationOption
+                    )
                 )
-            )
+            }
         }
     }
 

@@ -1,11 +1,17 @@
 package com.vuxur.khayyam.pages.setting
 
+import com.vuxur.khayyam.domain.model.Translation
 import com.vuxur.khayyam.domain.model.TranslationOptions
+import com.vuxur.khayyam.domain.usecase.getPoems.UNTRANSLATED_LANGUAGE_TAG
 import com.vuxur.khayyam.domain.usecase.getSelectedTranslationOption.GetSelectedTranslationOption
 import com.vuxur.khayyam.domain.usecase.getTranslations.GetAvailableTranslations
+import com.vuxur.khayyam.domain.usecase.useMatchingSystemLanguageTranslation.UseMatchSystemLanguageTranslation
 import com.vuxur.khayyam.domain.usecase.useSpecificTranslation.UseSpecificTranslation
 import com.vuxur.khayyam.domain.usecase.useSpecificTranslation.UseSpecificTranslationParams
+import com.vuxur.khayyam.domain.usecase.useUntranslated.UseUntranslated
+import com.vuxur.khayyam.mapper.TranslationItemMapper
 import com.vuxur.khayyam.mapper.TranslationOptionsItemMapper
+import com.vuxur.khayyam.model.TranslationItem
 import com.vuxur.khayyam.model.TranslationOptionsItem
 import io.mockk.Runs
 import io.mockk.coEvery
@@ -29,30 +35,66 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class SettingViewModelTest() {
+class SettingViewModelTest {
 
     private lateinit var settingViewModel: SettingViewModel
     private val getSelectedTranslationOption: GetSelectedTranslationOption = mockk()
     private val getAvailableTranslations: GetAvailableTranslations = mockk()
     private val translationOptionsItemMapper: TranslationOptionsItemMapper = mockk()
     private val useSpecificTranslation: UseSpecificTranslation = mockk()
-    private val poemLocale: TranslationOptions = mockk()
+    private val translationOptions: TranslationOptions = mockk()
     private val poemTranslationOptionsItem: TranslationOptionsItem = mockk()
-    private val originalLocale =
-        TranslationOptions.Specific(java.util.Locale.forLanguageTag("fa-IR"))
-    private val originalTranslationOptionsItem =
-        TranslationOptionsItem.CustomTranslationOptions(java.util.Locale.forLanguageTag("fa-IR"))
-    private val supportedLocale: List<TranslationOptions.Specific> = listOf(
-        originalLocale,
-        TranslationOptions.Specific(java.util.Locale.ENGLISH),
-        TranslationOptions.Specific(java.util.Locale.FRANCE),
+    private val untranslatedTranslation =
+        Translation(
+            1,
+            UNTRANSLATED_LANGUAGE_TAG,
+            "translator"
+        )
+    private val untranslatedTranslationItem =
+        TranslationItem(
+            1,
+            UNTRANSLATED_LANGUAGE_TAG,
+            "translator"
+        )
+    private val matchDeviceTranslation =
+        Translation(
+            2,
+            java.util.Locale.ENGLISH.toLanguageTag(),
+            "translator"
+        )
+    private val specificTranslation = Translation(
+        3,
+        java.util.Locale.FRANCE.toLanguageTag(),
+        "translator"
     )
-    private val supportedTranslationOptionsItems: List<TranslationOptionsItem> = listOf(
-        originalTranslationOptionsItem,
-        TranslationOptionsItem.CustomTranslationOptions(java.util.Locale.ENGLISH),
-        TranslationOptionsItem.CustomTranslationOptions(java.util.Locale.FRANCE),
+    private val specificTranslationItem = TranslationItem(
+        3,
+        java.util.Locale.FRANCE.toLanguageTag(),
+        "translator"
     )
+    private val specificTranslationOption = TranslationOptions.Specific(
+        specificTranslation
+    )
+    private val specificTranslationOptionItem = TranslationOptionsItem.Specific(
+        specificTranslationItem
+    )
+    private val availableTranslations: List<Translation> = listOf(
+        untranslatedTranslation,
+        matchDeviceTranslation,
+        specificTranslation,
+    )
+    private val availableTranslationItems: List<TranslationItem> =
+        availableTranslations.map { translationItem ->
+            TranslationItem(
+                translationItem.id,
+                translationItem.languageTag,
+                translationItem.translator,
+            )
+        }
     private val useSpecificTranslationParamsSlot = slot<UseSpecificTranslationParams>()
+    private val translationItemMapper: TranslationItemMapper = mockk()
+    private val useMatchSystemLanguageTranslation: UseMatchSystemLanguageTranslation = mockk()
+    private val useUntranslated: UseUntranslated = mockk()
 
     @BeforeEach
     fun setUp() {
@@ -61,16 +103,19 @@ class SettingViewModelTest() {
             getAvailableTranslations,
             translationOptionsItemMapper,
             useSpecificTranslation,
+            translationItemMapper,
+            useMatchSystemLanguageTranslation,
+            useUntranslated,
         )
 
-        coEvery { getSelectedTranslationOption() } returns flowOf(poemLocale)
-        coEvery { getAvailableTranslations() } returns supportedLocale
-        every { translationOptionsItemMapper.mapToPresentation(poemLocale) } returns poemTranslationOptionsItem
-        every { translationOptionsItemMapper.mapToPresentation(supportedLocale) } returns supportedTranslationOptionsItems
-        every { translationOptionsItemMapper.mapToDomain(poemTranslationOptionsItem) } returns poemLocale
-        every { translationOptionsItemMapper.mapToDomain(originalTranslationOptionsItem) } returns originalLocale
-        every { translationOptionsItemMapper.mapToDomain(TranslationOptionsItem.SystemTranslationOptions) } returns TranslationOptions.SystemLocale
+        coEvery { getSelectedTranslationOption() } returns flowOf(translationOptions)
+        coEvery { getAvailableTranslations() } returns availableTranslations
+        every { translationOptionsItemMapper.mapToPresentation(translationOptions) } returns poemTranslationOptionsItem
+        every { translationItemMapper.mapToPresentation(availableTranslations) } returns availableTranslationItems
+        every { translationOptionsItemMapper.mapToDomain(specificTranslationOptionItem) } returns specificTranslationOption
         coEvery { useSpecificTranslation(capture(useSpecificTranslationParamsSlot)) } just Runs
+        coEvery { useMatchSystemLanguageTranslation() } just Runs
+        coEvery { useUntranslated() } just Runs
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -85,23 +130,26 @@ class SettingViewModelTest() {
         val uiState = settingViewModel.uiState.value as SettingViewModel.UiState.Loaded
 
         coVerify { getAvailableTranslations() }
-        verify { translationOptionsItemMapper.mapToPresentation(supportedLocale) }
+        verify { translationItemMapper.mapToPresentation(availableTranslations) }
         assertEquals(
             uiState.availableTranslations,
-            supportedTranslationOptionsItems.filterNot { it == originalTranslationOptionsItem })
+            availableTranslationItems.filterNot { it == untranslatedTranslationItem })
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `setSelectedPoemLocale normal case`() = runTest {
+    fun `setSpecificTranslation normal case`() = runTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
         settingViewModel.viewIsReady()
-        settingViewModel.setSpecificTranslation(poemTranslationOptionsItem)
+        settingViewModel.setSpecificTranslation(specificTranslationOptionItem)
 
         coVerify { useSpecificTranslation(capture(useSpecificTranslationParamsSlot)) }
-        assertEquals(poemLocale, useSpecificTranslationParamsSlot.captured.translationOptions)
+        assertEquals(
+            specificTranslationOption,
+            useSpecificTranslationParamsSlot.captured.translationOption
+        )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -135,7 +183,7 @@ class SettingViewModelTest() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `selectOriginalLanguage normal case`() = runTest {
+    fun `setToUseUntranslated normal case`() = runTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
@@ -143,17 +191,13 @@ class SettingViewModelTest() {
         settingViewModel.setToUseUntranslated()
 
         coVerify {
-            useSpecificTranslation(
-                UseSpecificTranslationParams(
-                    originalLocale
-                )
-            )
+            useUntranslated()
         }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `selectSystemLanguage normal case`() = runTest {
+    fun `setToUseMatchSystemLanguageTranslation normal case`() = runTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
@@ -161,11 +205,7 @@ class SettingViewModelTest() {
         settingViewModel.setToUseMatchSystemLanguageTranslation()
 
         coVerify {
-            useSpecificTranslation(
-                UseSpecificTranslationParams(
-                    TranslationOptions.SystemLocale
-                )
-            )
+            useMatchSystemLanguageTranslation()
         }
     }
 

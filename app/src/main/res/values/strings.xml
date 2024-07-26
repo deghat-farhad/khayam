@@ -21,8 +21,6 @@
     <string name="no_translation_selected">No translation selected</string>
     <string name="select_translation">Select Translation</string>
     <string name="selected_title">Selected: %1$s - %2$s</string>
-    <string name="select_translation_dialog_title">Select Translation</string>
-    <string name="select_translation_dialog_description">Select your preferred translation.</string>
     <string name="translation_snackbar_text">Based on your device language, You are reading:\n%1$s translation by %2$s</string>
     <string name="translation_snackbar_text_for_untranslated_device_language">Based on your device language, you are reading the original poems of Omar Khayyam</string>
     <string name="switch_to_original">Switch to Original</string>

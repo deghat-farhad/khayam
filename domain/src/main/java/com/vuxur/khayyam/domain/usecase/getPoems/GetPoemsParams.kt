@@ -1,7 +1,7 @@
 package com.vuxur.khayyam.domain.usecase.getPoems
 
-import com.vuxur.khayyam.domain.model.Locale
+import com.vuxur.khayyam.domain.model.TranslationOptions
 
 data class GetPoemsParams(
-    val locale: Locale.CustomLocale
+    val translationOptions: TranslationOptions
 )

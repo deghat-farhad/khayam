@@ -1,14 +1,16 @@
 package com.vuxur.khayyam.data.entity
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 
 @Entity(
     foreignKeys = [ForeignKey(
-        entity = LanguageTagEntity::class,
+        entity = TranslationEntity::class,
         parentColumns = ["id"],
-        childColumns = ["language"],
+        childColumns = ["translationId"],
         onDelete = ForeignKey.CASCADE
     )]
 )
@@ -20,5 +22,14 @@ data class PoemEntity(
     val hemistich3: String,
     val hemistich4: String,
     val isSuspicious: Boolean,
-    val language: Int
+    val translationId: Int,
+)
+
+data class PoemWithTranslationEntity(
+    @Embedded val poem: PoemEntity,
+    @Relation(
+        parentColumn = "translationId",
+        entityColumn = "id"
+    )
+    val translation: TranslationEntity
 )

@@ -4,7 +4,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class LanguageTagEntity(
+data class TranslationEntity(
     @PrimaryKey val id: Int,
-    val languageTag: String
+    val languageTag: String,
+    val translator: String,
 )

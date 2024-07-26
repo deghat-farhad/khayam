@@ -1,12 +1,11 @@
 package com.vuxur.khayyam.pages.poemList.view.viewModel
 
-import com.vuxur.khayyam.domain.model.Locale
 import com.vuxur.khayyam.domain.usecase.findPoems.FindPoems
 import com.vuxur.khayyam.domain.usecase.findPoems.FindPoemsParams
-import com.vuxur.khayyam.mapper.LocaleItemMapper
 import com.vuxur.khayyam.mapper.PoemItemMapper
-import com.vuxur.khayyam.model.LocaleItem
+import com.vuxur.khayyam.mapper.TranslationItemMapper
 import com.vuxur.khayyam.model.PoemItem
+import com.vuxur.khayyam.model.TranslationItem
 import java.util.TreeSet
 import javax.inject.Inject
 import kotlin.math.abs
@@ -14,17 +13,17 @@ import kotlin.math.abs
 class SearchManager @Inject constructor(
     private val findPoems: FindPoems,
     private val poemItemMapper: PoemItemMapper,
-    private val localeItemMapper: LocaleItemMapper,
+    private val translationItemMapper: TranslationItemMapper,
 ) {
     private val searchResultSet = TreeSet<Int>()
 
     suspend fun nearestSearchResultIndex(
         searchPhrase: String,
-        selectedPoemLocale: LocaleItem.CustomLocale,
+        translation: TranslationItem,
         currentPoemItemIndex: Int,
         indexOf: (poemItem: PoemItem) -> Int,
     ): Int? {
-        fetchSearchResult(searchPhrase, selectedPoemLocale, indexOf)
+        fetchSearchResult(searchPhrase, translation, indexOf)
         val ceilingIndex = searchResultSet.ceiling(currentPoemItemIndex)
         val floorIndex = searchResultSet.floor(currentPoemItemIndex)
         return when {
@@ -48,7 +47,7 @@ class SearchManager @Inject constructor(
 
     private suspend fun fetchSearchResult(
         searchPhrase: String,
-        selectedPoemLocale: LocaleItem.CustomLocale,
+        translation: TranslationItem,
         indexOf: (poemItem: PoemItem) -> Int,
     ) {
         searchResultSet.clear()
@@ -56,7 +55,7 @@ class SearchManager @Inject constructor(
             val params =
                 FindPoemsParams(
                     searchPhrase,
-                    localeItemMapper.mapToDomain(selectedPoemLocale) as Locale.CustomLocale
+                    translationItemMapper.mapToDomain(translation)
                 )
             searchResultSet.addAll(
                 poemItemMapper.mapToPresentation(findPoems(params)).map { indexOf(it) }

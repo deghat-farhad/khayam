@@ -1,15 +1,17 @@
 package com.vuxur.khayyam.di
 
-import com.vuxur.khayyam.domain.repository.LocaleRepository
 import com.vuxur.khayyam.domain.repository.PoemRepository
 import com.vuxur.khayyam.domain.repository.SettingRepository
+import com.vuxur.khayyam.domain.repository.TranslationRepository
 import com.vuxur.khayyam.domain.usecase.findPoems.FindPoems
 import com.vuxur.khayyam.domain.usecase.getLastVisitedPoem.GetLastVisitedPoem
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoems
-import com.vuxur.khayyam.domain.usecase.getSelectedPoemLocale.GetSelectedPoemLocale
-import com.vuxur.khayyam.domain.usecase.getSupportedLocales.GetSupportedLocale
+import com.vuxur.khayyam.domain.usecase.getSelectedTranslationOption.GetSelectedTranslationOption
+import com.vuxur.khayyam.domain.usecase.getTranslations.GetAvailableTranslations
 import com.vuxur.khayyam.domain.usecase.setLastVisitedPoem.SetLastVisitedPoem
-import com.vuxur.khayyam.domain.usecase.setSelectedPoemLocale.SetSelectedPoemLocale
+import com.vuxur.khayyam.domain.usecase.useMatchingSystemLanguageTranslation.UseMatchSystemLanguageTranslation
+import com.vuxur.khayyam.domain.usecase.useSpecificTranslation.UseSpecificTranslation
+import com.vuxur.khayyam.domain.usecase.useUntranslated.UseUntranslated
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,8 +23,8 @@ class UseCaseModule {
     @Provides
     fun provideGetPoems(
         poemRepository: PoemRepository,
-        getSupportedLocale: GetSupportedLocale,
-    ) = GetPoems(poemRepository, getSupportedLocale)
+        getAvailableTranslations: GetAvailableTranslations,
+    ) = GetPoems(poemRepository, getAvailableTranslations)
 
     @Provides
     fun provideFindPoems(
@@ -30,19 +32,29 @@ class UseCaseModule {
     ) = FindPoems(poemRepository)
 
     @Provides
-    fun provideGetSupportedLocale(
-        localeRepository: LocaleRepository
-    ) = GetSupportedLocale(localeRepository)
+    fun provideUseMatchSystemLanguageTranslation(
+        settingRepository: SettingRepository
+    ) = UseMatchSystemLanguageTranslation(settingRepository)
 
     @Provides
-    fun provideGetSelectedPoemLocale(
+    fun provideUseUntranslated(
         settingRepository: SettingRepository
-    ) = GetSelectedPoemLocale(settingRepository)
+    ) = UseUntranslated(settingRepository)
 
     @Provides
-    fun provideSetSelectedPoemLocale(
+    fun provideGetAvailableTranslations(
+        translationRepository: TranslationRepository
+    ) = GetAvailableTranslations(translationRepository)
+
+    @Provides
+    fun provideGetSelectedTranslationOption(
         settingRepository: SettingRepository
-    ) = SetSelectedPoemLocale(settingRepository)
+    ) = GetSelectedTranslationOption(settingRepository)
+
+    @Provides
+    fun provideUseSpecificTranslation(
+        settingRepository: SettingRepository
+    ) = UseSpecificTranslation(settingRepository)
 
     @Provides
     fun provideSetLastVisitedPoem(

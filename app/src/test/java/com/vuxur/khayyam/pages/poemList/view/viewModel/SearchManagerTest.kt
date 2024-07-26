@@ -1,13 +1,13 @@
 package com.vuxur.khayyam.pages.poemList.view.viewModel
 
-import com.vuxur.khayyam.domain.model.Locale
 import com.vuxur.khayyam.domain.model.Poem
+import com.vuxur.khayyam.domain.model.Translation
 import com.vuxur.khayyam.domain.usecase.findPoems.FindPoems
 import com.vuxur.khayyam.domain.usecase.findPoems.FindPoemsParams
-import com.vuxur.khayyam.mapper.LocaleItemMapper
 import com.vuxur.khayyam.mapper.PoemItemMapper
-import com.vuxur.khayyam.model.LocaleItem
+import com.vuxur.khayyam.mapper.TranslationItemMapper
 import com.vuxur.khayyam.model.PoemItem
+import com.vuxur.khayyam.model.TranslationItem
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -30,9 +30,10 @@ class SearchManagerTest() {
     private lateinit var searchManager: SearchManager
     private val findPoems: FindPoems = mockk()
     private val poemItemMapper: PoemItemMapper = mockk()
-    private val localeItemMapper: LocaleItemMapper = mockk()
-    private val selectedPoemLocaleItem: LocaleItem.CustomLocale = mockk()
-    private val selectedPoemLocale: Locale.CustomLocale = mockk()
+    private val translationItemMapper: TranslationItemMapper = mockk()
+    private val translationItem: TranslationItem =
+        mockk()
+    private val translation: Translation = mockk()
     private val poems = listOf(
         mockk<Poem>(relaxed = true),
         mockk<Poem>(relaxed = true),
@@ -50,11 +51,11 @@ class SearchManagerTest() {
         searchManager = SearchManager(
             findPoems,
             poemItemMapper,
-            localeItemMapper,
+            translationItemMapper,
         )
 
         coEvery { findPoems.invoke(any()) } returns poems
-        every { localeItemMapper.mapToDomain(selectedPoemLocaleItem) } returns selectedPoemLocale
+        every { translationItemMapper.mapToDomain(translationItem) } returns translation
         every { poemItemMapper.mapToPresentation(poems) } returns poemItems
         poemItems.forEachIndexed { index, poemItem ->
             every { indexOf(poemItem) } returns indexes[index]
@@ -71,7 +72,7 @@ class SearchManagerTest() {
 
         val nearestSearchResultIndex = searchManager.nearestSearchResultIndex(
             searchPhrase,
-            selectedPoemLocaleItem,
+            translationItem,
             currentPoemItemIndex,
             indexOf,
         )
@@ -85,7 +86,7 @@ class SearchManagerTest() {
             findPoems.invoke(
                 FindPoemsParams(
                     searchPhrase,
-                    selectedPoemLocale
+                    translation,
                 )
             )
         }
@@ -101,7 +102,7 @@ class SearchManagerTest() {
 
         val nearestSearchResultIndex = searchManager.nearestSearchResultIndex(
             searchPhrase,
-            selectedPoemLocaleItem,
+            translationItem,
             currentPoemItemIndex,
             indexOf,
         )
@@ -115,7 +116,7 @@ class SearchManagerTest() {
             findPoems.invoke(
                 FindPoemsParams(
                     searchPhrase,
-                    selectedPoemLocale
+                    translation,
                 )
             )
         }
@@ -132,7 +133,7 @@ class SearchManagerTest() {
 
         val nearestSearchResultIndex = searchManager.nearestSearchResultIndex(
             searchPhrase,
-            selectedPoemLocaleItem,
+            translationItem,
             currentPoemItemIndex,
             indexOf,
         )
@@ -146,7 +147,7 @@ class SearchManagerTest() {
             findPoems.invoke(
                 FindPoemsParams(
                     searchPhrase,
-                    selectedPoemLocale
+                    translation,
                 )
             )
         }
@@ -163,7 +164,7 @@ class SearchManagerTest() {
 
         val nearestSearchResultIndex = searchManager.nearestSearchResultIndex(
             searchPhrase,
-            selectedPoemLocaleItem,
+            translationItem,
             currentPoemItemIndex,
             indexOf,
         )
@@ -177,7 +178,7 @@ class SearchManagerTest() {
             findPoems.invoke(
                 FindPoemsParams(
                     searchPhrase,
-                    selectedPoemLocale
+                    translation,
                 )
             )
         }
@@ -194,7 +195,7 @@ class SearchManagerTest() {
 
         val nearestSearchResultIndex = searchManager.nearestSearchResultIndex(
             searchPhrase,
-            selectedPoemLocaleItem,
+            translationItem,
             currentPoemItemIndex,
             indexOf,
         )
@@ -205,7 +206,7 @@ class SearchManagerTest() {
             findPoems.invoke(
                 FindPoemsParams(
                     searchPhrase,
-                    selectedPoemLocale
+                    translation,
                 )
             )
         }
@@ -221,7 +222,7 @@ class SearchManagerTest() {
 
         val nearestSearchResultIndex = searchManager.nearestSearchResultIndex(
             searchPhrase,
-            selectedPoemLocaleItem,
+            translationItem,
             currentPoemItemIndex,
             indexOf,
         )
@@ -239,7 +240,7 @@ class SearchManagerTest() {
 
         searchManager.nearestSearchResultIndex(
             searchPhrase,
-            selectedPoemLocaleItem,
+            translationItem,
             currentPoemItemIndex,
             indexOf,
         )
@@ -257,7 +258,7 @@ class SearchManagerTest() {
 
         searchManager.nearestSearchResultIndex(
             searchPhrase,
-            selectedPoemLocaleItem,
+            translationItem,
             currentPoemItemIndex,
             indexOf,
         )
@@ -275,7 +276,7 @@ class SearchManagerTest() {
 
         searchManager.nearestSearchResultIndex(
             searchPhrase,
-            selectedPoemLocaleItem,
+            translationItem,
             currentPoemItemIndex,
             indexOf,
         )
@@ -293,7 +294,7 @@ class SearchManagerTest() {
 
         searchManager.nearestSearchResultIndex(
             searchPhrase,
-            selectedPoemLocaleItem,
+            translationItem,
             currentPoemItemIndex,
             indexOf,
         )
@@ -312,7 +313,7 @@ class SearchManagerTest() {
         val currentPoemItemIndex = (sortedIndexes.last() + sortedIndexes.first()) / 2
         searchManager.nearestSearchResultIndex(
             searchPhrase,
-            selectedPoemLocaleItem,
+            translationItem,
             currentPoemItemIndex,
             indexOf,
         )

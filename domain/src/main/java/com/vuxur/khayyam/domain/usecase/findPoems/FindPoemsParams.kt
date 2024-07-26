@@ -1,8 +1,8 @@
 package com.vuxur.khayyam.domain.usecase.findPoems
 
-import com.vuxur.khayyam.domain.model.Locale
+import com.vuxur.khayyam.domain.model.Translation
 
-data class FindPoemsParams (
+data class FindPoemsParams(
     val searchPhrase: String,
-    val locale: Locale.CustomLocale,
+    val translation: Translation,
 )

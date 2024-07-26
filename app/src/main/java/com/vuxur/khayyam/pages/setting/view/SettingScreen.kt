@@ -35,20 +35,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.vuxur.khayyam.R
-import com.vuxur.khayyam.model.LocaleItem
+import com.vuxur.khayyam.model.TranslationItem
+import com.vuxur.khayyam.model.TranslationOptionsItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingScreen(
-    currentLocale: LocaleItem?,
-    supportedLocales: List<LocaleItem.CustomLocale>,
-    onLanguageSelected: (LocaleItem) -> Unit,
+    selectedTranslationOptionItem: TranslationOptionsItem?,
+    availableTranslations: List<TranslationItem>,
+    onSpesificTranslationSelection: (TranslationOptionsItem.Specific) -> Unit,
     onPopBack: () -> Unit,
-    onOriginalLanguageSelected: () -> Unit,
-    onSystemLanguageSelected: () -> Unit,
+    onUseUntranslated: () -> Unit,
+    onUseMatchSystemLanguageTranslation: () -> Unit,
 ) {
     var dropdownExpanded by remember { mutableStateOf(false) }
-    val isAuthenticTranslation = supportedLocales.contains(currentLocale)
 
     Scaffold(
         topBar = {
@@ -75,12 +75,12 @@ fun SettingScreen(
                     .padding(16.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.translation_settings),
+                    text = stringResource(R.string.translation_settings_title),
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 Text(
-                    text = stringResource(R.string.translation_setting_caption),
+                    text = stringResource(R.string.translation_settings_description),
                     style = MaterialTheme.typography.bodyMedium
                 )
                 // Card 1: Original Language
@@ -92,25 +92,25 @@ fun SettingScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onOriginalLanguageSelected() }
+                            .clickable { onUseUntranslated() }
                             .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
                             selected =
-                            (currentLocale as? LocaleItem.CustomLocale)?.isOriginal ?: false,
-                            onClick = onOriginalLanguageSelected
+                            selectedTranslationOptionItem is TranslationOptionsItem.Untranslated,
+                            onClick = onUseUntranslated
                         )
                         Column(
                             modifier = Modifier.padding(start = 8.dp)
                         ) {
                             Text(
-                                stringResource(R.string.original_persian_language),
+                                stringResource(R.string.original_persian_translation_title),
                                 style = MaterialTheme.typography.titleMedium
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                stringResource(R.string.original_language_caption),
+                                stringResource(R.string.original_persian_translation_description),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }
@@ -125,26 +125,38 @@ fun SettingScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onSystemLanguageSelected() }
+                            .clickable { onUseMatchSystemLanguageTranslation() }
                             .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
-                            selected = currentLocale is LocaleItem.SystemLocale,
-                            onClick = onSystemLanguageSelected
+                            selected = selectedTranslationOptionItem is TranslationOptionsItem.MatchDeviceLanguage,
+                            onClick = onUseMatchSystemLanguageTranslation
                         )
                         Column(
                             modifier = Modifier.padding(start = 8.dp)
                         ) {
                             Text(
-                                stringResource(R.string.system_default),
+                                stringResource(R.string.system_default_translation_title),
                                 style = MaterialTheme.typography.titleMedium
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = stringResource(R.string.system_default_language_caption),
+                                text = stringResource(R.string.system_default_translation_description),
                                 style = MaterialTheme.typography.bodyMedium
                             )
+                            // Display current selection
+                            Spacer(modifier = Modifier.height(8.dp))
+                            if (selectedTranslationOptionItem is TranslationOptionsItem.MatchDeviceLanguage) {
+                                Text(
+                                    text = stringResource(
+                                        R.string.selected_title,
+                                        selectedTranslationOptionItem.translation.displayLanguage,
+                                        selectedTranslationOptionItem.translation.translator
+                                    ),
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
                         }
                     }
                 }
@@ -158,7 +170,7 @@ fun SettingScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                if (!isAuthenticTranslation)
+                                if (selectedTranslationOptionItem !is TranslationOptionsItem.Specific)
                                     dropdownExpanded = true
                             }
                     ) {
@@ -169,9 +181,9 @@ fun SettingScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             RadioButton(
-                                selected = isAuthenticTranslation,
+                                selected = selectedTranslationOptionItem is TranslationOptionsItem.Specific,
                                 onClick = {
-                                    if (!isAuthenticTranslation)
+                                    if (selectedTranslationOptionItem !is TranslationOptionsItem.Specific)
                                         dropdownExpanded = true
                                 }
                             )
@@ -179,31 +191,32 @@ fun SettingScreen(
                                 modifier = Modifier.padding(start = 8.dp)
                             ) {
                                 Text(
-                                    text = stringResource(R.string.authentic_translations),
+                                    text = stringResource(R.string.authentic_translations_title),
                                     style = MaterialTheme.typography.titleMedium
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    text = stringResource(R.string.authentic_translation_caption),
+                                    text = stringResource(R.string.authentic_translations_description),
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                                 // Display current selection
                                 Spacer(modifier = Modifier.height(8.dp))
-                                supportedLocales.firstOrNull {
-                                    it == (currentLocale as? LocaleItem.CustomLocale)
-                                }?.let {
+                                if (selectedTranslationOptionItem is TranslationOptionsItem.Specific) {
                                     Text(
                                         text = stringResource(
                                             R.string.selected_title,
-                                            it.locale.displayLanguage
+                                            selectedTranslationOptionItem.translation.displayLanguage,
+                                            selectedTranslationOptionItem.translation.translator
                                         ),
                                         style = MaterialTheme.typography.bodySmall
                                     )
-                                } ?: Text(
-                                    text = stringResource(R.string.no_translation_selected),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color.Gray
-                                )
+                                } else {
+                                    Text(
+                                        text = stringResource(R.string.no_translation_selected),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.Gray
+                                    )
+                                }
                             }
                         }
                         // Dropdown menu for selecting translations
@@ -214,20 +227,24 @@ fun SettingScreen(
                                     dropdownExpanded = true
                                 },
                             ) {
-                                Text(stringResource(R.string.select_language))
+                                Text(stringResource(R.string.select_translation))
                             }
                             DropdownMenu(
                                 expanded = dropdownExpanded,
                                 onDismissRequest = { dropdownExpanded = false }
                             ) {
-                                supportedLocales.forEach { translation ->
+                                availableTranslations.forEach { translation ->
                                     DropdownMenuItem(
                                         onClick = {
-                                            onLanguageSelected(translation)
+                                            onSpesificTranslationSelection(
+                                                TranslationOptionsItem.Specific(
+                                                    translation
+                                                )
+                                            )
                                             dropdownExpanded = false
                                         },
                                         text = {
-                                            Text(translation.locale.displayLanguage)
+                                            Text("${translation.displayLanguage} - ${translation.translator}")
                                         },
                                     )
                                 }

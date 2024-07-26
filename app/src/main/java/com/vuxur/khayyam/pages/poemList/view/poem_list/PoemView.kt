@@ -14,8 +14,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.vuxur.khayyam.model.LocaleItem
 import com.vuxur.khayyam.model.PoemItem
+import com.vuxur.khayyam.model.TranslationItem
 import com.vuxur.khayyam.utils.getPoemsFontFamily
 import com.vuxur.khayyam.utils.getPoemsFontSize
 
@@ -24,15 +24,15 @@ import com.vuxur.khayyam.utils.getPoemsFontSize
 fun PoemView(
     modifier: Modifier = Modifier,
     poemItem: PoemItem,
-    localeItem: LocaleItem.CustomLocale,
+    translationItem: TranslationItem,
 ) {
 
-    val fontFamily = remember(localeItem) {
-        getPoemsFontFamily(localeItem)
+    val fontFamily = remember(translationItem) {
+        getPoemsFontFamily(translationItem)
     }
 
-    val fontSize = remember(localeItem) {
-        getPoemsFontSize(localeItem)
+    val fontSize = remember(translationItem) {
+        getPoemsFontSize(translationItem)
     }
 
     Column(
@@ -57,7 +57,7 @@ fun PoemView(
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
-        ){
+        ) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(

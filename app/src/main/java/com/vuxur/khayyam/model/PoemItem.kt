@@ -8,5 +8,5 @@ data class PoemItem(
     val hemistich3: String,
     val hemistich4: String,
     val isSuspicious: Boolean,
-    val language: Int
+    val translation: TranslationItem,
 )

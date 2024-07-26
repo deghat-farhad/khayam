@@ -684,6 +684,62 @@ class PoemListViewModelTest {
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `NONE translation as uiState is Loaded`() = runTest {
+        val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+        Dispatchers.setMain(testDispatcher)
+
+        val untranslatedTranslationOption: TranslationOptions.Untranslated = mockk()
+        val untranslatedTranslationOptionItem: TranslationOptionsItem.Untranslated = mockk()
+        val noneTranslationOption: TranslationOptions.None = mockk()
+        val noneTranslationOptionItem: TranslationOptionsItem.None = mockk()
+
+        val translationFlow = MutableStateFlow<TranslationOptions>(untranslatedTranslationOption)
+
+        coEvery { getSelectedTranslationOption() } returns translationFlow
+        every { translationOptionsItemMapper.mapToPresentation(untranslatedTranslationOption) } returns untranslatedTranslationOptionItem
+        every { translationOptionsItemMapper.mapToDomain(untranslatedTranslationOptionItem) } returns untranslatedTranslationOption
+        every { translationOptionsItemMapper.mapToPresentation(noneTranslationOption) } returns noneTranslationOptionItem
+        every { translationOptionsItemMapper.mapToDomain(noneTranslationOptionItem) } returns noneTranslationOption
+
+        viewModel.viewIsReady()
+
+        assertTrue(viewModel.uiState.value is PoemListViewModel.UiState.Loaded)
+        translationFlow.emit(noneTranslationOption)
+        assertTrue(viewModel.uiState.value is PoemListViewModel.UiState.Loading)
+        val uiState = viewModel.uiState.value as PoemListViewModel.UiState.Loading
+        assertFalse(uiState.isTranslationOptionSelected)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `setToUseUntranslated normal case`() = runTest {
+        val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+        Dispatchers.setMain(testDispatcher)
+
+        viewModel.viewIsReady()
+
+        viewModel.setToUseUntranslated()
+
+        coVerify { useUntranslated() }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `getPoem error case`() = runTest {
+        val testDispatcher = UnconfinedTestDispatcher(testScheduler)
+        Dispatchers.setMain(testDispatcher)
+
+        coEvery { getPoems(any()) } throws Exception()
+
+        val uiStateBeforeGetPoemsCall = viewModel.uiState.value
+
+        viewModel.viewIsReady()
+
+        assertEquals(uiStateBeforeGetPoemsCall, viewModel.uiState.value)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     @AfterEach
     fun tearDown() {
         Dispatchers.resetMain()

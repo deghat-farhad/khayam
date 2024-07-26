@@ -13,18 +13,10 @@ import org.junit.jupiter.api.Test
 class TranslationOptionsItemMapperTest {
 
     private val translationItemMapper: TranslationItemMapper = mockk()
-    private val translationOptionsItemMapper = TranslationOptionsItemMapper(translationItemMapper)
+    private lateinit var translationOptionsItemMapper: TranslationOptionsItemMapper
 
-    private val dummyTranslation = Translation(
-        1,
-        "deviceLanguageTag",
-        "translator"
-    )
-    private val dummyTranslationItem = TranslationItem(
-        1,
-        "deviceLanguageTag",
-        "translator"
-    )
+    private val dummyTranslation: Translation = mockk()
+    private val dummyTranslationItem: TranslationItem = mockk()
 
     private val dummyNoneTranslationOption = TranslationOptions.None
     private val dummyUntranslatedOption = TranslationOptions.Untranslated
@@ -45,45 +37,63 @@ class TranslationOptionsItemMapperTest {
 
     @BeforeEach
     fun setup() {
+        translationOptionsItemMapper = TranslationOptionsItemMapper(translationItemMapper)
+
         every { translationItemMapper.mapToDomain(dummyTranslationItem) } returns dummyTranslation
         every { translationItemMapper.mapToPresentation(dummyTranslation) } returns dummyTranslationItem
     }
 
     @Test
     fun `mapToPresentation NoneTranslationOption`() {
-        val localeItem = translationOptionsItemMapper.mapToPresentation(dummyNoneTranslationOption)
-        assertEquals(dummyNoneTranslationOptionItem, localeItem)
+        val translationOptionItem =
+            translationOptionsItemMapper.mapToPresentation(dummyNoneTranslationOption)
+        assertEquals(dummyNoneTranslationOptionItem, translationOptionItem)
     }
 
     @Test
     fun `mapToPresentation MatchSystemTranslationOption`() {
-        val localeItem =
+        val translationOptionItem =
             translationOptionsItemMapper.mapToPresentation(dummyMatchSystemTranslationOption)
-        assertEquals(dummyMatchSystemTranslationOptionItem, localeItem)
+        assertEquals(dummyMatchSystemTranslationOptionItem, translationOptionItem)
     }
 
     @Test
     fun `mapToPresentation SpecificTranslationOption`() {
-        val localeItem =
+        val translationOptionItem =
             translationOptionsItemMapper.mapToPresentation(dummySpecificTranslationOption)
-        assertEquals(dummySpecificTranslationOptionItem, localeItem)
+        assertEquals(dummySpecificTranslationOptionItem, translationOptionItem)
+    }
+
+    @Test
+    fun `mapToPresentation Untranslated`() {
+        val translationOptionItem =
+            translationOptionsItemMapper.mapToPresentation(dummyUntranslatedOption)
+        assertEquals(dummyUntranslatedOptionItem, translationOptionItem)
     }
 
     @Test
     fun `mapToDomain NoneTranslationOption`() {
-        val locale = translationOptionsItemMapper.mapToDomain(dummyNoneTranslationOptionItem)
-        assertEquals(dummyNoneTranslationOption, locale)
+        val translation = translationOptionsItemMapper.mapToDomain(dummyNoneTranslationOptionItem)
+        assertEquals(dummyNoneTranslationOption, translation)
     }
 
     @Test
     fun `mapToDomain MatchSystemTranslationOption`() {
-        val locale = translationOptionsItemMapper.mapToDomain(dummyMatchSystemTranslationOptionItem)
-        assertEquals(dummyMatchSystemTranslationOption, locale)
+        val translation =
+            translationOptionsItemMapper.mapToDomain(dummyMatchSystemTranslationOptionItem)
+        assertEquals(dummyMatchSystemTranslationOption, translation)
     }
 
     @Test
     fun `mapToDomain SpecificTranslationOption`() {
-        val locale = translationOptionsItemMapper.mapToDomain(dummySpecificTranslationOptionItem)
-        assertEquals(dummySpecificTranslationOption, locale)
+        val translation =
+            translationOptionsItemMapper.mapToDomain(dummySpecificTranslationOptionItem)
+        assertEquals(dummySpecificTranslationOption, translation)
+    }
+
+    @Test
+    fun `mapToDomain Untranslated`() {
+        val translation = translationOptionsItemMapper.mapToDomain(dummyUntranslatedOptionItem)
+        assertEquals(dummyUntranslatedOption, translation)
     }
 }

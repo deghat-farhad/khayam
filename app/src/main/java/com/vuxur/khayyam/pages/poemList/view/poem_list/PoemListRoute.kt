@@ -90,6 +90,7 @@ fun PoemListRoute(
                 showTranslationSnackbar = state.showTranslationDecision,
                 onSetToUseUntranslated = viewModel::setToUseUntranslated,
                 onChooseNotToUseUntranslated = viewModel::translationDecisionMade,
+                highlightPhrase = state.searchState.searchPhrase
             )
         }
 

@@ -16,6 +16,7 @@ class SearchManager @Inject constructor(
     private val translationItemMapper: TranslationItemMapper,
 ) {
     private val searchResultSet = TreeSet<Int>()
+    private var searchPhrase: String? = null
 
     suspend fun nearestSearchResultIndex(
         searchPhrase: String,
@@ -24,6 +25,7 @@ class SearchManager @Inject constructor(
         indexOf: (poemItem: PoemItem) -> Int,
     ): Int? {
         fetchSearchResult(searchPhrase, translation, indexOf)
+        this.searchPhrase = searchPhrase
         val ceilingIndex = searchResultSet.ceiling(currentPoemItemIndex)
         val floorIndex = searchResultSet.floor(currentPoemItemIndex)
         return when {
@@ -43,6 +45,7 @@ class SearchManager @Inject constructor(
         hasResult = searchResultSet.isNotEmpty(),
         hasNext = searchResultSet.higher(currentPoemItemIndex) != null,
         hasPrevious = searchResultSet.lower(currentPoemItemIndex) != null,
+        searchPhrase = searchPhrase,
     )
 
     private suspend fun fetchSearchResult(

@@ -48,6 +48,7 @@ fun PoemHorizontalPager(
     setCurrentPoemIndex: (Int) -> Unit,
     captureCurrentPage: (Bitmap) -> Unit,
     translationItem: TranslationItem,
+    highlightPhrase: String?,
 ) {
     val pagerState = rememberPagerState(
         pageCount = {
@@ -111,6 +112,8 @@ fun PoemHorizontalPager(
                     currentPageOffsetFraction = pagerState.currentPageOffsetFraction,
                     poemItem = poemList[page],
                     translationItem = translationItem,
+                    highlightPhrase = highlightPhrase,
+                    showHighlights = (!pagerState.isScrollInProgress && page == pagerState.currentPage)
                 )
             }
         }
@@ -125,6 +128,8 @@ private fun AnimatedPoemView(
     thisPageIndex: Int,
     currentPageOffsetFraction: Float,
     translationItem: TranslationItem,
+    highlightPhrase: String?,
+    showHighlights: Boolean,
 ) {
     val direction = LocalLayoutDirection.current
     PoemView(
@@ -144,6 +149,8 @@ private fun AnimatedPoemView(
             },
         poemItem = poemItem,
         translationItem = translationItem,
+        highlightPhrase = highlightPhrase,
+        showHighlights = showHighlights,
     )
 }
 

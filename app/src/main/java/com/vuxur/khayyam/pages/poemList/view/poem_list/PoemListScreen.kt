@@ -60,7 +60,8 @@ fun PoemListScreen(
     translationItem: TranslationItem,
     showTranslationSnackbar: Boolean,
     onSetToUseUntranslated: () -> Unit,
-    onChooseNotToUseUntranslated: () -> Unit
+    onChooseNotToUseUntranslated: () -> Unit,
+    highlightPhrase: String?,
 ) {
     var capture by remember { mutableStateOf({ _: Bitmap -> }) }
 
@@ -120,6 +121,7 @@ fun PoemListScreen(
                         setCurrentPoemIndex = setCurrentPoemIndex,
                         captureCurrentPage = capture,
                         translationItem = translationItem,
+                        highlightPhrase = highlightPhrase,
                     )
                     Column(
                         modifier = Modifier.padding(horizontal = 24.dp),

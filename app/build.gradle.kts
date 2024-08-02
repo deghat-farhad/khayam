@@ -77,9 +77,9 @@ dependencies {
     implementation(Libs.Coroutines.kotlinxCoroutinesCore)
 
     implementation(platform(Libs.AndroidX.Compose.Bom))
-    implementation (Libs.AndroidX.Compose.Material3)
-    implementation (Libs.AndroidX.Compose.ui)
-    implementation (Libs.AndroidX.Compose.uiTooling)
+    implementation(Libs.AndroidX.Compose.Material3)
+    implementation(Libs.AndroidX.Compose.ui)
+    implementation(Libs.AndroidX.Compose.uiTooling)
 
 
     implementation(Libs.AndroidX.hiltNavigationCompose)
@@ -87,7 +87,7 @@ dependencies {
     ksp(Libs.Hilt.hiltCompiler)
 
     implementation(Libs.AndroidX.materialIconExtended)
-    implementation (Libs.AndroidX.activityKtx)
+    implementation(Libs.AndroidX.activityKtx)
 
     implementation(platform(Libs.Firebase.Bom))
     implementation(Libs.Firebase.analytics)
@@ -96,4 +96,6 @@ dependencies {
     testImplementation(Libs.Test.junit5)
     testImplementation(Libs.Test.mockk)
     testImplementation(Libs.Coroutines.kotlinxCoroutinesTest)
+
+    implementation(Libs.Other.capturable)
 }

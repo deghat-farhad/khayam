@@ -7,7 +7,6 @@ object Versions {
     const val kotlinVersion = "2.0.0"
     const val googleServiceVersion = "4.4.2"
     const val crashlyticsVersion = "3.0.1"
-    const val jetbraninsComposeVersio = "1.7.0-dev1686"
 }
 
 object Plugins {
@@ -19,7 +18,6 @@ object Plugins {
     const val jetbrainsKotlinAndroid = "org.jetbrains.kotlin.android"
     const val googleService = "com.google.gms.google-services"
     const val crashlytics = "com.google.firebase.crashlytics"
-    const val jetbrainsCompose = "org.jetbrains.compose"
     const val composeCompiler = "org.jetbrains.kotlin.plugin.compose"
 }
 
@@ -32,14 +30,17 @@ object Libs {
         const val kotlinxCoroutinesTest =
             "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinxCoroutinesCoreVersion"
     }
+
     object AndroidX {
         private const val hiltNavigationComposeVersion = "1.2.0"
         private const val materialIconsExtendedVersion = "1.6.8"
         private const val activityKtxVersion = "1.9.0"
         private const val datastorePreferencesVersion = "1.1.1"
 
-        const val hiltNavigationCompose = "androidx.hilt:hilt-navigation-compose:$hiltNavigationComposeVersion"
-        const val materialIconExtended = "androidx.compose.material:material-icons-extended:$materialIconsExtendedVersion"
+        const val hiltNavigationCompose =
+            "androidx.hilt:hilt-navigation-compose:$hiltNavigationComposeVersion"
+        const val materialIconExtended =
+            "androidx.compose.material:material-icons-extended:$materialIconsExtendedVersion"
         const val activityKtx = "androidx.activity:activity-ktx:$activityKtxVersion"
         const val datastorePreferences =
             "androidx.datastore:datastore-preferences:$datastorePreferencesVersion"
@@ -79,5 +80,11 @@ object Libs {
 
         const val junit5 = "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
         const val mockk = "io.mockk:mockk:$mockkVersion"
+    }
+
+    object Other {
+        private const val capturableVersion = "2.1.0"
+
+        const val capturable = "dev.shreyaspatil:capturable:$capturableVersion"
     }
 }

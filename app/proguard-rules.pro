@@ -22,3 +22,15 @@
 
 -keepattributes LineNumberTable,SourceFile
 -renamesourcefileattribute SourceFile
+
+-dontwarn com.vuxur.khayyam.data.di.RepositoryModule
+-dontwarn com.vuxur.khayyam.data.di.RepositoryModule_DatabaseFactory
+-dontwarn com.vuxur.khayyam.data.di.RepositoryModule_ProvidePoemRepositoryFactory
+-dontwarn com.vuxur.khayyam.data.di.RepositoryModule_ProvideSettingRepositoryFactory
+-dontwarn com.vuxur.khayyam.data.di.RepositoryModule_ProvideTranslationRepositoryFactory
+-dontwarn com.vuxur.khayyam.data.local.Local
+-dontwarn com.vuxur.khayyam.data.local.database.PoemDatabaseDao
+-dontwarn com.vuxur.khayyam.data.local.sharedPreferences.PreferencesDataSource
+-dontwarn com.vuxur.khayyam.data.mapper.PoemMapper
+-dontwarn com.vuxur.khayyam.data.mapper.TranslationEntityMapper
+-dontwarn com.vuxur.khayyam.data.mapper.TranslationOptionsEntityMapper

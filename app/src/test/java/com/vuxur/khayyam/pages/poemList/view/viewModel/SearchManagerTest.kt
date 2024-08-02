@@ -319,6 +319,7 @@ class SearchManagerTest() {
         )
         val searchState = searchManager.checkSearchState(currentPoemItemIndex)
         val expectedSearchStare = PoemListViewModel.SearchState(
+            searchPhrase = searchPhrase,
             hasResult = true,
             hasNext = true,
             hasPrevious = true,
@@ -331,6 +332,7 @@ class SearchManagerTest() {
     fun `checkSearchState noResult, noNext, noPrevious`() {
         val searchState = searchManager.checkSearchState(currentPoemItemIndex)
         val expectedSearchStare = PoemListViewModel.SearchState(
+            searchPhrase = null,
             hasResult = false,
             hasNext = false,
             hasPrevious = false,

@@ -299,6 +299,7 @@ class PoemListViewModel @Inject constructor(
     }
 
     data class SearchState(
+        val searchPhrase: String?,
         val hasResult: Boolean,
         val hasNext: Boolean,
         val hasPrevious: Boolean,
@@ -313,9 +314,10 @@ class PoemListViewModel @Inject constructor(
             val poems: List<PoemItem>,
             val currentItemIndex: Int = 0,
             val searchState: SearchState = SearchState(
+                searchPhrase = null,
                 hasResult = false,
                 hasNext = false,
-                hasPrevious = false
+                hasPrevious = false,
             ),
             val events: List<Event> = emptyList(),
             val translation: TranslationItem,

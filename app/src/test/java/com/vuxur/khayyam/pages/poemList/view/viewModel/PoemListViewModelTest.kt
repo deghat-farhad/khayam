@@ -79,9 +79,10 @@ class PoemListViewModelTest {
     private val lastVisitedPoemIndex = poems.size - 2
     private val lastVisitedPoem = poems[lastVisitedPoemIndex]
     private val searchState: PoemListViewModel.SearchState = PoemListViewModel.SearchState(
+        searchPhrase = "searchPhrase",
         hasResult = true,
         hasNext = false,
-        hasPrevious = false
+        hasPrevious = false,
     )
 
     @BeforeEach
@@ -325,11 +326,13 @@ class PoemListViewModelTest {
         // Mock data
         val searchPhrase = "searchPhrase"
         val mockSearchState1 = PoemListViewModel.SearchState(
+            searchPhrase,
             Random.nextBoolean(),
             Random.nextBoolean(),
             Random.nextBoolean(),
         )
         val mockSearchState2 = PoemListViewModel.SearchState(
+            searchPhrase,
             mockSearchState1.hasResult.not(),
             mockSearchState1.hasNext.not(),
             mockSearchState1.hasPrevious.not(),
@@ -379,11 +382,13 @@ class PoemListViewModelTest {
         // Mock data
         val searchPhrase = "searchPhrase"
         val mockSearchState1 = PoemListViewModel.SearchState(
+            searchPhrase,
             Random.nextBoolean(),
             Random.nextBoolean(),
             Random.nextBoolean(),
         )
         val mockSearchState2 = PoemListViewModel.SearchState(
+            searchPhrase,
             mockSearchState1.hasResult.not(),
             mockSearchState1.hasNext.not(),
             mockSearchState1.hasPrevious.not(),

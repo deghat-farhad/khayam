@@ -5,9 +5,9 @@ object ConfigurationData {
     const val compileSdk = 35
     const val buildToolsVersion = "34.0.0"
     const val minSdk = 21
-    const val targetSdk= 35
-    const val versionCode = 5
-    const val versionName = "1.1.1"
+    const val targetSdk = 35
+    const val versionCode = 6
+    const val versionName = "1.2.0"
     const val useSupportLibrary = true
     const val multiDexEnabled = true
     const val isMinifyEnabled = true

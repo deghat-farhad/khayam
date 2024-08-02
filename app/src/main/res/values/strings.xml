@@ -12,7 +12,7 @@
     <string name="back">Back</string>
     <string name="translation_settings_title">Translation Settings</string>
     <string name="translation_settings_description">Configure your preferred translations of Omar Khayyam\'s poems.</string>
-    <string name="original_persian_translation_title">Original Persian Translation</string>
+    <string name="original_persian_translation_title">Original version in Persian</string>
     <string name="original_persian_translation_description">Read the poems as originally written in Persian.</string>
     <string name="system_default_translation_title">Based on the Device Language</string>
     <string name="system_default_translation_description">Use the authentic translation matching your device\'s language.</string>

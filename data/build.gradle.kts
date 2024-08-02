@@ -25,26 +25,16 @@ android {
         }
     }
 
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = ConfigurationData.isMinifyEnabled
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-
     buildFeatures {
         viewBinding = true
     }
 }
 
 dependencies {
-    implementation (project(":domain"))
+    implementation(project(":domain"))
 
-    implementation (Libs.AndroidX.Room.RoomKtx)
-    ksp (Libs.AndroidX.Room.RoomCompiler)
+    implementation(Libs.AndroidX.Room.RoomKtx)
+    ksp(Libs.AndroidX.Room.RoomCompiler)
 
     implementation(Libs.AndroidX.hiltNavigationCompose)
     implementation(Libs.Hilt.hiltAndroid)

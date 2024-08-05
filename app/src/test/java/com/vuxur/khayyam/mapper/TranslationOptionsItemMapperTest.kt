@@ -19,18 +19,21 @@ class TranslationOptionsItemMapperTest {
     private val dummyTranslationItem: TranslationItem = mockk()
 
     private val dummyNoneTranslationOption = TranslationOptions.None
-    private val dummyUntranslatedOption = TranslationOptions.Untranslated
-    private val dummyMatchSystemTranslationOption = TranslationOptions.MatchDeviceLanguage(
-        dummyTranslation
-    )
+    private val dummyUntranslatedOption = TranslationOptions.Untranslated(dummyTranslation)
+    private val dummyMatchSystemTranslationOption =
+        TranslationOptions.MatchDeviceLanguage.Available(
+            dummyTranslation
+        )
     private val dummySpecificTranslationOption = TranslationOptions.Specific(
         dummyTranslation
     )
     private val dummyNoneTranslationOptionItem = TranslationOptionsItem.None
-    private val dummyUntranslatedOptionItem = TranslationOptionsItem.Untranslated
-    private val dummyMatchSystemTranslationOptionItem = TranslationOptionsItem.MatchDeviceLanguage(
-        dummyTranslationItem
-    )
+    private val dummyUntranslatedOptionItem =
+        TranslationOptionsItem.Untranslated(dummyTranslationItem)
+    private val dummyMatchSystemTranslationOptionItem =
+        TranslationOptionsItem.MatchDeviceLanguage.Available(
+            dummyTranslationItem
+        )
     private val dummySpecificTranslationOptionItem = TranslationOptionsItem.Specific(
         dummyTranslationItem
     )

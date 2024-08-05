@@ -23,8 +23,7 @@ class UseCaseModule {
     @Provides
     fun provideGetPoems(
         poemRepository: PoemRepository,
-        getAvailableTranslations: GetAvailableTranslations,
-    ) = GetPoems(poemRepository, getAvailableTranslations)
+    ) = GetPoems(poemRepository)
 
     @Provides
     fun provideFindPoems(
@@ -48,8 +47,9 @@ class UseCaseModule {
 
     @Provides
     fun provideGetSelectedTranslationOption(
-        settingRepository: SettingRepository
-    ) = GetSelectedTranslationOption(settingRepository)
+        settingRepository: SettingRepository,
+        translationRepository: TranslationRepository
+    ) = GetSelectedTranslationOption(settingRepository, translationRepository)
 
     @Provides
     fun provideUseSpecificTranslation(

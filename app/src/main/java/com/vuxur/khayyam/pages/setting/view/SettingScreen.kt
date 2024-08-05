@@ -148,11 +148,19 @@ fun SettingScreen(
                             // Display current selection
                             Spacer(modifier = Modifier.height(8.dp))
                             if (selectedTranslationOptionItem is TranslationOptionsItem.MatchDeviceLanguage) {
+                                val displayLanguage = when (selectedTranslationOptionItem) {
+                                    is TranslationOptionsItem.MatchDeviceLanguage.Available -> selectedTranslationOptionItem.translation.displayLanguage
+                                    is TranslationOptionsItem.MatchDeviceLanguage.Unavailable -> selectedTranslationOptionItem.fallBackTranslation.displayLanguage
+                                }
+                                val translator = when (selectedTranslationOptionItem) {
+                                    is TranslationOptionsItem.MatchDeviceLanguage.Available -> selectedTranslationOptionItem.translation.translator
+                                    is TranslationOptionsItem.MatchDeviceLanguage.Unavailable -> selectedTranslationOptionItem.fallBackTranslation.translator
+                                }
                                 Text(
                                     text = stringResource(
                                         R.string.selected_title,
-                                        selectedTranslationOptionItem.translation.displayLanguage,
-                                        selectedTranslationOptionItem.translation.translator
+                                        displayLanguage,
+                                        translator,
                                     ),
                                     style = MaterialTheme.typography.bodySmall
                                 )

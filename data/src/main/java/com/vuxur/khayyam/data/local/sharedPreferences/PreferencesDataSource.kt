@@ -12,6 +12,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.vuxur.khayyam.data.entity.PoemWithTranslationEntity
 import com.vuxur.khayyam.data.entity.TranslationEntity
 import com.vuxur.khayyam.data.entity.TranslationOptionsEntity
+import com.vuxur.khayyam.data.entity.TranslationPreferencesEntity
 import java.io.IOException
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -76,7 +77,7 @@ class PreferencesDataSource @Inject constructor(
         }
         .distinctUntilChanged()
 
-    val transactionState: Flow<TranslationPreferences> = application.dataStore.data
+    val transactionState: Flow<TranslationPreferencesEntity> = application.dataStore.data
         .catch { exception ->
             if (exception is IOException) {
                 emit(emptyPreferences())
@@ -90,30 +91,21 @@ class PreferencesDataSource @Inject constructor(
             val isUsingMatchDeviceLanguageTranslation =
                 preferences[IS_USING_MATCH_DEVICE_LANGUAGE_TRANSLATION_KEY] ?: false
             when {
-                specificTranslationId > 0 -> TranslationPreferences.SpecificTranslation(
+                specificTranslationId > 0 -> TranslationPreferencesEntity.SpecificTranslation(
                     specificTranslationId
                 )
 
-                isUsingUntranslated -> TranslationPreferences.Untranslated
+                isUsingUntranslated -> TranslationPreferencesEntity.Untranslated
 
-                isUsingMatchDeviceLanguageTranslation -> TranslationPreferences.MatchDeviceLanguageTranslation
+                isUsingMatchDeviceLanguageTranslation -> TranslationPreferencesEntity.MatchDeviceLanguageTranslation
 
                 preferences[IS_USING_MATCH_DEVICE_LANGUAGE_TRANSLATION_KEY] == null &&
                     preferences[SPECIFIC_TRANSLATION_ID_KEY] == null &&
                     preferences[IS_USING_MATCH_DEVICE_LANGUAGE_TRANSLATION_KEY] == null
-                -> TranslationPreferences.None
+                -> TranslationPreferencesEntity.None
 
                 else -> null
             }
         }
         .distinctUntilChanged()
-}
-
-sealed class TranslationPreferences {
-    data object Untranslated : TranslationPreferences()
-    data object MatchDeviceLanguageTranslation : TranslationPreferences()
-    data object None : TranslationPreferences()
-    data class SpecificTranslation(
-        val id: Int
-    ) : TranslationPreferences()
 }

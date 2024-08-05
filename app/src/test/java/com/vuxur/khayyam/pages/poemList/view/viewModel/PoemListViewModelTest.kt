@@ -31,6 +31,7 @@ import io.mockk.slot
 import io.mockk.verify
 import java.io.File
 import java.io.FileOutputStream
+import java.util.Locale
 import kotlin.random.Random
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -84,6 +85,7 @@ class PoemListViewModelTest {
         hasNext = false,
         hasPrevious = false,
     )
+    private val deviceLocale: Locale = mockk()
 
     @BeforeEach
     fun setUp() {
@@ -103,7 +105,7 @@ class PoemListViewModelTest {
         )
 
         // Mock interactions
-        coEvery { getSelectedTranslationOption() } returns flowOf(specificTranslation)
+        coEvery { getSelectedTranslationOption(any()) } returns flowOf(specificTranslation)
         coEvery { getPoems(any()) } returns poems
         every { poemItemMapper.mapToPresentation(any<List<Poem>>()) } returns poemItems
         poemItems.forEachIndexed { index, poemItem ->
@@ -121,11 +123,11 @@ class PoemListViewModelTest {
         every { translationOptionsItemMapper.mapToDomain(specificTranslationItem) } returns specificTranslation
         every {
             translationOptionsItemMapper.mapToDomain(
-                TranslationOptionsItem.MatchDeviceLanguage(
+                TranslationOptionsItem.MatchDeviceLanguage.Available(
                     translationItem
                 )
             )
-        } returns TranslationOptions.MatchDeviceLanguage(translation)
+        } returns TranslationOptions.MatchDeviceLanguage.Available(translation)
         every { translationItemMapper.mapToDomain(translationItem) } returns translation
         every { translationItemMapper.mapToPresentation(translation) } returns translationItem
         every { searchManager.checkSearchState(any()) } returns searchState
@@ -147,7 +149,7 @@ class PoemListViewModelTest {
         Dispatchers.setMain(testDispatcher)
 
         // Call the function under test
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         // Verify the UI state
         assertTrue(viewModel.uiState.value is PoemListViewModel.UiState.Loaded)
@@ -171,19 +173,20 @@ class PoemListViewModelTest {
         val selectedTranslationOptionsItem: TranslationOptionsItem =
             TranslationOptionsItem.None
         val selectedTranslationFlow = MutableStateFlow(selectedTranslationOption)
-        val matchDeviceTranslation = TranslationOptions.MatchDeviceLanguage(translation)
-        val matchDeviceTranslationItem = TranslationOptionsItem.MatchDeviceLanguage(translationItem)
+        val matchDeviceTranslation = TranslationOptions.MatchDeviceLanguage.Available(translation)
+        val matchDeviceTranslationItem =
+            TranslationOptionsItem.MatchDeviceLanguage.Available(translationItem)
         // Mock interactions
         coEvery { useMatchSystemLanguageTranslation() } answers {
             selectedTranslationFlow.tryEmit(matchDeviceTranslation)
         }
-        coEvery { getSelectedTranslationOption() } returns selectedTranslationFlow
+        coEvery { getSelectedTranslationOption(any()) } returns selectedTranslationFlow
         //coEvery { getLastVisitedPoem() } returns flowOf(null)
         every { translationOptionsItemMapper.mapToPresentation(selectedTranslationOption) } returns selectedTranslationOptionsItem
         every { translationOptionsItemMapper.mapToPresentation(matchDeviceTranslation) } returns matchDeviceTranslationItem
 
         // Call the function under test
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         // Verify the UI state
         assertTrue(viewModel.uiState.value is PoemListViewModel.UiState.Loaded)
@@ -222,7 +225,7 @@ class PoemListViewModelTest {
         every { Resources.getSystem() } returns resources
 
         // Call the function under test
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         // Verify the UI state
         assertTrue(viewModel.uiState.value is PoemListViewModel.UiState.Loaded)
@@ -256,7 +259,7 @@ class PoemListViewModelTest {
         coEvery { getLastVisitedPoem() } returns mockLastVisitedPoemFlow
         every { poemItemMapper.mapToPresentation(mockPoem) } returns mockk()
 
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         assertTrue(viewModel.uiState.value is PoemListViewModel.UiState.Loaded)
 
@@ -274,7 +277,7 @@ class PoemListViewModelTest {
         Dispatchers.setMain(testDispatcher)
 
         // Call the function under test
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         // Verify the UI state
         assertTrue(viewModel.uiState.value is PoemListViewModel.UiState.Loaded)
@@ -304,7 +307,7 @@ class PoemListViewModelTest {
         coEvery { getLastVisitedPoem() } returns lastVisitedPoemFlow
 
         // Call the function under test
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         // Verify the UI state
         assertTrue(viewModel.uiState.value is PoemListViewModel.UiState.Loaded)
@@ -350,7 +353,7 @@ class PoemListViewModelTest {
         every { searchManager.checkSearchState(lastVisitedPoemIndex) } returns mockSearchState1 andThen mockSearchState2
 
         // Call the function under test
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         // Verify the UI state
         viewModel.navigateToNearestResult(searchPhrase)
@@ -405,7 +408,7 @@ class PoemListViewModelTest {
         every { searchManager.checkSearchState(lastVisitedPoemIndex) } returns mockSearchState1 andThen mockSearchState2
 
         // Call the function under test
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         // Verify the UI state
         viewModel.navigateToNearestResult(searchPhrase)
@@ -431,7 +434,7 @@ class PoemListViewModelTest {
         every { searchManager.nextResult(any()) } returns poemItems.indexOf(poemItems.last())
 
         // Call the function under test
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         // Verify the UI state
         viewModel.navigateToNextResult()
@@ -455,7 +458,7 @@ class PoemListViewModelTest {
         every { searchManager.nextResult(any()) } returns null
 
         // Call the function under test
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         // Verify the UI state
         viewModel.navigateToNextResult()
@@ -477,7 +480,7 @@ class PoemListViewModelTest {
         every { searchManager.previousResult(any()) } returns poemItems.indexOf(poemItems.last())
 
         // Call the function under test
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         // Verify the UI state
         viewModel.navigateToPreviousResult()
@@ -501,7 +504,7 @@ class PoemListViewModelTest {
         every { searchManager.previousResult(any()) } returns null
 
         // Call the function under test
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         // Verify the UI state
         viewModel.navigateToPreviousResult()
@@ -520,7 +523,7 @@ class PoemListViewModelTest {
         Dispatchers.setMain(testDispatcher)
 
         // Call the function under test
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         // Verify the UI state
         viewModel.sharePoemText()
@@ -552,7 +555,7 @@ class PoemListViewModelTest {
         Dispatchers.setMain(testDispatcher)
 
         // Call the function under test
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         //mock
         val mockedClipboard: ClipboardManager = mockk(relaxed = true)
@@ -583,7 +586,7 @@ class PoemListViewModelTest {
         Dispatchers.setMain(testDispatcher)
 
         // Call the function under test
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         // Verify the UI state
         val poemSlot = slot<SetLastVisitedPoemParams>()
@@ -607,7 +610,7 @@ class PoemListViewModelTest {
         val mockPoemUri: Uri = mockk(relaxed = true)
 
         // Call the function under test
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         // Verify the UI state
         assertTrue(viewModel.uiState.value is PoemListViewModel.UiState.Loaded)
@@ -634,7 +637,7 @@ class PoemListViewModelTest {
         Dispatchers.setMain(testDispatcher)
 
         // Call the function under test
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         val mockedBitmap: Bitmap = mockk()
         val outputStream: FileOutputStream = mockk()
@@ -661,7 +664,7 @@ class PoemListViewModelTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         val mockedClipboard: ClipboardManager = mockk(relaxed = true)
         every { mockedClipboard.setText(any()) } just Runs
@@ -681,7 +684,7 @@ class PoemListViewModelTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
         viewModel.navigateToSetting()
 
         val uiStateEvents = (viewModel.uiState.value as PoemListViewModel.UiState.Loaded).events
@@ -701,13 +704,13 @@ class PoemListViewModelTest {
 
         val translationFlow = MutableStateFlow<TranslationOptions>(untranslatedTranslationOption)
 
-        coEvery { getSelectedTranslationOption() } returns translationFlow
+        coEvery { getSelectedTranslationOption(any()) } returns translationFlow
         every { translationOptionsItemMapper.mapToPresentation(untranslatedTranslationOption) } returns untranslatedTranslationOptionItem
         every { translationOptionsItemMapper.mapToDomain(untranslatedTranslationOptionItem) } returns untranslatedTranslationOption
         every { translationOptionsItemMapper.mapToPresentation(noneTranslationOption) } returns noneTranslationOptionItem
         every { translationOptionsItemMapper.mapToDomain(noneTranslationOptionItem) } returns noneTranslationOption
 
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         assertTrue(viewModel.uiState.value is PoemListViewModel.UiState.Loaded)
         translationFlow.emit(noneTranslationOption)
@@ -722,7 +725,7 @@ class PoemListViewModelTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         viewModel.setToUseUntranslated()
 
@@ -739,7 +742,7 @@ class PoemListViewModelTest {
 
         val uiStateBeforeGetPoemsCall = viewModel.uiState.value
 
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(deviceLocale)
 
         assertEquals(uiStateBeforeGetPoemsCall, viewModel.uiState.value)
     }

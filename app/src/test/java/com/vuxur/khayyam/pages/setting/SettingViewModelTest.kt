@@ -2,8 +2,8 @@ package com.vuxur.khayyam.pages.setting
 
 import com.vuxur.khayyam.domain.model.Translation
 import com.vuxur.khayyam.domain.model.TranslationOptions
-import com.vuxur.khayyam.domain.usecase.getPoems.UNTRANSLATED_LANGUAGE_TAG
 import com.vuxur.khayyam.domain.usecase.getSelectedTranslationOption.GetSelectedTranslationOption
+import com.vuxur.khayyam.domain.usecase.getSelectedTranslationOption.UNTRANSLATED_LANGUAGE_TAG
 import com.vuxur.khayyam.domain.usecase.getTranslations.GetAvailableTranslations
 import com.vuxur.khayyam.domain.usecase.useMatchingSystemLanguageTranslation.UseMatchSystemLanguageTranslation
 import com.vuxur.khayyam.domain.usecase.useSpecificTranslation.UseSpecificTranslation
@@ -21,6 +21,7 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -95,6 +96,7 @@ class SettingViewModelTest {
     private val translationItemMapper: TranslationItemMapper = mockk()
     private val useMatchSystemLanguageTranslation: UseMatchSystemLanguageTranslation = mockk()
     private val useUntranslated: UseUntranslated = mockk()
+    private val deviceLocale: Locale = mockk()
 
     @BeforeEach
     fun setUp() {
@@ -108,7 +110,7 @@ class SettingViewModelTest {
             useUntranslated,
         )
 
-        coEvery { getSelectedTranslationOption() } returns flowOf(translationOptions)
+        coEvery { getSelectedTranslationOption(any()) } returns flowOf(translationOptions)
         coEvery { getAvailableTranslations() } returns availableTranslations
         every { translationOptionsItemMapper.mapToPresentation(translationOptions) } returns poemTranslationOptionsItem
         every { translationItemMapper.mapToPresentation(availableTranslations) } returns availableTranslationItems
@@ -124,7 +126,7 @@ class SettingViewModelTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
-        settingViewModel.viewIsReady()
+        settingViewModel.viewIsReady(deviceLocale)
 
         assertTrue(settingViewModel.uiState.value is SettingViewModel.UiState.Loaded)
         val uiState = settingViewModel.uiState.value as SettingViewModel.UiState.Loaded
@@ -142,7 +144,7 @@ class SettingViewModelTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
-        settingViewModel.viewIsReady()
+        settingViewModel.viewIsReady(deviceLocale)
         settingViewModel.setSpecificTranslation(specificTranslationOptionItem)
 
         coVerify { useSpecificTranslation(capture(useSpecificTranslationParamsSlot)) }
@@ -159,7 +161,7 @@ class SettingViewModelTest {
         Dispatchers.setMain(testDispatcher)
 
         val event = SettingViewModel.Event.PopBack
-        settingViewModel.viewIsReady()
+        settingViewModel.viewIsReady(deviceLocale)
         settingViewModel.popBack()
         settingViewModel.onEventConsumed(event)
         val uiState = settingViewModel.uiState.value as SettingViewModel.UiState.Loaded
@@ -173,7 +175,7 @@ class SettingViewModelTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
-        settingViewModel.viewIsReady()
+        settingViewModel.viewIsReady(deviceLocale)
         settingViewModel.popBack()
 
         val uiState = settingViewModel.uiState.value as SettingViewModel.UiState.Loaded
@@ -187,7 +189,7 @@ class SettingViewModelTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
-        settingViewModel.viewIsReady()
+        settingViewModel.viewIsReady(deviceLocale)
         settingViewModel.setToUseUntranslated()
 
         coVerify {
@@ -201,7 +203,7 @@ class SettingViewModelTest {
         val testDispatcher = UnconfinedTestDispatcher(testScheduler)
         Dispatchers.setMain(testDispatcher)
 
-        settingViewModel.viewIsReady()
+        settingViewModel.viewIsReady(deviceLocale)
         settingViewModel.setToUseMatchSystemLanguageTranslation()
 
         coVerify {

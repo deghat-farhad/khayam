@@ -13,6 +13,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
 import com.vuxur.khayyam.pages.poemList.view.viewModel.PoemListViewModel
+import com.vuxur.khayyam.utils.getCurrentLocale
 import java.io.File
 
 @Composable
@@ -25,7 +26,7 @@ fun PoemListRoute(
     val context = LocalContext.current
 
     LaunchedEffect(key1 = true) {
-        viewModel.viewIsReady()
+        viewModel.viewIsReady(getCurrentLocale(context.resources))
     }
 
     DisposableEffect(uiState) {

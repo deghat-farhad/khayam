@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vuxur.khayyam.domain.model.TranslationOptions
 import com.vuxur.khayyam.domain.usecase.getSelectedTranslationOption.GetSelectedTranslationOption
+import com.vuxur.khayyam.domain.usecase.getSelectedTranslationOption.GetSelectedTranslationOptionParams
 import com.vuxur.khayyam.domain.usecase.getTranslations.GetAvailableTranslations
 import com.vuxur.khayyam.domain.usecase.useMatchingSystemLanguageTranslation.UseMatchSystemLanguageTranslation
 import com.vuxur.khayyam.domain.usecase.useSpecificTranslation.UseSpecificTranslation
@@ -14,6 +15,7 @@ import com.vuxur.khayyam.mapper.TranslationOptionsItemMapper
 import com.vuxur.khayyam.model.TranslationItem
 import com.vuxur.khayyam.model.TranslationOptionsItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,14 +34,14 @@ class SettingViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
     val uiState: StateFlow<UiState> = _uiState
 
-    fun viewIsReady() {
+    fun viewIsReady(deviceLocale: Locale) {
         viewModelScope.launch {
             _uiState.value = UiState.Loaded(
                 availableTranslations =
                 translationItemMapper.mapToPresentation(getAvailableTranslations())
                     .filterNot { it.isUntranslated() }
             )
-            onSelectedTranslationOptionChange()
+            onSelectedTranslationOptionChange(deviceLocale)
         }
     }
 
@@ -95,10 +97,12 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    private fun onSelectedTranslationOptionChange() {
+    private fun onSelectedTranslationOptionChange(deviceLocale: Locale) {
         (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
             viewModelScope.launch {
-                getSelectedTranslationOption().collect { translationOption ->
+                val getSelectedTranslationOptionParams =
+                    GetSelectedTranslationOptionParams(deviceLocale)
+                getSelectedTranslationOption(getSelectedTranslationOptionParams).collect { translationOption ->
                     _uiState.value = uiStateSnapshot.copy(
                         selectedTranslationOption =
                         translationOptionsItemMapper.mapToPresentation(translationOption)

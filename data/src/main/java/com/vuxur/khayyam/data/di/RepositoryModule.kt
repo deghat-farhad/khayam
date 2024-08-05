@@ -6,6 +6,7 @@ import com.vuxur.khayyam.data.local.database.PoemDatabase
 import com.vuxur.khayyam.data.mapper.PoemMapper
 import com.vuxur.khayyam.data.mapper.TranslationEntityMapper
 import com.vuxur.khayyam.data.mapper.TranslationOptionsEntityMapper
+import com.vuxur.khayyam.data.mapper.TranslationPreferencesEntityMapper
 import com.vuxur.khayyam.data.repository.PoemRepositoryImpl
 import com.vuxur.khayyam.data.repository.SettingRepositoryImpl
 import com.vuxur.khayyam.data.repository.TranslationRepositoryImp
@@ -43,11 +44,13 @@ class RepositoryModule {
         local: Local,
         translationOptionsEntityMapper: TranslationOptionsEntityMapper,
         poemMapper: PoemMapper,
+        translationPreferencesEntityMapper: TranslationPreferencesEntityMapper,
     ): SettingRepository =
         SettingRepositoryImpl(
             local,
             translationOptionsEntityMapper,
             poemMapper,
+            translationPreferencesEntityMapper,
         )
 
     @Provides

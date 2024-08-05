@@ -19,18 +19,29 @@ class TranslationOptionsItemMapperTest {
     private val dummyTranslationItem: TranslationItem = mockk()
 
     private val dummyNoneTranslationOption = TranslationOptions.None
-    private val dummyUntranslatedOption = TranslationOptions.Untranslated
-    private val dummyMatchSystemTranslationOption = TranslationOptions.MatchDeviceLanguage(
-        dummyTranslation
-    )
+    private val dummyUntranslatedOption = TranslationOptions.Untranslated(dummyTranslation)
+    private val dummyMatchSystemTranslationOptionAvailable =
+        TranslationOptions.MatchDeviceLanguage.Available(
+            dummyTranslation
+        )
+    private val dummyMatchSystemTranslationOptionUnavailable =
+        TranslationOptions.MatchDeviceLanguage.Unavailable(
+            dummyTranslation
+        )
     private val dummySpecificTranslationOption = TranslationOptions.Specific(
         dummyTranslation
     )
     private val dummyNoneTranslationOptionItem = TranslationOptionsItem.None
-    private val dummyUntranslatedOptionItem = TranslationOptionsItem.Untranslated
-    private val dummyMatchSystemTranslationOptionItem = TranslationOptionsItem.MatchDeviceLanguage(
-        dummyTranslationItem
-    )
+    private val dummyUntranslatedOptionItem =
+        TranslationOptionsItem.Untranslated(dummyTranslationItem)
+    private val dummyMatchSystemTranslationOptionItemAvailable =
+        TranslationOptionsItem.MatchDeviceLanguage.Available(
+            dummyTranslationItem
+        )
+    private val dummyMatchSystemTranslationOptionItemUnavailable =
+        TranslationOptionsItem.MatchDeviceLanguage.Unavailable(
+            dummyTranslationItem
+        )
     private val dummySpecificTranslationOptionItem = TranslationOptionsItem.Specific(
         dummyTranslationItem
     )
@@ -51,10 +62,21 @@ class TranslationOptionsItemMapperTest {
     }
 
     @Test
-    fun `mapToPresentation MatchSystemTranslationOption`() {
+    fun `mapToPresentation MatchSystemTranslationOption Available`() {
         val translationOptionItem =
-            translationOptionsItemMapper.mapToPresentation(dummyMatchSystemTranslationOption)
-        assertEquals(dummyMatchSystemTranslationOptionItem, translationOptionItem)
+            translationOptionsItemMapper.mapToPresentation(
+                dummyMatchSystemTranslationOptionAvailable
+            )
+        assertEquals(dummyMatchSystemTranslationOptionItemAvailable, translationOptionItem)
+    }
+
+    @Test
+    fun `mapToPresentation MatchSystemTranslationOption Unavailable`() {
+        val translationOptionItem =
+            translationOptionsItemMapper.mapToPresentation(
+                dummyMatchSystemTranslationOptionUnavailable
+            )
+        assertEquals(dummyMatchSystemTranslationOptionItemUnavailable, translationOptionItem)
     }
 
     @Test
@@ -78,10 +100,19 @@ class TranslationOptionsItemMapperTest {
     }
 
     @Test
-    fun `mapToDomain MatchSystemTranslationOption`() {
+    fun `mapToDomain MatchSystemTranslationOption Available`() {
         val translation =
-            translationOptionsItemMapper.mapToDomain(dummyMatchSystemTranslationOptionItem)
-        assertEquals(dummyMatchSystemTranslationOption, translation)
+            translationOptionsItemMapper.mapToDomain(dummyMatchSystemTranslationOptionItemAvailable)
+        assertEquals(dummyMatchSystemTranslationOptionAvailable, translation)
+    }
+
+    @Test
+    fun `mapToDomain MatchSystemTranslationOption Unavailable`() {
+        val translation =
+            translationOptionsItemMapper.mapToDomain(
+                dummyMatchSystemTranslationOptionItemUnavailable
+            )
+        assertEquals(dummyMatchSystemTranslationOptionUnavailable, translation)
     }
 
     @Test

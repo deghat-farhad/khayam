@@ -10,10 +10,17 @@ class TranslationOptionsEntityMapper @Inject constructor(
     fun mapToDomain(translationOptionsEntity: TranslationOptionsEntity) =
         when (translationOptionsEntity) {
             TranslationOptionsEntity.None -> TranslationOptions.None
-            TranslationOptionsEntity.Untranslated -> TranslationOptions.Untranslated
+            is TranslationOptionsEntity.Untranslated -> mapToDomain(translationOptionsEntity)
             is TranslationOptionsEntity.Specific -> mapToDomain(translationOptionsEntity)
             is TranslationOptionsEntity.MatchDeviceLanguage -> mapToDomain(translationOptionsEntity)
         }
+
+    private fun mapToDomain(untranslated: TranslationOptionsEntity.Untranslated) =
+        TranslationOptions.Untranslated(
+            translationEntityMapper.mapToDomain(
+                untranslated.translationEntity
+            )
+        )
 
     fun mapToDomain(specificTranslationList: List<TranslationOptionsEntity.Specific>) =
         specificTranslationList.map { mapToDomain(it) }
@@ -26,11 +33,19 @@ class TranslationOptionsEntityMapper @Inject constructor(
         )
 
     fun mapToDomain(matchDeviceLanguageTranslation: TranslationOptionsEntity.MatchDeviceLanguage) =
-        TranslationOptions.MatchDeviceLanguage(
-            translationEntityMapper.mapToDomain(
-                matchDeviceLanguageTranslation.translationEntity
+        when (matchDeviceLanguageTranslation) {
+            is TranslationOptionsEntity.MatchDeviceLanguage.Available -> TranslationOptions.MatchDeviceLanguage.Available(
+                translationEntityMapper.mapToDomain(
+                    matchDeviceLanguageTranslation.translationEntity
+                )
             )
-        )
+
+            is TranslationOptionsEntity.MatchDeviceLanguage.Unavailable -> TranslationOptions.MatchDeviceLanguage.Unavailable(
+                translationEntityMapper.mapToDomain(
+                    matchDeviceLanguageTranslation.fallBackTranslationEntity
+                )
+            )
+        }
 
     fun mapToData(specificTranslation: TranslationOptions.Specific) =
         TranslationOptionsEntity.Specific(

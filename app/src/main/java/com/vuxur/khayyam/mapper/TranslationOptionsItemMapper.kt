@@ -10,10 +10,17 @@ class TranslationOptionsItemMapper @Inject constructor(
     fun mapToPresentation(translationOptions: TranslationOptions) =
         when (translationOptions) {
             TranslationOptions.None -> TranslationOptionsItem.None
-            TranslationOptions.Untranslated -> TranslationOptionsItem.Untranslated
+            is TranslationOptions.Untranslated -> mapToPresentation(translationOptions)
             is TranslationOptions.Specific -> mapToPresentation(translationOptions)
             is TranslationOptions.MatchDeviceLanguage -> mapToPresentation(translationOptions)
         }
+
+    private fun mapToPresentation(untranslated: TranslationOptions.Untranslated) =
+        TranslationOptionsItem.Untranslated(
+            translationItemMapper.mapToPresentation(
+                untranslated.translation
+            )
+        )
 
     private fun mapToPresentation(specificTranslation: TranslationOptions.Specific) =
         TranslationOptionsItem.Specific(
@@ -21,17 +28,32 @@ class TranslationOptionsItemMapper @Inject constructor(
         )
 
     private fun mapToPresentation(matchDeviseLanguageTranslation: TranslationOptions.MatchDeviceLanguage) =
-        TranslationOptionsItem.MatchDeviceLanguage(
-            translationItemMapper.mapToPresentation(matchDeviseLanguageTranslation.translation)
-        )
+        when (matchDeviseLanguageTranslation) {
+            is TranslationOptions.MatchDeviceLanguage.Available ->
+                TranslationOptionsItem.MatchDeviceLanguage.Available(
+                    translationItemMapper.mapToPresentation(matchDeviseLanguageTranslation.translation)
+                )
+
+            is TranslationOptions.MatchDeviceLanguage.Unavailable ->
+                TranslationOptionsItem.MatchDeviceLanguage.Unavailable(
+                    translationItemMapper.mapToPresentation(matchDeviseLanguageTranslation.fallBackTranslation)
+                )
+        }
 
     fun mapToDomain(translationOptionsItem: TranslationOptionsItem) =
         when (translationOptionsItem) {
             TranslationOptionsItem.None -> TranslationOptions.None
-            TranslationOptionsItem.Untranslated -> TranslationOptions.Untranslated
+            is TranslationOptionsItem.Untranslated -> mapToDomain(translationOptionsItem)
             is TranslationOptionsItem.Specific -> mapToDomain(translationOptionsItem)
             is TranslationOptionsItem.MatchDeviceLanguage -> mapToDomain(translationOptionsItem)
         }
+
+    private fun mapToDomain(untranslated: TranslationOptionsItem.Untranslated) =
+        TranslationOptions.Untranslated(
+            translationItemMapper.mapToDomain(
+                untranslated.translation
+            )
+        )
 
     private fun mapToDomain(specificTranslationItem: TranslationOptionsItem.Specific) =
         TranslationOptions.Specific(
@@ -39,7 +61,15 @@ class TranslationOptionsItemMapper @Inject constructor(
         )
 
     private fun mapToDomain(matchDeviseLanguageTranslationItem: TranslationOptionsItem.MatchDeviceLanguage) =
-        TranslationOptions.MatchDeviceLanguage(
-            translationItemMapper.mapToDomain(matchDeviseLanguageTranslationItem.translation)
-        )
+        when (matchDeviseLanguageTranslationItem) {
+            is TranslationOptionsItem.MatchDeviceLanguage.Available ->
+                TranslationOptions.MatchDeviceLanguage.Available(
+                    translationItemMapper.mapToDomain(matchDeviseLanguageTranslationItem.translation)
+                )
+
+            is TranslationOptionsItem.MatchDeviceLanguage.Unavailable ->
+                TranslationOptions.MatchDeviceLanguage.Unavailable(
+                    translationItemMapper.mapToDomain(matchDeviseLanguageTranslationItem.fallBackTranslation)
+                )
+        }
 }

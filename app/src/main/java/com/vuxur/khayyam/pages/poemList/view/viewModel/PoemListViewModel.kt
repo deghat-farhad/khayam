@@ -12,6 +12,7 @@ import com.vuxur.khayyam.domain.usecase.getLastVisitedPoem.GetLastVisitedPoem
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoems
 import com.vuxur.khayyam.domain.usecase.getPoems.GetPoemsParams
 import com.vuxur.khayyam.domain.usecase.getSelectedTranslationOption.GetSelectedTranslationOption
+import com.vuxur.khayyam.domain.usecase.getSelectedTranslationOption.GetSelectedTranslationOptionParams
 import com.vuxur.khayyam.domain.usecase.setLastVisitedPoem.SetLastVisitedPoem
 import com.vuxur.khayyam.domain.usecase.setLastVisitedPoem.SetLastVisitedPoemParams
 import com.vuxur.khayyam.domain.usecase.useMatchingSystemLanguageTranslation.UseMatchSystemLanguageTranslation
@@ -23,6 +24,7 @@ import com.vuxur.khayyam.model.TranslationItem
 import com.vuxur.khayyam.model.TranslationOptionsItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.File
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Named
 import kotlin.random.Random
@@ -54,9 +56,9 @@ class PoemListViewModel @Inject constructor(
     val uiState: StateFlow<UiState> = _uiState
     private val poemList get() = (_uiState.value as UiState.Loaded).poems
 
-    fun viewIsReady() {
+    fun viewIsReady(deviceLocale: Locale) {
         if (_uiState.value is UiState.Loading) {
-            onSelectedTranslationOptionChange { translationOptionsItem ->
+            onSelectedTranslationOptionChange(deviceLocale) { translationOptionsItem ->
                 if (translationOptionsItem is TranslationOptionsItem.None) {
                     setIsTranslationOptionSelected()
                     setToUseMatchingSystemLanguageTranslation()
@@ -79,9 +81,15 @@ class PoemListViewModel @Inject constructor(
         }
     }
 
-    private fun onSelectedTranslationOptionChange(action: suspend (selectedPoemTranslationOptionsItem: TranslationOptionsItem) -> Unit) {
+    private fun onSelectedTranslationOptionChange(
+        deviceLocale: Locale,
+        action: suspend (selectedPoemTranslationOptionsItem: TranslationOptionsItem) -> Unit,
+    ) {
         viewModelScope.launch {
-            getSelectedTranslationOption().collect { selectedTranslationOption ->
+            val getSelectedTranslationOptionParams = GetSelectedTranslationOptionParams(
+                deviceLocale
+            )
+            getSelectedTranslationOption(getSelectedTranslationOptionParams).collect { selectedTranslationOption ->
                 val selectedTranslationOptionItem =
                     translationOptionsItemMapper.mapToPresentation(selectedTranslationOption)
                 action(selectedTranslationOptionItem)

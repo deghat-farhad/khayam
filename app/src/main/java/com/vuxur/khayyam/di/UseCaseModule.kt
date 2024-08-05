@@ -48,7 +48,7 @@ class UseCaseModule {
     @Provides
     fun provideGetSelectedTranslationOption(
         settingRepository: SettingRepository,
-        translationRepository: TranslationRepository
+        translationRepository: TranslationRepository,
     ) = GetSelectedTranslationOption(settingRepository, translationRepository)
 
     @Provides

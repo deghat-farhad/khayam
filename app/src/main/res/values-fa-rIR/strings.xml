@@ -25,4 +25,6 @@
     <string name="translation_snackbar_text">بر اساس زبان دستگاه شما، در حال خواندن:\n%1$s ترجمه توسط %2$s هستید</string>
     <string name="translation_snackbar_text_for_untranslated_device_language">با توجه به زبان دستگاه شما، در حال خواندن نسخه اصلی اشعار عمر خیام هستید</string>
     <string name="switch_to_original">تغییر به نسخه اصلی</string>
+    <string name="fallback_translation_message">ما اشعار را به زبان پیش‌فرض نمایش می‌دهیم زیرا زبان دستگاه شما هنوز پشتیبانی نمی‌شود.</string>
+
 </resources>

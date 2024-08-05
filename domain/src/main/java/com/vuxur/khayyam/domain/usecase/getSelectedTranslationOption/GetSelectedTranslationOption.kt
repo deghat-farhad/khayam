@@ -22,10 +22,13 @@ class GetSelectedTranslationOption(
                 TranslationPreferences.MatchDeviceLanguageTranslation -> {
                     val systemLanguageTag =
                         params.deviceLocale.toLanguageTag()
-                    TranslationOptions.MatchDeviceLanguage.Available(
-                        translationRepository.getTranslationsWithLanguageTag(systemLanguageTag)
-                            .firstOrNull()
-                            ?: getFallBackTranslation(),
+                    translationRepository.getTranslationsWithLanguageTag(systemLanguageTag)
+                        .firstOrNull()?.let { availableMatchDeviceLanguageTranslation ->
+                            TranslationOptions.MatchDeviceLanguage.Available(
+                                availableMatchDeviceLanguageTranslation
+                            )
+                        } ?: TranslationOptions.MatchDeviceLanguage.Unavailable(
+                        getFallBackTranslation(),
                     )
                 }
 

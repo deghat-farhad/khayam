@@ -164,6 +164,14 @@ fun SettingScreen(
                                     ),
                                     style = MaterialTheme.typography.bodySmall
                                 )
+                                // Display friendly fallback message if using fallback translation
+                                if (selectedTranslationOptionItem is TranslationOptionsItem.MatchDeviceLanguage.Unavailable) {
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = stringResource(R.string.fallback_translation_message),
+                                        style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.primary)
+                                    )
+                                }
                             }
                         }
                     }

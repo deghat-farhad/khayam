@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Хайям</string>
+    <string name="search">Поиск</string>
+    <string name="copyText">Копировать текст</string>
+    <string name="shareText">Поделиться текстом</string>
+    <string name="shareImage">Поделиться изображением</string>
+    <string name="settings">Настройки</string>
+    <string name="previous_result">Предыдущий результат</string>
+    <string name="next_result">Следующий результат</string>
+    <string name="random_poem">Случайное стихотворение</string>
+    <string name="share">Поделиться</string>
+    <string name="back">Назад</string>
+    <string name="translation_settings_title">Настройки перевода</string>
+    <string name="translation_settings_description">Настройте предпочитаемые переводы стихов Омара Хайяма.</string>
+    <string name="original_persian_translation_title">Оригинальная версия на персидском</string>
+    <string name="original_persian_translation_description">Читайте стихотворения, как они были написаны на персидском языке.</string>
+    <string name="system_default_translation_title">На основе языка устройства</string>
+    <string name="system_default_translation_description">Используйте аутентичный перевод, соответствующий языку вашего устройства.</string>
+    <string name="authentic_translations_title">Аутентичные переводы</string>
+    <string name="authentic_translations_description">Выберите аутентичные переводы стихов Омара Хайяма.</string>
+    <string name="no_translation_selected">Перевод не выбран</string>
+    <string name="select_translation">Выбрать перевод</string>
+    <string name="selected_title">Выбрано: %1$s - %2$s</string>
+    <string name="translation_snackbar_text">На основе языка вашего устройства, вы читаете:\n%1$s перевод от %2$s</string>
+    <string name="translation_snackbar_text_for_untranslated_device_language">На основе языка вашего устройства, вы читаете оригинальные стихотворения Омара Хайяма</string>
+    <string name="switch_to_original">Переключиться на оригинал</string>
+    <string name="fallback_translation_message">Мы показываем стихотворения на языке по умолчанию, так как язык вашего устройства еще не поддерживается.</string>
+</resources>

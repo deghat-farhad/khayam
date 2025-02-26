@@ -12,5 +12,5 @@ object ConfigurationData {
     const val multiDexEnabled = true
     const val isMinifyEnabled = true
 
-    val javaVersion = JavaVersion.VERSION_17
+    val javaVersion = JavaVersion.VERSION_21
 }

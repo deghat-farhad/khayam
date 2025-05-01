@@ -1,4 +1,4 @@
-package com.vuxur.khayyam.domain.usecase.useMatchingSystemLanguageTranslation
+package com.vuxur.khayyam.domain.usecase.settings.translation.useMatchingSystemLanguageTranslation
 
 import com.vuxur.khayyam.domain.repository.SettingRepository
 import com.vuxur.khayyam.domain.usecase.base.UseCase

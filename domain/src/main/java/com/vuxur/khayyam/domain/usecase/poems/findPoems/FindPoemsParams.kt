@@ -1,4 +1,4 @@
-package com.vuxur.khayyam.domain.usecase.findPoems
+package com.vuxur.khayyam.domain.usecase.poems.findPoems
 
 import com.vuxur.khayyam.domain.model.Translation
 

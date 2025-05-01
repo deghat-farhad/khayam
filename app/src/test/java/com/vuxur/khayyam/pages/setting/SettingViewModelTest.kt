@@ -2,13 +2,13 @@ package com.vuxur.khayyam.pages.setting
 
 import com.vuxur.khayyam.domain.model.Translation
 import com.vuxur.khayyam.domain.model.TranslationOptions
-import com.vuxur.khayyam.domain.usecase.getSelectedTranslationOption.GetSelectedTranslationOption
-import com.vuxur.khayyam.domain.usecase.getSelectedTranslationOption.UNTRANSLATED_LANGUAGE_TAG
-import com.vuxur.khayyam.domain.usecase.getTranslations.GetAvailableTranslations
-import com.vuxur.khayyam.domain.usecase.useMatchingSystemLanguageTranslation.UseMatchSystemLanguageTranslation
-import com.vuxur.khayyam.domain.usecase.useSpecificTranslation.UseSpecificTranslation
-import com.vuxur.khayyam.domain.usecase.useSpecificTranslation.UseSpecificTranslationParams
-import com.vuxur.khayyam.domain.usecase.useUntranslated.UseUntranslated
+import com.vuxur.khayyam.domain.usecase.settings.translation.getSelectedTranslationOption.GetSelectedTranslationOption
+import com.vuxur.khayyam.domain.usecase.settings.translation.getSelectedTranslationOption.UNTRANSLATED_LANGUAGE_TAG
+import com.vuxur.khayyam.domain.usecase.settings.translation.getTranslations.GetAvailableTranslations
+import com.vuxur.khayyam.domain.usecase.settings.translation.useMatchingSystemLanguageTranslation.UseMatchSystemLanguageTranslation
+import com.vuxur.khayyam.domain.usecase.settings.translation.useSpecificTranslation.UseSpecificTranslation
+import com.vuxur.khayyam.domain.usecase.settings.translation.useSpecificTranslation.UseSpecificTranslationParams
+import com.vuxur.khayyam.domain.usecase.settings.translation.useUntranslated.UseUntranslated
 import com.vuxur.khayyam.mapper.TranslationItemMapper
 import com.vuxur.khayyam.mapper.TranslationOptionsItemMapper
 import com.vuxur.khayyam.model.TranslationItem

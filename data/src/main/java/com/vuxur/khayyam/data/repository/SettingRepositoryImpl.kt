@@ -37,6 +37,9 @@ class SettingRepositoryImpl @Inject constructor(
             timeOfDayEntityMapper.mapToDomain(timeOfDayEntity)
         }
 
+    override val isRandomPoemNotificationEnabled: Flow<Boolean> =
+        local.isRandomPoemNotificationEnabled
+
     override suspend fun useUntranslated() {
         local.useUntranslated()
     }
@@ -56,6 +59,12 @@ class SettingRepositoryImpl @Inject constructor(
     override suspend fun setRandomPoemNotificationTime(timeOfDay: TimeOfDay) {
         local.setRandomPoemNotificationTime(
             timeOfDayEntityMapper.mapToData(timeOfDay)
+        )
+    }
+
+    override suspend fun setRandomPoemNotificationEnabled(isEnabled: Boolean) {
+        local.setRandomPoemNotificationEnabled(
+            isEnabled
         )
     }
 }

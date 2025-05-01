@@ -7,6 +7,8 @@ import com.vuxur.khayyam.domain.usecase.poems.findPoems.FindPoems
 import com.vuxur.khayyam.domain.usecase.poems.getPoems.GetPoems
 import com.vuxur.khayyam.domain.usecase.settings.lastVositedPoem.getLastVisitedPoem.GetLastVisitedPoem
 import com.vuxur.khayyam.domain.usecase.settings.lastVositedPoem.setLastVisitedPoem.SetLastVisitedPoem
+import com.vuxur.khayyam.domain.usecase.settings.randomPoemNotification.isEnabled.isRandomPoemNotificationEnabled.IsRandomPoemNotificationEnabled
+import com.vuxur.khayyam.domain.usecase.settings.randomPoemNotification.isEnabled.setRandomPoemNotificationsEnabled.SetRandomPoemNotificationEnabled
 import com.vuxur.khayyam.domain.usecase.settings.randomPoemNotification.time.getRandomPoemNotificationTime.GetRandomPoemNotificationTime
 import com.vuxur.khayyam.domain.usecase.settings.randomPoemNotification.time.setRandomPoemNotificationTime.SetRandomPoemNotificationTime
 import com.vuxur.khayyam.domain.usecase.settings.translation.getSelectedTranslationOption.GetSelectedTranslationOption
@@ -77,4 +79,14 @@ class UseCaseModule {
     fun provideGetRandomPoemNotificationTime(
         settingRepository: SettingRepository,
     ) = GetRandomPoemNotificationTime(settingRepository)
+
+    @Provides
+    fun provideSetRandomPoemNotificationEnabled(
+        settingRepository: SettingRepository,
+    ) = SetRandomPoemNotificationEnabled(settingRepository)
+
+    @Provides
+    fun provideIsRandomPoemNotificationEnabled(
+        settingRepository: SettingRepository,
+    ) = IsRandomPoemNotificationEnabled(settingRepository)
 }

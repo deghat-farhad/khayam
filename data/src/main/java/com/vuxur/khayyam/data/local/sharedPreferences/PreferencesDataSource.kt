@@ -32,6 +32,8 @@ private val IS_USING_MATCH_DEVICE_LANGUAGE_TRANSLATION_KEY =
 private val IS_USING_UNTRANSLATED_KEY = booleanPreferencesKey("isUsingUntranslated")
 private val RANDOM_POEM_NOTIFICATION_TIME_KEY =
     intPreferencesKey("randoPoemNotificationTimeKey")
+private val IS_RANDOM_POEM_NOTIFICATION_ENABLED =
+    booleanPreferencesKey("isRandomPoemNotificationEnabled")
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = DATA_STORE_NAME)
 
@@ -74,6 +76,25 @@ class PreferencesDataSource @Inject constructor(
             preferences[RANDOM_POEM_NOTIFICATION_TIME_KEY] = timeOfDayEntity.toMinutes()
         }
     }
+
+    suspend fun setRandomPoemNotificationEnabled(isEnabled: Boolean) {
+        application.dataStore.edit { preferences ->
+            preferences[IS_RANDOM_POEM_NOTIFICATION_ENABLED] = isEnabled
+        }
+    }
+
+    val isRandomPoemNotificationEnabled = application.dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[IS_RANDOM_POEM_NOTIFICATION_ENABLED] == true
+        }
+        .distinctUntilChanged()
 
     val randomPoemNotificationTime = application.dataStore.data
         .catch { exception ->

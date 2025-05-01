@@ -10,9 +10,11 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.vuxur.khayyam.data.entity.PoemWithTranslationEntity
+import com.vuxur.khayyam.data.entity.TimeOfDayEntity
 import com.vuxur.khayyam.data.entity.TranslationEntity
 import com.vuxur.khayyam.data.entity.TranslationOptionsEntity
 import com.vuxur.khayyam.data.entity.TranslationPreferencesEntity
+import com.vuxur.khayyam.data.utils.toMinutes
 import java.io.IOException
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -28,6 +30,9 @@ private val LAST_VISITED_POEM_ID_KEY = intPreferencesKey("lastVisitedPoemIdKey")
 private val IS_USING_MATCH_DEVICE_LANGUAGE_TRANSLATION_KEY =
     booleanPreferencesKey("isUsingMatchDeviceLanguageTranslation")
 private val IS_USING_UNTRANSLATED_KEY = booleanPreferencesKey("isUsingUntranslated")
+private val RANDOM_POEM_NOTIFICATION_TIME_KEY =
+    intPreferencesKey("randoPoemNotificationTimeKey")
+
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = DATA_STORE_NAME)
 
 class PreferencesDataSource @Inject constructor(
@@ -63,6 +68,25 @@ class PreferencesDataSource @Inject constructor(
             preferences[LAST_VISITED_POEM_ID_KEY] = poemWithTranslationEntity.poem.id
         }
     }
+
+    suspend fun setRandomPoemNotificationTime(timeOfDayEntity: TimeOfDayEntity) {
+        application.dataStore.edit { preferences ->
+            preferences[RANDOM_POEM_NOTIFICATION_TIME_KEY] = timeOfDayEntity.toMinutes()
+        }
+    }
+
+    val randomPoemNotificationTime = application.dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[RANDOM_POEM_NOTIFICATION_TIME_KEY] ?: -1
+        }
+        .distinctUntilChanged()
 
     val lastVisitedPoem: Flow<Int> = application.dataStore.data
         .catch { exception ->
@@ -102,7 +126,7 @@ class PreferencesDataSource @Inject constructor(
                 preferences[IS_USING_MATCH_DEVICE_LANGUAGE_TRANSLATION_KEY] == null &&
                     preferences[SPECIFIC_TRANSLATION_ID_KEY] == null &&
                     preferences[IS_USING_MATCH_DEVICE_LANGUAGE_TRANSLATION_KEY] == null
-                -> TranslationPreferencesEntity.None
+                    -> TranslationPreferencesEntity.None
 
                 else -> null
             }

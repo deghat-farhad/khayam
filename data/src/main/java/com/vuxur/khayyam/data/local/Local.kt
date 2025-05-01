@@ -1,19 +1,31 @@
 package com.vuxur.khayyam.data.local
 
 import com.vuxur.khayyam.data.entity.PoemWithTranslationEntity
+import com.vuxur.khayyam.data.entity.TimeOfDayEntity
 import com.vuxur.khayyam.data.entity.TranslationEntity
 import com.vuxur.khayyam.data.entity.TranslationOptionsEntity
 import com.vuxur.khayyam.data.entity.TranslationPreferencesEntity
 import com.vuxur.khayyam.data.local.database.PoemDatabaseDao
 import com.vuxur.khayyam.data.local.sharedPreferences.PreferencesDataSource
+import com.vuxur.khayyam.data.utils.toTimeOfDayEntity
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 
 class Local @Inject constructor(
     private val database: PoemDatabaseDao,
     private val preferencesDataSource: PreferencesDataSource,
 ) {
+
+    val randomPoemNotificationTime: Flow<TimeOfDayEntity> =
+        preferencesDataSource.randomPoemNotificationTime
+            .filter { minutes ->
+                minutes != -1 //doesn't emmit any value before user set random poem notification time.
+            }.map { minutes ->
+                minutes.toTimeOfDayEntity()
+            }
+
     suspend fun getPoems(translationEntity: TranslationEntity) =
         database.getPoems(translationEntity.languageTag)
 
@@ -60,4 +72,8 @@ class Local @Inject constructor(
 
     val selectedTranslationOption: Flow<TranslationPreferencesEntity> =
         preferencesDataSource.transactionState
+
+    suspend fun setRandomPoemNotificationTime(timeOfDayEntity: TimeOfDayEntity) {
+        preferencesDataSource.setRandomPoemNotificationTime(timeOfDayEntity)
+    }
 }

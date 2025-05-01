@@ -7,6 +7,8 @@ import com.vuxur.khayyam.domain.usecase.poems.findPoems.FindPoems
 import com.vuxur.khayyam.domain.usecase.poems.getPoems.GetPoems
 import com.vuxur.khayyam.domain.usecase.settings.lastVositedPoem.getLastVisitedPoem.GetLastVisitedPoem
 import com.vuxur.khayyam.domain.usecase.settings.lastVositedPoem.setLastVisitedPoem.SetLastVisitedPoem
+import com.vuxur.khayyam.domain.usecase.settings.randomPoemNotification.time.getRandomPoemNotificationTime.GetRandomPoemNotificationTime
+import com.vuxur.khayyam.domain.usecase.settings.randomPoemNotification.time.setRandomPoemNotificationTime.SetRandomPoemNotificationTime
 import com.vuxur.khayyam.domain.usecase.settings.translation.getSelectedTranslationOption.GetSelectedTranslationOption
 import com.vuxur.khayyam.domain.usecase.settings.translation.getTranslations.GetAvailableTranslations
 import com.vuxur.khayyam.domain.usecase.settings.translation.useMatchingSystemLanguageTranslation.UseMatchSystemLanguageTranslation
@@ -65,4 +67,14 @@ class UseCaseModule {
     fun provideGetLastVisitedPoem(
         settingRepository: SettingRepository,
     ) = GetLastVisitedPoem(settingRepository)
+
+    @Provides
+    fun provideSetRandomPoemNotificationTime(
+        settingRepository: SettingRepository,
+    ) = SetRandomPoemNotificationTime(settingRepository)
+
+    @Provides
+    fun provideGetRandomPoemNotificationTime(
+        settingRepository: SettingRepository,
+    ) = GetRandomPoemNotificationTime(settingRepository)
 }

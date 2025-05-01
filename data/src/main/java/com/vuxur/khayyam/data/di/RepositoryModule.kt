@@ -4,6 +4,7 @@ import android.content.Context
 import com.vuxur.khayyam.data.local.Local
 import com.vuxur.khayyam.data.local.database.PoemDatabase
 import com.vuxur.khayyam.data.mapper.PoemMapper
+import com.vuxur.khayyam.data.mapper.TimeOfDayEntityMapper
 import com.vuxur.khayyam.data.mapper.TranslationEntityMapper
 import com.vuxur.khayyam.data.mapper.TranslationOptionsEntityMapper
 import com.vuxur.khayyam.data.mapper.TranslationPreferencesEntityMapper
@@ -47,12 +48,14 @@ class RepositoryModule {
         translationOptionsEntityMapper: TranslationOptionsEntityMapper,
         poemMapper: PoemMapper,
         translationPreferencesEntityMapper: TranslationPreferencesEntityMapper,
+        timeOfDayEntityMapper: TimeOfDayEntityMapper,
     ): SettingRepository =
         SettingRepositoryImpl(
             local,
             translationOptionsEntityMapper,
             poemMapper,
             translationPreferencesEntityMapper,
+            timeOfDayEntityMapper
         )
 
     @Provides

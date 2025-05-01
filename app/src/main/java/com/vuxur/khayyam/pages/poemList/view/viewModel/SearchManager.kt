@@ -1,7 +1,7 @@
 package com.vuxur.khayyam.pages.poemList.view.viewModel
 
-import com.vuxur.khayyam.domain.usecase.findPoems.FindPoems
-import com.vuxur.khayyam.domain.usecase.findPoems.FindPoemsParams
+import com.vuxur.khayyam.domain.usecase.poems.findPoems.FindPoems
+import com.vuxur.khayyam.domain.usecase.poems.findPoems.FindPoemsParams
 import com.vuxur.khayyam.mapper.PoemItemMapper
 import com.vuxur.khayyam.mapper.TranslationItemMapper
 import com.vuxur.khayyam.model.PoemItem

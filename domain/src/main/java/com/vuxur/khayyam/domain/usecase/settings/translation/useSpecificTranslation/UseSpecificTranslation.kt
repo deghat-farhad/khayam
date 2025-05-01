@@ -1,4 +1,4 @@
-package com.vuxur.khayyam.domain.usecase.useSpecificTranslation
+package com.vuxur.khayyam.domain.usecase.settings.translation.useSpecificTranslation
 
 import com.vuxur.khayyam.domain.repository.SettingRepository
 import com.vuxur.khayyam.domain.usecase.base.UseCaseWithParams

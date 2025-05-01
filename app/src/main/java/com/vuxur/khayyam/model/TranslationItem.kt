@@ -1,6 +1,6 @@
 package com.vuxur.khayyam.model
 
-import com.vuxur.khayyam.domain.usecase.getSelectedTranslationOption.UNTRANSLATED_LANGUAGE_TAG
+import com.vuxur.khayyam.domain.usecase.settings.translation.getSelectedTranslationOption.UNTRANSLATED_LANGUAGE_TAG
 import java.util.Locale
 
 data class TranslationItem(

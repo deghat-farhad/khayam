@@ -1,4 +1,4 @@
-package com.vuxur.khayyam.domain.usecase.getTranslations
+package com.vuxur.khayyam.domain.usecase.settings.translation.getTranslations
 
 import com.vuxur.khayyam.domain.model.Translation
 import com.vuxur.khayyam.domain.repository.TranslationRepository

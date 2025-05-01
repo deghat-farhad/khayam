@@ -1,4 +1,4 @@
-package com.vuxur.khayyam.domain.usecase.getLastVisitedPoem
+package com.vuxur.khayyam.domain.usecase.settings.lastVositedPoem.getLastVisitedPoem
 
 import com.vuxur.khayyam.domain.model.Poem
 import com.vuxur.khayyam.domain.repository.SettingRepository

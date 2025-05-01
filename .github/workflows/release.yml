@@ -34,12 +34,12 @@ jobs:
           tag: v${{ env.VERSION_NAME }}
 
 
-      - name: Setup JDK 17 and Android SDK
+      - name: Setup JDK 21 and Android SDK
         if: steps.check_tag_exists.outputs.exists == 'false'
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: '21'
+          distribution: 'zulu'
       - if: steps.check_tag_exists.outputs.exists == 'false'
         name: Setup Android SDK
         uses: android-actions/setup-android@v3

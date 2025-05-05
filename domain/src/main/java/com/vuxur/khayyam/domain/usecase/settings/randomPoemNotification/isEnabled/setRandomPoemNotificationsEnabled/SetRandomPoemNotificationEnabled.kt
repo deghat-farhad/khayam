@@ -5,8 +5,8 @@ import com.vuxur.khayyam.domain.usecase.base.UseCaseWithParams
 
 class SetRandomPoemNotificationEnabled(
     private val settingRepository: SettingRepository,
-) : UseCaseWithParams<Unit, SetRandomPoemNotificationsEnabledParams> {
-    override suspend fun invoke(params: SetRandomPoemNotificationsEnabledParams) {
+) : UseCaseWithParams<Unit, SetRandomPoemNotificationEnabledParams> {
+    override suspend fun invoke(params: SetRandomPoemNotificationEnabledParams) {
         return settingRepository.setRandomPoemNotificationEnabled(
             params.isEnabled
         )

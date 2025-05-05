@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.Flow
 
 class GetRandomPoemNotificationTime(
     private val settingRepository: SettingRepository,
-) : UseCase<Flow<TimeOfDay>> {
-    override suspend fun invoke(): Flow<TimeOfDay> {
+) : UseCase<Flow<TimeOfDay?>> {
+    override suspend fun invoke(): Flow<TimeOfDay?> {
         return settingRepository.randomPoemNotificationTime
     }
 }

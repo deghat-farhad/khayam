@@ -17,10 +17,13 @@ class Local @Inject constructor(
     private val preferencesDataSource: PreferencesDataSource,
 ) {
 
-    val randomPoemNotificationTime: Flow<TimeOfDayEntity> =
+    val randomPoemNotificationTime: Flow<TimeOfDayEntity?> =
         preferencesDataSource.randomPoemNotificationTime
             .map { minutes ->
-                minutes.toTimeOfDayEntity()
+                if (minutes != -1)
+                    minutes.toTimeOfDayEntity()
+                else
+                    null
             }
 
     val isRandomPoemNotificationEnabled: Flow<Boolean> =

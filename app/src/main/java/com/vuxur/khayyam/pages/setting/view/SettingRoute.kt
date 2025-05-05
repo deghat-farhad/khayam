@@ -42,6 +42,12 @@ fun SettingRoute(
             },
             onUseUntranslated = viewModel::setToUseUntranslated,
             onUseMatchSystemLanguageTranslation = viewModel::setToUseMatchSystemLanguageTranslation,
+            onSetRandomPoemNotificationTime = viewModel::setRandomPoemNotificationTime,
+            onToggleRandomPoemNotification = viewModel::setRandomPoemNotificationEnabled,
+            isRandomPoemNotificationEnabled = uiStateSnapshot.isRandomPoemNotificationEnabled,
+            randomPoemNotificationTime = uiStateSnapshot.randomPoemNotificationTime,
+            isTimePickerVisible = uiStateSnapshot.isTimePickerVisible,
+            setTimePickerVisibility = viewModel::setTimePickerVisibility
         )
     }
 }

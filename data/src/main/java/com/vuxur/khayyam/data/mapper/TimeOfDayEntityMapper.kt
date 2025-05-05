@@ -6,12 +6,12 @@ import javax.inject.Inject
 
 class TimeOfDayEntityMapper @Inject constructor() {
     fun mapToData(timeOfDay: TimeOfDay) = TimeOfDayEntity(
-        hours = timeOfDay.hours,
-        minutes = timeOfDay.minutes,
+        hours = timeOfDay.hour,
+        minutes = timeOfDay.minute,
     )
 
     fun mapToDomain(timeOfDayEntity: TimeOfDayEntity) = TimeOfDay(
-        hours = timeOfDayEntity.hours,
-        minutes = timeOfDayEntity.minutes,
+        hour = timeOfDayEntity.hours,
+        minute = timeOfDayEntity.minutes,
     )
 }

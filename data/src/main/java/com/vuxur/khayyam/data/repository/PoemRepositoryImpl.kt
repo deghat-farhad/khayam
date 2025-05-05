@@ -25,4 +25,10 @@ class PoemRepositoryImpl @Inject constructor(
         )
             .map { poemMapper.mapToDomain(it) }
     }
+
+    override suspend fun getRandomPoem(translation: Translation): Poem {
+        return poemMapper.mapToDomain(
+            local.getRandomPoem(translationEntityMapper.mapToData(translation))
+        )
+    }
 }

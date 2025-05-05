@@ -40,6 +40,10 @@ class Local @Inject constructor(
         translationEntity.languageTag
     )
 
+    suspend fun getRandomPoem(translationEntity: TranslationEntity): PoemWithTranslationEntity {
+        return (database.getRandomPoem(translationEntity.languageTag))
+    }
+
     suspend fun getAvailableTranslations() = database.getAvailableTranslations()
 
     suspend fun useUntranslated() {

@@ -101,4 +101,30 @@ interface PoemDatabaseDao {
         """
     )
     suspend fun getTranslationsWithId(translationId: Int): TranslationEntity
+
+    @Query(
+        """
+            SELECT
+                PoemEntity.id,
+                PoemEntity.`index`,
+                PoemEntity.hemistich1,
+                PoemEntity.hemistich2,
+                PoemEntity.hemistich3,
+                PoemEntity.hemistich4,
+                PoemEntity.isSuspicious,
+                PoemEntity.translationId 
+            FROM
+                PoemEntity 
+                JOIN
+                    TranslationEntity 
+                    ON TranslationEntity.id = PoemEntity.translationId 
+            WHERE
+                TranslationEntity.languageTag = :translationLanguageTag
+            ORDER BY
+                random()
+            LIMIT
+                1
+    """
+    )
+    suspend fun getRandomPoem(translationLanguageTag: String): PoemWithTranslationEntity
 }

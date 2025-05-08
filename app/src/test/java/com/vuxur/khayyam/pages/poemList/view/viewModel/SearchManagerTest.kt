@@ -8,6 +8,8 @@ import com.vuxur.khayyam.mapper.PoemItemMapper
 import com.vuxur.khayyam.mapper.TranslationItemMapper
 import com.vuxur.khayyam.model.PoemItem
 import com.vuxur.khayyam.model.TranslationItem
+import com.vuxur.khayyam.ui.pages.poemList.view.viewModel.PoemListViewModel
+import com.vuxur.khayyam.ui.pages.poemList.view.viewModel.SearchManager
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every

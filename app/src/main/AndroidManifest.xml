@@ -11,7 +11,7 @@
         android:theme="@style/Theme.Khayyam"
         android:name=".KhayyamApp">
         <activity
-            android:name=".Activity"
+            android:name=".entry.user.Activity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>

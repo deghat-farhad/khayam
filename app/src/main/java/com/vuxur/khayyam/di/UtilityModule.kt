@@ -1,10 +1,10 @@
 package com.vuxur.khayyam.di
 
 import android.content.Context
-import com.vuxur.khayyam.pages.poemList.view.viewModel.ImageFileOutputStreamProvider
-import com.vuxur.khayyam.pages.poemList.view.viewModel.ImageFileOutputStreamProviderImpl
-import com.vuxur.khayyam.pages.poemList.view.viewModel.ShareIntentProvider
-import com.vuxur.khayyam.pages.poemList.view.viewModel.ShareIntentProviderImpl
+import com.vuxur.khayyam.ui.pages.poemList.view.viewModel.ImageFileOutputStreamProvider
+import com.vuxur.khayyam.ui.pages.poemList.view.viewModel.ImageFileOutputStreamProviderImpl
+import com.vuxur.khayyam.ui.pages.poemList.view.viewModel.ShareIntentProvider
+import com.vuxur.khayyam.ui.pages.poemList.view.viewModel.ShareIntentProviderImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

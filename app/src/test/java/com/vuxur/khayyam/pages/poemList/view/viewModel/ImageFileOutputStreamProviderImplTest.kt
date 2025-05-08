@@ -1,5 +1,6 @@
 package com.vuxur.khayyam.pages.poemList.view.viewModel
 
+import com.vuxur.khayyam.ui.pages.poemList.view.viewModel.ImageFileOutputStreamProviderImpl
 import java.io.File
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach

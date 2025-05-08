@@ -13,6 +13,7 @@ import com.vuxur.khayyam.mapper.TranslationItemMapper
 import com.vuxur.khayyam.mapper.TranslationOptionsItemMapper
 import com.vuxur.khayyam.model.TranslationItem
 import com.vuxur.khayyam.model.TranslationOptionsItem
+import com.vuxur.khayyam.ui.pages.setting.SettingViewModel
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify

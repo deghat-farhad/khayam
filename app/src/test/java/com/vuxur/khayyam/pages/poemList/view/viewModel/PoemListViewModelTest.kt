@@ -21,6 +21,10 @@ import com.vuxur.khayyam.mapper.TranslationOptionsItemMapper
 import com.vuxur.khayyam.model.PoemItem
 import com.vuxur.khayyam.model.TranslationItem
 import com.vuxur.khayyam.model.TranslationOptionsItem
+import com.vuxur.khayyam.ui.pages.poemList.view.viewModel.ImageFileOutputStreamProviderImpl
+import com.vuxur.khayyam.ui.pages.poemList.view.viewModel.PoemListViewModel
+import com.vuxur.khayyam.ui.pages.poemList.view.viewModel.SearchManager
+import com.vuxur.khayyam.ui.pages.poemList.view.viewModel.ShareIntentProvider
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify

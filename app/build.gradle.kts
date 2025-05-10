@@ -73,6 +73,7 @@ tasks.withType<Test> {
 dependencies {
     implementation(project(":data"))
     implementation(project(":domain"))
+    implementation(project(":device"))
 
     implementation(Libs.Coroutines.kotlinxCoroutinesCore)
 

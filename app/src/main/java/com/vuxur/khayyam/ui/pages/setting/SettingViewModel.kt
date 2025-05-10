@@ -3,6 +3,7 @@ package com.vuxur.khayyam.ui.pages.setting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vuxur.khayyam.domain.model.TranslationOptions
+import com.vuxur.khayyam.domain.usecase.notification.rescheduleNotification.RescheduleNotification
 import com.vuxur.khayyam.domain.usecase.settings.randomPoemNotification.isEnabled.isRandomPoemNotificationEnabled.IsRandomPoemNotificationEnabled
 import com.vuxur.khayyam.domain.usecase.settings.randomPoemNotification.isEnabled.setRandomPoemNotificationsEnabled.SetRandomPoemNotificationEnabled
 import com.vuxur.khayyam.domain.usecase.settings.randomPoemNotification.isEnabled.setRandomPoemNotificationsEnabled.SetRandomPoemNotificationEnabledParams
@@ -47,6 +48,7 @@ class SettingViewModel @Inject constructor(
     private val timeOfDayItemMapper: TimeOfDayItemMapper,
     private val setRandomPoemNotificationEnabled: SetRandomPoemNotificationEnabled,
     private val isRandomPoemNotificationEnabled: IsRandomPoemNotificationEnabled,
+    private val rescheduleNotification: RescheduleNotification,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
     val uiState: StateFlow<UiState> = _uiState
@@ -97,6 +99,7 @@ class SettingViewModel @Inject constructor(
         )
         viewModelScope.launch {
             setRandomPoemNotificationTime(setRandomPoemNotificationTimeParams)
+            rescheduleNotification.invoke()
         }
         setTimePickerVisibility(isVisible = false)
     }
@@ -108,6 +111,7 @@ class SettingViewModel @Inject constructor(
 
                 if (!isEnabled) {
                     setRandomPoemNotificationEnabled(params)
+                    rescheduleNotification.invoke()
                     return@launch
                 }
 
@@ -119,6 +123,7 @@ class SettingViewModel @Inject constructor(
                 }
 
                 setRandomPoemNotificationEnabled(params)
+                rescheduleNotification.invoke()
             }
         }
     }

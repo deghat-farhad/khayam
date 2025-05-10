@@ -1,10 +1,14 @@
 package com.vuxur.khayyam.di
 
+import com.vuxur.khayyam.domain.repository.NotificationRepository
 import com.vuxur.khayyam.domain.repository.PoemRepository
 import com.vuxur.khayyam.domain.repository.SettingRepository
 import com.vuxur.khayyam.domain.repository.TranslationRepository
+import com.vuxur.khayyam.domain.usecase.notification.rescheduleNotification.RescheduleNotification
+import com.vuxur.khayyam.domain.usecase.notification.showRandomPoemNotification.ShowPoemNotification
 import com.vuxur.khayyam.domain.usecase.poems.findPoems.FindPoems
 import com.vuxur.khayyam.domain.usecase.poems.getPoems.GetPoems
+import com.vuxur.khayyam.domain.usecase.poems.getRandomPoem.GetRandomPoem
 import com.vuxur.khayyam.domain.usecase.settings.lastVositedPoem.getLastVisitedPoem.GetLastVisitedPoem
 import com.vuxur.khayyam.domain.usecase.settings.lastVositedPoem.setLastVisitedPoem.SetLastVisitedPoem
 import com.vuxur.khayyam.domain.usecase.settings.randomPoemNotification.isEnabled.isRandomPoemNotificationEnabled.IsRandomPoemNotificationEnabled
@@ -89,4 +93,23 @@ class UseCaseModule {
     fun provideIsRandomPoemNotificationEnabled(
         settingRepository: SettingRepository,
     ) = IsRandomPoemNotificationEnabled(settingRepository)
+
+    @Provides
+    fun provideGetRandomPoem(
+        poemRepository: PoemRepository,
+    ) = GetRandomPoem(poemRepository)
+
+    @Provides
+    fun provideRescheduleNotification(
+        settingRepository: SettingRepository,
+        notificationRepository: NotificationRepository,
+    ) = RescheduleNotification(
+        settingRepository,
+        notificationRepository
+    )
+
+    @Provides
+    fun provideShowPoemNotification(
+        notificationRepository: NotificationRepository,
+    ) = ShowPoemNotification(notificationRepository)
 }

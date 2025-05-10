@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="poem_of_the_day">شعر روز</string>
+    <string name="shows_a_daily_khayyam_poem">نمایش روزانه شعر خیام</string>
+</resources>

@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 
@@ -34,6 +35,8 @@ private val RANDOM_POEM_NOTIFICATION_TIME_KEY =
     intPreferencesKey("randoPoemNotificationTimeKey")
 private val IS_RANDOM_POEM_NOTIFICATION_ENABLED =
     booleanPreferencesKey("isRandomPoemNotificationEnabled")
+private val UNIQUE_NOTIFICATION_REQUEST_CODE_KEY =
+    intPreferencesKey("uniqueNotificationRequestCodeKey")
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = DATA_STORE_NAME)
 
@@ -83,6 +86,18 @@ class PreferencesDataSource @Inject constructor(
         }
     }
 
+    suspend fun generateUniqueNotificationRequestCode(): Int {
+        val currentCode = uniqueNotificationRequestCode.first()
+        val newCode = if (currentCode < Int.MAX_VALUE)
+            currentCode + 1
+        else
+            Int.MIN_VALUE
+        application.dataStore.edit { preferences ->
+            preferences[UNIQUE_NOTIFICATION_REQUEST_CODE_KEY] = newCode
+        }
+        return uniqueNotificationRequestCode.first()
+    }
+
     val isRandomPoemNotificationEnabled = application.dataStore.data
         .catch { exception ->
             if (exception is IOException) {
@@ -122,7 +137,20 @@ class PreferencesDataSource @Inject constructor(
         }
         .distinctUntilChanged()
 
-    val transactionState: Flow<TranslationPreferencesEntity> = application.dataStore.data
+    val uniqueNotificationRequestCode: Flow<Int> = application.dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[UNIQUE_NOTIFICATION_REQUEST_CODE_KEY] ?: Int.MIN_VALUE
+        }
+        .distinctUntilChanged()
+
+    val translationState: Flow<TranslationPreferencesEntity> = application.dataStore.data
         .catch { exception ->
             if (exception is IOException) {
                 emit(emptyPreferences())

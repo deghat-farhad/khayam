@@ -11,10 +11,12 @@ interface SettingRepository {
     val translationPreferences: Flow<TranslationPreferences>
     val randomPoemNotificationTime: Flow<TimeOfDay?>
     val isRandomPoemNotificationEnabled: Flow<Boolean>
+    val uniqueNotificationRequestCode: Flow<Int>
     suspend fun useUntranslated()
     suspend fun useMatchSystemLanguageTranslation()
     suspend fun useSpecificTranslation(specificTranslation: TranslationOptions.Specific)
     suspend fun setLastVisitedPoem(lastVisitedPoem: Poem)
     suspend fun setRandomPoemNotificationTime(timeOfDay: TimeOfDay)
     suspend fun setRandomPoemNotificationEnabled(isEnabled: Boolean)
+    suspend fun generateUniqueNotificationRequestCode(): Int
 }

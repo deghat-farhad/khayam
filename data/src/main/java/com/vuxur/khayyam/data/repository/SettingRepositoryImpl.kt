@@ -42,6 +42,9 @@ class SettingRepositoryImpl @Inject constructor(
     override val isRandomPoemNotificationEnabled: Flow<Boolean> =
         local.isRandomPoemNotificationEnabled
 
+    override val uniqueNotificationRequestCode: Flow<Int> =
+        local.uniqueNotificationRequestCode
+
     override suspend fun useUntranslated() {
         local.useUntranslated()
     }
@@ -69,4 +72,7 @@ class SettingRepositoryImpl @Inject constructor(
             isEnabled
         )
     }
+
+    override suspend fun generateUniqueNotificationRequestCode(): Int =
+        local.generateUniqueNotificationRequestCode()
 }

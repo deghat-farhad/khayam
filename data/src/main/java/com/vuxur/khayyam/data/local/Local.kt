@@ -29,6 +29,9 @@ class Local @Inject constructor(
     val isRandomPoemNotificationEnabled: Flow<Boolean> =
         preferencesDataSource.isRandomPoemNotificationEnabled
 
+    val uniqueNotificationRequestCode: Flow<Int> =
+        preferencesDataSource.uniqueNotificationRequestCode
+
     suspend fun getPoems(translationEntity: TranslationEntity) =
         database.getPoems(translationEntity.languageTag)
 
@@ -78,7 +81,7 @@ class Local @Inject constructor(
         }
 
     val selectedTranslationOption: Flow<TranslationPreferencesEntity> =
-        preferencesDataSource.transactionState
+        preferencesDataSource.translationState
 
     suspend fun setRandomPoemNotificationTime(timeOfDayEntity: TimeOfDayEntity) {
         preferencesDataSource.setRandomPoemNotificationTime(timeOfDayEntity)
@@ -86,5 +89,9 @@ class Local @Inject constructor(
 
     suspend fun setRandomPoemNotificationEnabled(isEnabled: Boolean) {
         preferencesDataSource.setRandomPoemNotificationEnabled(isEnabled)
+    }
+
+    suspend fun generateUniqueNotificationRequestCode(): Int {
+        return preferencesDataSource.generateUniqueNotificationRequestCode()
     }
 }

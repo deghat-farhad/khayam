@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.text.AnnotatedString
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vuxur.khayyam.di.UtilityModule
@@ -49,7 +50,10 @@ class PoemListViewModel @Inject constructor(
     private val shareIntentProvider: ShareIntentProvider,
     private val useMatchSystemLanguageTranslation: UseMatchSystemLanguageTranslation,
     private val useUntranslated: UseUntranslated,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+
+    val initialPoemId: Int? = savedStateHandle["initial_poem_id"]
 
     private val _uiState: MutableStateFlow<UiState> =
         MutableStateFlow(UiState.Loading(isTranslationOptionSelected = true))
@@ -57,19 +61,29 @@ class PoemListViewModel @Inject constructor(
     private val poemList get() = (_uiState.value as UiState.Loaded).poems
 
     fun viewIsReady(deviceLocale: Locale) {
-        if (_uiState.value is UiState.Loading) {
-            onSelectedTranslationOptionChange(deviceLocale) { translationOptionsItem ->
-                if (translationOptionsItem is TranslationOptionsItem.None) {
-                    setIsTranslationOptionSelected()
-                    setToUseMatchingSystemLanguageTranslation()
-                } else {
-                    setLoadedState(translationOptionsItem)
-                }
-            }
-            onLastVisitedPoemChanged { lastVisitedPoemItem ->
-                navigateToPoem(lastVisitedPoemItem)
-                updateSearchState()
-            }
+        if (_uiState.value !is UiState.Loading) {
+            return
+        }
+        onSelectedTranslationOptionChange(deviceLocale) { translationOptionsItem ->
+            handleTranslationOptionSelection(
+                translationOptionsItem = translationOptionsItem,
+            )
+        }
+        onLastVisitedPoemChanged { lastVisitedPoemItem ->
+            navigateToPoem(lastVisitedPoemItem)
+            updateSearchState()
+        }
+    }
+
+    private suspend fun handleTranslationOptionSelection(
+        translationOptionsItem: TranslationOptionsItem,
+    ) {
+        if (translationOptionsItem is TranslationOptionsItem.None) {
+            setIsTranslationOptionSelected()
+            setToUseMatchingSystemLanguageTranslation()
+        } else {
+            setLoadedState(translationOptionsItem)
+            poemList.find { poemItem -> poemItem.id == initialPoemId }?.let(::navigateToPoem)
         }
     }
 

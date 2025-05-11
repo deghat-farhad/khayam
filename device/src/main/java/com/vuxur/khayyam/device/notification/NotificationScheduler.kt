@@ -29,9 +29,10 @@ class NotificationScheduler @Inject constructor(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val triggerTime = timeOfDayDeviceModel.toNextTriggerMillis()
-        alarmManager.set(
+        alarmManager.setRepeating(
             AlarmManager.RTC_WAKEUP,
             triggerTime,
+            AlarmManager.INTERVAL_DAY,
             pendingIntent
         )
     }

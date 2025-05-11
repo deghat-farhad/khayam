@@ -2,4 +2,5 @@
 <resources>
     <string name="poem_of_the_day">Стих дня</string>
     <string name="shows_a_daily_khayyam_poem">Показывает ежедневный стих Хайяма</string>
+    <string name="daily_khayyam_poem">Ежедневный рубаи Хайяма</string>
 </resources>

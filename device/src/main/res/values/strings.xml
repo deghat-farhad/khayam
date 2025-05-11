@@ -2,4 +2,5 @@
 <resources>
     <string name="poem_of_the_day">Poem of the Day</string>
     <string name="shows_a_daily_khayyam_poem">Shows a daily Khayyam poem</string>
+    <string name="daily_khayyam_poem">Daily Khayyam Poem</string>
 </resources>

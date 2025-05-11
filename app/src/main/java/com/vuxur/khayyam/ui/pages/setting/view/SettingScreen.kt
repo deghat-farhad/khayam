@@ -17,6 +17,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -27,11 +28,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,11 +69,44 @@ fun SettingScreen(
     randomPoemNotificationTime: TimeOfDayItem?,
     isTimePickerVisible: Boolean,
     setTimePickerVisibility: (isVisible: Boolean) -> Unit,
+    showNotificationPermissionDenialMessage: Boolean,
+    isNotificationPermissionRationaleDialogVisible: Boolean,
+    onDismissNotificationPermissionRationaleDialog: () -> Unit,
+    onConfirmNotificationPermissionRationaleDialog: () -> Unit,
 ) {
     var dropdownExpanded by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 
     val context = LocalContext.current
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(showNotificationPermissionDenialMessage) {
+        if (showNotificationPermissionDenialMessage)
+            snackbarHostState.showSnackbar(
+                message = context.getString(R.string.random_poem_permission_denial_message)
+            )
+    }
+
+    if (isNotificationPermissionRationaleDialogVisible) {
+        AlertDialog(
+            onDismissRequest = onDismissNotificationPermissionRationaleDialog,
+            title = { Text(stringResource(R.string.random_poem_notification_permission_rationale_title)) },
+            text = {
+                Text(stringResource(R.string.random_poem_notification_permission_rationale_caption))
+            },
+            confirmButton = {
+                TextButton(onClick = onConfirmNotificationPermissionRationaleDialog) {
+                    Text(stringResource(R.string.allow))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismissNotificationPermissionRationaleDialog) {
+                    Text(stringResource(R.string.no_thanks))
+                }
+            }
+        )
+    }
 
     if (isTimePickerVisible) {
         DialWithDialogExample(
@@ -103,7 +141,8 @@ fun SettingScreen(
                     containerColor = Color.Transparent
                 )
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { paddingValues ->
         Column(
             modifier = Modifier

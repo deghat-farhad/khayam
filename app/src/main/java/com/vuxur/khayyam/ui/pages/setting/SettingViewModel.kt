@@ -1,5 +1,6 @@
 package com.vuxur.khayyam.ui.pages.setting
 
+import android.Manifest
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vuxur.khayyam.domain.model.TranslationOptions
@@ -23,6 +24,7 @@ import com.vuxur.khayyam.mapper.TranslationOptionsItemMapper
 import com.vuxur.khayyam.model.TimeOfDayItem
 import com.vuxur.khayyam.model.TranslationItem
 import com.vuxur.khayyam.model.TranslationOptionsItem
+import com.vuxur.khayyam.utils.PermissionChecker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.Locale
 import javax.inject.Inject
@@ -49,6 +51,7 @@ class SettingViewModel @Inject constructor(
     private val setRandomPoemNotificationEnabled: SetRandomPoemNotificationEnabled,
     private val isRandomPoemNotificationEnabled: IsRandomPoemNotificationEnabled,
     private val rescheduleNotification: RescheduleNotification,
+    private val permissionChecker: PermissionChecker,
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<UiState> = MutableStateFlow(UiState.Loading)
     val uiState: StateFlow<UiState> = _uiState
@@ -57,8 +60,8 @@ class SettingViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = UiState.Loaded(
                 availableTranslations =
-                translationItemMapper.mapToPresentation(getAvailableTranslations())
-                    .filterNot { it.isUntranslated() },
+                    translationItemMapper.mapToPresentation(getAvailableTranslations())
+                        .filterNot { it.isUntranslated() },
                 isRandomPoemNotificationEnabled = isRandomPoemNotificationEnabled.invoke().first(),
                 randomPoemNotificationTime = getRandomPoemNotificationTime.invoke()
                     .map { timeOfDay ->
@@ -105,27 +108,55 @@ class SettingViewModel @Inject constructor(
     }
 
     fun setRandomPoemNotificationEnabled(isEnabled: Boolean) {
-        (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
-            viewModelScope.launch {
-                val params = SetRandomPoemNotificationEnabledParams(isEnabled = isEnabled)
+        if (checkNotificationPermission())
+            (_uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+                viewModelScope.launch {
+                    val params = SetRandomPoemNotificationEnabledParams(isEnabled = isEnabled)
 
-                if (!isEnabled) {
+                    if (!isEnabled) {
+                        setRandomPoemNotificationEnabled(params)
+                        rescheduleNotification.invoke()
+                        return@launch
+                    }
+
+                    if (uiStateSnapshot.randomPoemNotificationTime == null) {
+                        setTimePickerVisibility(true)
+                        getRandomPoemNotificationTime.invoke()
+                            .filterNotNull()
+                            .first()
+                    }
+
                     setRandomPoemNotificationEnabled(params)
                     rescheduleNotification.invoke()
-                    return@launch
                 }
-
-                if (uiStateSnapshot.randomPoemNotificationTime == null) {
-                    setTimePickerVisibility(true)
-                    getRandomPoemNotificationTime.invoke()
-                        .filterNotNull()
-                        .first()
-                }
-
-                setRandomPoemNotificationEnabled(params)
-                rescheduleNotification.invoke()
             }
+    }
+
+    private fun checkNotificationPermission(): Boolean {
+        return (if (permissionChecker.isPermissionGranted(Manifest.permission.POST_NOTIFICATIONS)) {
+            true
+        } else {
+            setNotificationPermissionRationaleDialogVisibility(true)
+            false
+        })
+    }
+
+    private fun setNotificationPermissionRationaleDialogVisibility(visibility: Boolean) {
+        _uiState.update { current ->
+            if (current is UiState.Loaded)
+                current.copy(isNotificationPermissionRationaleDialogVisible = visibility)
+            else
+                current
         }
+    }
+
+    fun onDismissNotificationPermissionRationaleDialog() {
+        setNotificationPermissionRationaleDialogVisibility(false)
+    }
+
+    fun onConfirmNotificationPermissionRationaleDialog() {
+        setNotificationPermissionRationaleDialogVisibility(false)
+        consumeEvent(Event.RequestPostNotificationPermission)
     }
 
     fun setTimePickerVisibility(isVisible: Boolean) {
@@ -190,7 +221,7 @@ class SettingViewModel @Inject constructor(
                     if (current is UiState.Loaded)
                         current.copy(
                             selectedTranslationOption =
-                            translationOptionsItemMapper.mapToPresentation(translationOption)
+                                translationOptionsItemMapper.mapToPresentation(translationOption)
                         )
                     else
                         current
@@ -219,15 +250,22 @@ class SettingViewModel @Inject constructor(
                     if (current is UiState.Loaded && randomPoemNotificationTime != null)
                         current.copy(
                             randomPoemNotificationTime =
-                            timeOfDayItemMapper.mapToPresentation(
-                                randomPoemNotificationTime
-                            ),
+                                timeOfDayItemMapper.mapToPresentation(
+                                    randomPoemNotificationTime
+                                ),
                         )
                     else
                         current
                 }
             }
         }
+    }
+
+    fun onNotificationPermissionResult(isGranted: Boolean) {
+        if (isGranted)
+            setRandomPoemNotificationEnabled(true)
+        else
+            consumeEvent(Event.ShowPermissionDenialMessage)
     }
 
     sealed class UiState {
@@ -239,10 +277,13 @@ class SettingViewModel @Inject constructor(
             val isRandomPoemNotificationEnabled: Boolean,
             val randomPoemNotificationTime: TimeOfDayItem? = null,
             val isTimePickerVisible: Boolean = false,
+            val isNotificationPermissionRationaleDialogVisible: Boolean = false,
         ) : UiState()
     }
 
     sealed class Event {
         data object PopBack : Event()
+        data object RequestPostNotificationPermission : Event()
+        data object ShowPermissionDenialMessage : Event()
     }
 }

@@ -33,4 +33,9 @@
     <string name="select_time">Select Time</string>
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
+    <string name="random_poem_permission_denial_message">No problem! If you change your mind, you can enable notifications anytime in settings to enjoy a new poem each day.</string>
+    <string name="random_poem_notification_permission_rationale_title">Stay Inspired Daily</string>
+    <string name="random_poem_notification_permission_rationale_caption">To send you a daily Khayyam poem, we need permission to show notifications. This helps you receive a new poem each day without opening the app.</string>
+    <string name="allow">Allow</string>
+    <string name="no_thanks">No Thanks</string>
 </resources>

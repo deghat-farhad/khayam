@@ -13,7 +13,6 @@ class NotificationRepositoryImpl(
     private val notificationScheduler: NotificationScheduler,
     private val timeOfDayDeviceModelMapper: TimeOfDayDeviceModelMapper,
     private val poemNotificationManager: PoemNotificationManager,
-    private val poemDeviceModelMapper: PoemDevicePoemMapper,
 ) : NotificationRepository {
     override suspend fun rescheduleNotification(timeOfDay: TimeOfDay) {
         notificationScheduler.scheduleAt(timeOfDayDeviceModelMapper.mapToDevice(timeOfDay))
@@ -22,5 +21,9 @@ class NotificationRepositoryImpl(
     override suspend fun showRandomPoemNotification(poem: Poem) {
         Log.i("NotificationRepository", poem.toString())
         poemNotificationManager.show(PoemDevicePoemMapper.mapToDevice(poem))
+    }
+
+    override suspend fun cancelRandomPoemNotification() {
+        notificationScheduler.cancel()
     }
 }

@@ -6,4 +6,5 @@ import com.vuxur.khayyam.domain.model.TimeOfDay
 interface NotificationRepository {
     suspend fun rescheduleNotification(timeOfDay: TimeOfDay)
     suspend fun showRandomPoemNotification(poem: Poem)
+    suspend fun cancelRandomPoemNotification()
 }

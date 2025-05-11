@@ -1,6 +1,5 @@
 package com.vuxur.khayyam.device.di
 
-import com.vuxur.khayyam.device.mapper.PoemDevicePoemMapper
 import com.vuxur.khayyam.device.mapper.TimeOfDayDeviceModelMapper
 import com.vuxur.khayyam.device.notification.NotificationScheduler
 import com.vuxur.khayyam.device.notification.PoemNotificationManager
@@ -19,11 +18,9 @@ class RepositoryModule {
         notificationScheduler: NotificationScheduler,
         timeOfDayDeviceModelMapper: TimeOfDayDeviceModelMapper,
         poemNotificationManager: PoemNotificationManager,
-        poemDevicePoemMapper: PoemDevicePoemMapper,
     ): NotificationRepository = NotificationRepositoryImpl(
         notificationScheduler,
         timeOfDayDeviceModelMapper,
         poemNotificationManager,
-        poemDevicePoemMapper,
     )
 }

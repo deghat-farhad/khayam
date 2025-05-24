@@ -1,10 +1,13 @@
 package com.vuxur.khayyam.di
 
 import android.content.Context
-import com.vuxur.khayyam.pages.poemList.view.viewModel.ImageFileOutputStreamProvider
-import com.vuxur.khayyam.pages.poemList.view.viewModel.ImageFileOutputStreamProviderImpl
-import com.vuxur.khayyam.pages.poemList.view.viewModel.ShareIntentProvider
-import com.vuxur.khayyam.pages.poemList.view.viewModel.ShareIntentProviderImpl
+import com.vuxur.khayyam.ui.pages.poemList.view.viewModel.ImageFileOutputStreamProvider
+import com.vuxur.khayyam.ui.pages.poemList.view.viewModel.ImageFileOutputStreamProviderImpl
+import com.vuxur.khayyam.ui.pages.poemList.view.viewModel.ShareIntentProvider
+import com.vuxur.khayyam.ui.pages.poemList.view.viewModel.ShareIntentProviderImpl
+import com.vuxur.khayyam.utils.AndroidPermissionChecker
+import com.vuxur.khayyam.utils.PermissionChecker
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -60,4 +63,11 @@ class UtilityModule {
     fun provideShareIntentProvider(): ShareIntentProvider {
         return ShareIntentProviderImpl()
     }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class PermissionModule {
+    @Binds
+    abstract fun bindPermissionChecker(impl: AndroidPermissionChecker): PermissionChecker
 }

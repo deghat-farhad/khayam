@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,13 +13,23 @@
         android:theme="@style/Theme.Khayyam"
         android:name=".KhayyamApp">
         <activity
-            android:name=".Activity"
+            android:name=".entry.user.Activity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="poem_list"
+                    android:scheme="khayyam" />
             </intent-filter>
         </activity>
 
@@ -30,6 +42,22 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
+
+        <receiver
+            android:name=".entry.system.BootBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".entry.system.NotificationAlarmBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.vuxur.khayyam.ACTION_SCHEDULE_NOTIFICATION" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

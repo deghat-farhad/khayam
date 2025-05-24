@@ -2,9 +2,11 @@ package com.vuxur.khayyam.data.repository
 
 import com.vuxur.khayyam.data.local.Local
 import com.vuxur.khayyam.data.mapper.PoemMapper
+import com.vuxur.khayyam.data.mapper.TimeOfDayEntityMapper
 import com.vuxur.khayyam.data.mapper.TranslationOptionsEntityMapper
 import com.vuxur.khayyam.data.mapper.TranslationPreferencesEntityMapper
 import com.vuxur.khayyam.domain.model.Poem
+import com.vuxur.khayyam.domain.model.TimeOfDay
 import com.vuxur.khayyam.domain.model.TranslationOptions
 import com.vuxur.khayyam.domain.model.TranslationPreferences
 import com.vuxur.khayyam.domain.repository.SettingRepository
@@ -17,6 +19,7 @@ class SettingRepositoryImpl @Inject constructor(
     private val translationOptionsEntityMapper: TranslationOptionsEntityMapper,
     private val poemMapper: PoemMapper,
     private val translationPreferencesEntityMapper: TranslationPreferencesEntityMapper,
+    private val timeOfDayEntityMapper: TimeOfDayEntityMapper,
 ) : SettingRepository {
     override val lastVisitedPoem = local.lastVisitedPoem.map { lastVisitedPoemEntity ->
         lastVisitedPoemEntity?.let {
@@ -28,6 +31,19 @@ class SettingRepositoryImpl @Inject constructor(
         local.selectedTranslationOption.map { translationPreferences ->
             translationPreferencesEntityMapper.mapToDomain(translationPreferences)
         }
+
+    override val randomPoemNotificationTime: Flow<TimeOfDay?> =
+        local.randomPoemNotificationTime.map { timeOfDayEntity ->
+            timeOfDayEntity?.let {
+                timeOfDayEntityMapper.mapToDomain(timeOfDayEntity)
+            }
+        }
+
+    override val isRandomPoemNotificationEnabled: Flow<Boolean> =
+        local.isRandomPoemNotificationEnabled
+
+    override val uniqueNotificationRequestCode: Flow<Int> =
+        local.uniqueNotificationRequestCode
 
     override suspend fun useUntranslated() {
         local.useUntranslated()
@@ -44,4 +60,19 @@ class SettingRepositoryImpl @Inject constructor(
     override suspend fun setLastVisitedPoem(lastVisitedPoem: Poem) {
         local.setLastVisitedPoem(poemMapper.mapToData(lastVisitedPoem))
     }
+
+    override suspend fun setRandomPoemNotificationTime(timeOfDay: TimeOfDay) {
+        local.setRandomPoemNotificationTime(
+            timeOfDayEntityMapper.mapToData(timeOfDay)
+        )
+    }
+
+    override suspend fun setRandomPoemNotificationEnabled(isEnabled: Boolean) {
+        local.setRandomPoemNotificationEnabled(
+            isEnabled
+        )
+    }
+
+    override suspend fun generateUniqueNotificationRequestCode(): Int =
+        local.generateUniqueNotificationRequestCode()
 }

@@ -7,6 +7,10 @@ java {
     targetCompatibility = ConfigurationData.javaVersion
 }
 
+kotlin {
+    jvmToolchain(ConfigurationData.javaVersionInt)
+}
+
 dependencies {
     implementation(Libs.Coroutines.kotlinxCoroutinesCore)
 }

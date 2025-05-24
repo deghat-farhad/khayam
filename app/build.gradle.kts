@@ -25,10 +25,6 @@ android {
             targetCompatibility = ConfigurationData.javaVersion
         }
 
-        kotlinOptions {
-            jvmTarget = ConfigurationData.javaVersion.toString()
-        }
-
         buildFeatures {
             buildConfig = true
         }
@@ -66,6 +62,10 @@ android {
     }
 }
 
+kotlin {
+    jvmToolchain(ConfigurationData.javaVersionInt)
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }
@@ -73,6 +73,7 @@ tasks.withType<Test> {
 dependencies {
     implementation(project(":data"))
     implementation(project(":domain"))
+    implementation(project(":device"))
 
     implementation(Libs.Coroutines.kotlinxCoroutinesCore)
 

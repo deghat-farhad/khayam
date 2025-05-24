@@ -13,4 +13,7 @@ object ConfigurationData {
     const val isMinifyEnabled = true
 
     val javaVersion = JavaVersion.VERSION_21
+
+    val javaVersionInt: Int
+        get() = javaVersion.majorVersion.toInt()
 }

@@ -10,15 +10,18 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.vuxur.khayyam.data.entity.PoemWithTranslationEntity
+import com.vuxur.khayyam.data.entity.TimeOfDayEntity
 import com.vuxur.khayyam.data.entity.TranslationEntity
 import com.vuxur.khayyam.data.entity.TranslationOptionsEntity
 import com.vuxur.khayyam.data.entity.TranslationPreferencesEntity
+import com.vuxur.khayyam.data.utils.toMinutes
 import java.io.IOException
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 
@@ -28,6 +31,13 @@ private val LAST_VISITED_POEM_ID_KEY = intPreferencesKey("lastVisitedPoemIdKey")
 private val IS_USING_MATCH_DEVICE_LANGUAGE_TRANSLATION_KEY =
     booleanPreferencesKey("isUsingMatchDeviceLanguageTranslation")
 private val IS_USING_UNTRANSLATED_KEY = booleanPreferencesKey("isUsingUntranslated")
+private val RANDOM_POEM_NOTIFICATION_TIME_KEY =
+    intPreferencesKey("randoPoemNotificationTimeKey")
+private val IS_RANDOM_POEM_NOTIFICATION_ENABLED =
+    booleanPreferencesKey("isRandomPoemNotificationEnabled")
+private val UNIQUE_NOTIFICATION_REQUEST_CODE_KEY =
+    intPreferencesKey("uniqueNotificationRequestCodeKey")
+
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = DATA_STORE_NAME)
 
 class PreferencesDataSource @Inject constructor(
@@ -64,6 +74,56 @@ class PreferencesDataSource @Inject constructor(
         }
     }
 
+    suspend fun setRandomPoemNotificationTime(timeOfDayEntity: TimeOfDayEntity) {
+        application.dataStore.edit { preferences ->
+            preferences[RANDOM_POEM_NOTIFICATION_TIME_KEY] = timeOfDayEntity.toMinutes()
+        }
+    }
+
+    suspend fun setRandomPoemNotificationEnabled(isEnabled: Boolean) {
+        application.dataStore.edit { preferences ->
+            preferences[IS_RANDOM_POEM_NOTIFICATION_ENABLED] = isEnabled
+        }
+    }
+
+    suspend fun generateUniqueNotificationRequestCode(): Int {
+        val currentCode = uniqueNotificationRequestCode.first()
+        val newCode = if (currentCode < Int.MAX_VALUE)
+            currentCode + 1
+        else
+            Int.MIN_VALUE
+        application.dataStore.edit { preferences ->
+            preferences[UNIQUE_NOTIFICATION_REQUEST_CODE_KEY] = newCode
+        }
+        return uniqueNotificationRequestCode.first()
+    }
+
+    val isRandomPoemNotificationEnabled = application.dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[IS_RANDOM_POEM_NOTIFICATION_ENABLED] == true
+        }
+        .distinctUntilChanged()
+
+    val randomPoemNotificationTime = application.dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[RANDOM_POEM_NOTIFICATION_TIME_KEY] ?: -1
+        }
+        .distinctUntilChanged()
+
     val lastVisitedPoem: Flow<Int> = application.dataStore.data
         .catch { exception ->
             if (exception is IOException) {
@@ -77,7 +137,20 @@ class PreferencesDataSource @Inject constructor(
         }
         .distinctUntilChanged()
 
-    val transactionState: Flow<TranslationPreferencesEntity> = application.dataStore.data
+    val uniqueNotificationRequestCode: Flow<Int> = application.dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[UNIQUE_NOTIFICATION_REQUEST_CODE_KEY] ?: Int.MIN_VALUE
+        }
+        .distinctUntilChanged()
+
+    val translationState: Flow<TranslationPreferencesEntity> = application.dataStore.data
         .catch { exception ->
             if (exception is IOException) {
                 emit(emptyPreferences())
@@ -102,7 +175,7 @@ class PreferencesDataSource @Inject constructor(
                 preferences[IS_USING_MATCH_DEVICE_LANGUAGE_TRANSLATION_KEY] == null &&
                     preferences[SPECIFIC_TRANSLATION_ID_KEY] == null &&
                     preferences[IS_USING_MATCH_DEVICE_LANGUAGE_TRANSLATION_KEY] == null
-                -> TranslationPreferencesEntity.None
+                    -> TranslationPreferencesEntity.None
 
                 else -> null
             }

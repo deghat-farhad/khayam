@@ -1,6 +1,7 @@
 package com.vuxur.khayyam.pages.poemList.view.viewModel
 
 import android.content.Intent
+import com.vuxur.khayyam.ui.pages.poemList.view.viewModel.ShareIntentProviderImpl
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor

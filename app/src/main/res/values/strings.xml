@@ -25,4 +25,17 @@
     <string name="translation_snackbar_text_for_untranslated_device_language">Based on your device language, you are reading the original poems of Omar Khayyam</string>
     <string name="switch_to_original">Switch to Original</string>
     <string name="fallback_translation_message">We\'re showing the poems in default language as your device language is not yet supported.</string>
+    <string name="enable_daily_poem_notification">Enable Daily Poem Notification</string>
+    <string name="disable_daily_poem_notification">Disable Daily Poem Notification</string>
+    <string name="random_poem_notification_description">Receive a random Khayyam poem every day at your selected time.</string>
+    <string name="random_poem_time_display">Notification time: %1$s</string>
+    <string name="random_poem_notification_settings_title">Daily Poem Notification</string>
+    <string name="select_time">Select Time</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="random_poem_permission_denial_message">No problem! If you change your mind, you can enable notifications anytime in settings to enjoy a new poem each day.</string>
+    <string name="random_poem_notification_permission_rationale_title">Stay Inspired Daily</string>
+    <string name="random_poem_notification_permission_rationale_caption">To send you a daily Khayyam poem, we need permission to show notifications. This helps you receive a new poem each day without opening the app.</string>
+    <string name="allow">Allow</string>
+    <string name="no_thanks">No Thanks</string>
 </resources>

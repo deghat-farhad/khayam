@@ -619,7 +619,6 @@ class PoemListViewModelTest {
         val uiState = viewModel.uiState.value as PoemListViewModel.UiState.Loaded
 
         // Verify the Intent interactions
-        verify { mockIntent.setData(mockPoemUri) }
         verify { mockIntent.putExtra(Intent.EXTRA_STREAM, mockPoemUri) }
         verify { shareIntentProvider.getShareImageIntent() }
 

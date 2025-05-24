@@ -210,7 +210,6 @@ class PoemListViewModel @Inject constructor(
 
     fun sharePoemImageUri(poemUri: Uri) {
         val shareIntent = shareIntentProvider.getShareImageIntent()
-            .setData(poemUri)
             .putExtra(Intent.EXTRA_STREAM, poemUri)
         consumeEvent(Event.SharePoemText(shareIntent))
     }

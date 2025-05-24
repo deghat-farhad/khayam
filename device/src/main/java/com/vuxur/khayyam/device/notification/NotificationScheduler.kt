@@ -5,10 +5,14 @@ import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import android.util.Log
 import com.vuxur.khayyam.device.extentions.toNextTriggerMillis
 import com.vuxur.khayyam.device.model.TimeOfDayDeviceModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
+
+const val EXTRA_REQUEST_CODE = "requestCode"
 
 class NotificationScheduler @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -20,6 +24,7 @@ class NotificationScheduler @Inject constructor(
                 "com.vuxur.khayyam",
                 "com.vuxur.khayyam.entry.system.NotificationAlarmBroadcastReceiver"
             )
+            putExtra(EXTRA_REQUEST_CODE, uniqueRequestCode)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
@@ -29,12 +34,24 @@ class NotificationScheduler @Inject constructor(
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         val triggerTime = timeOfDayDeviceModel.toNextTriggerMillis()
-        alarmManager.setRepeating(
-            AlarmManager.RTC_WAKEUP,
-            triggerTime,
-            AlarmManager.INTERVAL_DAY,
-            pendingIntent
-        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarmManager.setAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                triggerTime,
+                pendingIntent
+            )
+            Log.d(
+                "NotificationScheduler",
+                "Using setAndAllowWhileIdle (API ${Build.VERSION.SDK_INT})"
+            )
+        } else {
+            alarmManager.setExact(
+                AlarmManager.RTC_WAKEUP,
+                triggerTime,
+                pendingIntent
+            )
+            Log.d("NotificationScheduler", "Using setExact (API ${Build.VERSION.SDK_INT})")
+        }
     }
 
     fun cancel(uniqueRequestCode: Int) {
@@ -44,6 +61,7 @@ class NotificationScheduler @Inject constructor(
                 "com.vuxur.khayyam",
                 "com.vuxur.khayyam.entry.system.NotificationAlarmBroadcastReceiver"
             )
+            putExtra(EXTRA_REQUEST_CODE, uniqueRequestCode)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(

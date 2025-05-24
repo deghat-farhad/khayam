@@ -10,8 +10,11 @@ class RescheduleNotification(
     private val notificationRepository: NotificationRepository,
 ) : UseCase<Unit> {
     override suspend fun invoke() {
-        val isEnable = settingRepository.isRandomPoemNotificationEnabled.first()
+        val uniqueNotificationRequestCode =
+            settingRepository.uniqueNotificationRequestCode.first()
+        notificationRepository.cancelRandomPoemNotification(uniqueNotificationRequestCode)
 
+        val isEnable = settingRepository.isRandomPoemNotificationEnabled.first()
         if (isEnable) {
             settingRepository.randomPoemNotificationTime.first()?.let { timeOfDay ->
                 val uniqueNotificationRequestCode =
@@ -21,10 +24,6 @@ class RescheduleNotification(
                     uniqueNotificationRequestCode
                 )
             }
-        } else {
-            val uniqueNotificationRequestCode =
-                settingRepository.uniqueNotificationRequestCode.first()
-            notificationRepository.cancelRandomPoemNotification(uniqueNotificationRequestCode)
         }
     }
 }

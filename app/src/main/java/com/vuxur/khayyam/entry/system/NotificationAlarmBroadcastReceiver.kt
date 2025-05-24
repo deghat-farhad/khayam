@@ -3,6 +3,7 @@ package com.vuxur.khayyam.entry.system
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.vuxur.khayyam.domain.usecase.notification.rescheduleNotification.RescheduleNotification
 import com.vuxur.khayyam.domain.usecase.notification.showRandomPoemNotification.ShowPoemNotification
 import com.vuxur.khayyam.domain.usecase.notification.showRandomPoemNotification.ShowPoemNotificationParams
 import com.vuxur.khayyam.domain.usecase.poems.getRandomPoem.GetRandomPoem
@@ -21,7 +22,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class NotificationAlarmBroadcastReceiver : BroadcastReceiver() {
     @Inject
-    lateinit var showRandomPoemNotification: ShowPoemNotification
+    lateinit var showPoemNotification: ShowPoemNotification
 
     @Inject
     lateinit var getSelectedTranslationOption: GetSelectedTranslationOption
@@ -29,22 +30,34 @@ class NotificationAlarmBroadcastReceiver : BroadcastReceiver() {
     @Inject
     lateinit var getRandomPoem: GetRandomPoem
 
+    @Inject
+    lateinit var rescheduleNotification: RescheduleNotification
+
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     override fun onReceive(context: Context, intent: Intent) {
         scope.launch {
-            val getSelectedTranslationOptionParams = GetSelectedTranslationOptionParams(
-                Locale.getDefault()
-            )
-            val translation =
-                getSelectedTranslationOption(getSelectedTranslationOptionParams).first()
-
-            val randomPoemParams = GetRandomPoemParams(translation)
-            val randomPoem = getRandomPoem(randomPoemParams)
-            val showPoemNotificationParams = ShowPoemNotificationParams(
-                randomPoem
-            )
-            showRandomPoemNotification.invoke(showPoemNotificationParams)
+            showRandomPoemNotification()
+            scheduleNextNotification()
         }
+    }
+
+    private suspend fun showRandomPoemNotification() {
+        val getSelectedTranslationOptionParams = GetSelectedTranslationOptionParams(
+            Locale.getDefault()
+        )
+        val translation =
+            getSelectedTranslationOption(getSelectedTranslationOptionParams).first()
+
+        val randomPoemParams = GetRandomPoemParams(translation)
+        val randomPoem = getRandomPoem(randomPoemParams)
+        val showPoemNotificationParams = ShowPoemNotificationParams(
+            randomPoem
+        )
+        showPoemNotification.invoke(showPoemNotificationParams)
+    }
+
+    private suspend fun scheduleNextNotification() {
+        rescheduleNotification.invoke()
     }
 }

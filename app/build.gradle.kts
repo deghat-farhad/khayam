@@ -25,10 +25,6 @@ android {
             targetCompatibility = ConfigurationData.javaVersion
         }
 
-        kotlinOptions {
-            jvmTarget = ConfigurationData.javaVersion.toString()
-        }
-
         buildFeatures {
             buildConfig = true
         }
@@ -64,6 +60,10 @@ android {
         textOutput = File("stdout")
         explainIssues = false
     }
+}
+
+kotlin {
+    jvmToolchain(ConfigurationData.javaVersionInt)
 }
 
 tasks.withType<Test> {

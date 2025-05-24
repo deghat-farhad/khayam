@@ -19,15 +19,15 @@ android {
             sourceCompatibility = ConfigurationData.javaVersion
             targetCompatibility = ConfigurationData.javaVersion
         }
-
-        kotlinOptions {
-            jvmTarget = ConfigurationData.javaVersion.toString()
-        }
     }
 
     buildFeatures {
         viewBinding = true
     }
+}
+
+kotlin {
+    jvmToolchain(ConfigurationData.javaVersionInt)
 }
 
 dependencies {

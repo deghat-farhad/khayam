@@ -83,6 +83,12 @@ class PoemListViewModel @Inject constructor(
             setToUseMatchingSystemLanguageTranslation()
         } else {
             setLoadedState(translationOptionsItem)
+            navigateToInitialPoem()
+        }
+    }
+
+    private fun navigateToInitialPoem() {
+        (_uiState.value as? UiState.Loaded)?.let {
             poemList.find { poemItem -> poemItem.id == initialPoemId }?.let(::navigateToPoem)
         }
     }

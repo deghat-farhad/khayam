@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.text.AnnotatedString
+import androidx.lifecycle.SavedStateHandle
 import com.vuxur.khayyam.domain.model.Poem
 import com.vuxur.khayyam.domain.model.Translation
 import com.vuxur.khayyam.domain.model.TranslationOptions
@@ -90,9 +91,11 @@ class PoemListViewModelTest {
         hasPrevious = false,
     )
     private val deviceLocale: Locale = mockk()
+    private val savedStateHandle: SavedStateHandle = mockk()
 
     @BeforeEach
     fun setUp() {
+        every { savedStateHandle.get<Int>("initial_poem_id") } returns 0
         viewModel = PoemListViewModel(
             getPoems,
             poemItemMapper,
@@ -105,7 +108,8 @@ class PoemListViewModelTest {
             imageFile,
             shareIntentProvider,
             useMatchSystemLanguageTranslation,
-            useUntranslated
+            useUntranslated,
+            savedStateHandle,
         )
 
         // Mock interactions

@@ -1,7 +1,13 @@
 package com.vuxur.khayyam.pages.setting
 
+import com.vuxur.khayyam.domain.model.TimeOfDay
 import com.vuxur.khayyam.domain.model.Translation
 import com.vuxur.khayyam.domain.model.TranslationOptions
+import com.vuxur.khayyam.domain.usecase.notification.rescheduleNotification.RescheduleNotification
+import com.vuxur.khayyam.domain.usecase.settings.randomPoemNotification.isEnabled.isRandomPoemNotificationEnabled.IsRandomPoemNotificationEnabled
+import com.vuxur.khayyam.domain.usecase.settings.randomPoemNotification.isEnabled.setRandomPoemNotificationsEnabled.SetRandomPoemNotificationEnabled
+import com.vuxur.khayyam.domain.usecase.settings.randomPoemNotification.time.getRandomPoemNotificationTime.GetRandomPoemNotificationTime
+import com.vuxur.khayyam.domain.usecase.settings.randomPoemNotification.time.setRandomPoemNotificationTime.SetRandomPoemNotificationTime
 import com.vuxur.khayyam.domain.usecase.settings.translation.getSelectedTranslationOption.GetSelectedTranslationOption
 import com.vuxur.khayyam.domain.usecase.settings.translation.getSelectedTranslationOption.UNTRANSLATED_LANGUAGE_TAG
 import com.vuxur.khayyam.domain.usecase.settings.translation.getTranslations.GetAvailableTranslations
@@ -9,11 +15,14 @@ import com.vuxur.khayyam.domain.usecase.settings.translation.useMatchingSystemLa
 import com.vuxur.khayyam.domain.usecase.settings.translation.useSpecificTranslation.UseSpecificTranslation
 import com.vuxur.khayyam.domain.usecase.settings.translation.useSpecificTranslation.UseSpecificTranslationParams
 import com.vuxur.khayyam.domain.usecase.settings.translation.useUntranslated.UseUntranslated
+import com.vuxur.khayyam.mapper.TimeOfDayItemMapper
 import com.vuxur.khayyam.mapper.TranslationItemMapper
 import com.vuxur.khayyam.mapper.TranslationOptionsItemMapper
+import com.vuxur.khayyam.model.TimeOfDayItem
 import com.vuxur.khayyam.model.TranslationItem
 import com.vuxur.khayyam.model.TranslationOptionsItem
 import com.vuxur.khayyam.ui.pages.setting.SettingViewModel
+import com.vuxur.khayyam.utils.PermissionChecker
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -46,6 +55,13 @@ class SettingViewModelTest {
     private val useSpecificTranslation: UseSpecificTranslation = mockk()
     private val translationOptions: TranslationOptions = mockk()
     private val poemTranslationOptionsItem: TranslationOptionsItem = mockk()
+    private val setRandomPoemNotificationTime: SetRandomPoemNotificationTime = mockk()
+    private val getRandomPoemNotificationTime: GetRandomPoemNotificationTime = mockk()
+    private val timeOfDayItemMapper: TimeOfDayItemMapper = mockk()
+    private val setRandomPoemNotificationEnabled: SetRandomPoemNotificationEnabled = mockk()
+    private val isRandomPoemNotificationEnabled: IsRandomPoemNotificationEnabled = mockk()
+    private val rescheduleNotification: RescheduleNotification = mockk()
+    private val permissionChecker: PermissionChecker = mockk()
     private val untranslatedTranslation =
         Translation(
             1,
@@ -93,6 +109,8 @@ class SettingViewModelTest {
                 translationItem.translator,
             )
         }
+    private val timeOfDay: TimeOfDay = mockk()
+    private val timeOfDayItem: TimeOfDayItem = mockk()
     private val useSpecificTranslationParamsSlot = slot<UseSpecificTranslationParams>()
     private val translationItemMapper: TranslationItemMapper = mockk()
     private val useMatchSystemLanguageTranslation: UseMatchSystemLanguageTranslation = mockk()
@@ -109,6 +127,13 @@ class SettingViewModelTest {
             translationItemMapper,
             useMatchSystemLanguageTranslation,
             useUntranslated,
+            setRandomPoemNotificationTime,
+            getRandomPoemNotificationTime,
+            timeOfDayItemMapper,
+            setRandomPoemNotificationEnabled,
+            isRandomPoemNotificationEnabled,
+            rescheduleNotification,
+            permissionChecker,
         )
 
         coEvery { getSelectedTranslationOption(any()) } returns flowOf(translationOptions)
@@ -119,6 +144,9 @@ class SettingViewModelTest {
         coEvery { useSpecificTranslation(capture(useSpecificTranslationParamsSlot)) } just Runs
         coEvery { useMatchSystemLanguageTranslation() } just Runs
         coEvery { useUntranslated() } just Runs
+        coEvery { isRandomPoemNotificationEnabled() } returns flowOf(false)
+        coEvery { getRandomPoemNotificationTime() } returns flowOf(timeOfDay)
+        every { timeOfDayItemMapper.mapToPresentation(timeOfDay) } returns timeOfDayItem
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

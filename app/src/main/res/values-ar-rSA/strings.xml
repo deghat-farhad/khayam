@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">خيّام</string>
+    <string name="search">بحث</string>
+    <string name="copyText">نسخ النص</string>
+    <string name="shareText">مشاركة النص</string>
+    <string name="shareImage">مشاركة الصورة</string>
+    <string name="settings">الإعدادات</string>
+    <string name="previous_result">النتيجة السابقة</string>
+    <string name="next_result">النتيجة التالية</string>
+    <string name="random_poem">قصيدة عشوائية</string>
+    <string name="share">مشاركة</string>
+    <string name="back">رجوع</string>
+    <string name="translation_settings_title">إعدادات الترجمة</string>
+    <string name="translation_settings_description">قم بتكوين الترجمات المفضّلة لرباعيات عمر الخيّام.</string>
+    <string name="original_persian_translation_title">النص الأصلي بالفارسية</string>
+    <string name="original_persian_translation_description">اقرأ القصائد كما كُتبت أصلًا باللغة الفارسية.</string>
+    <string name="system_default_translation_title">اعتمادًا على لغة الجهاز</string>
+    <string name="system_default_translation_description">استخدم الترجمة الموثوقة المطابقة للغة جهازك.</string>
+    <string name="authentic_translations_title">ترجمات موثوقة</string>
+    <string name="authentic_translations_description">اختر من الترجمات الموثوقة لرباعيات عمر الخيّام.</string>
+    <string name="no_translation_selected">لم يتم اختيار ترجمة</string>
+    <string name="select_translation">اختر الترجمة</string>
+    <string name="selected_title">المختارة: %1$s - %2$s</string>
+    <string name="translation_snackbar_text">استنادًا إلى لغة جهازك، أنت تقرأ:\nترجمة %1$s بقلم %2$s</string>
+    <string name="translation_snackbar_text_for_untranslated_device_language">استنادًا إلى لغة جهازك، أنت تقرأ القصائد الأصلية لعمر الخيّام</string>
+    <string name="switch_to_original">الانتقال إلى النسخة الأصلية</string>
+    <string name="fallback_translation_message">نعرض القصائد باللغة الافتراضية لأن لغة جهازك غير مدعومة بعد.</string>
+    <string name="enable_daily_poem_notification">تفعيل إشعار القصيدة اليومية</string>
+    <string name="disable_daily_poem_notification">إيقاف إشعار القصيدة اليومية</string>
+    <string name="random_poem_notification_description">استلم قصيدة عشوائية من رباعيات الخيّام كل يوم في الوقت الذي تختاره.</string>
+    <string name="random_poem_time_display">وقت الإشعار: %1$s</string>
+    <string name="random_poem_notification_settings_title">إشعار القصيدة اليومية</string>
+    <string name="select_time">اختر الوقت</string>
+    <string name="cancel">إلغاء</string>
+    <string name="ok">حسنًا</string>
+    <string name="random_poem_permission_denial_message">لا مشكلة! إذا غيّرت رأيك، يمكنك تفعيل الإشعارات في أي وقت من الإعدادات للاستمتاع بقصيدة جديدة كل يوم.</string>
+    <string name="random_poem_notification_permission_rationale_title">إلهام يومي مستمر</string>
+    <string name="random_poem_notification_permission_rationale_caption">لإرسال قصيدة يومية من رباعيات الخيّام، نحتاج إلى إذن لعرض الإشعارات. يساعدك هذا على تلقي قصيدة جديدة كل يوم دون فتح التطبيق.</string>
+    <string name="allow">السماح</string>
+    <string name="no_thanks">لا، شكرًا</string>
+</resources>

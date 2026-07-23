@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
 import com.vuxur.khayyam.entry.user.Activity
@@ -29,6 +30,7 @@ fun SettingRoute(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val currentLocale = getCurrentLocale(LocalResources.current)
 
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -37,8 +39,8 @@ fun SettingRoute(
         }
     )
 
-    LaunchedEffect(key1 = true) {
-        viewModel.viewIsReady(getCurrentLocale(context.resources))
+    LaunchedEffect(currentLocale) {
+        viewModel.viewIsReady(currentLocale)
     }
 
     var showNotificationPermissionDenialMessage = remember { mutableStateOf(false) }

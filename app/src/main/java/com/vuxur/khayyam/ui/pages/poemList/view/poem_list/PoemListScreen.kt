@@ -30,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
@@ -71,23 +70,25 @@ fun PoemListScreen(
         else -> LayoutDirection.Ltr
     }
     val translationSnackBarState = remember { SnackbarHostState() }
-    val context = LocalContext.current
+    val snackbarMessage = stringResource(
+        if (translationItem.isUntranslated())
+            R.string.translation_snackbar_text_for_untranslated_device_language
+        else
+            R.string.translation_snackbar_text,
+        translationItem.displayLanguage,
+        translationItem.translator
+    )
+    val snackbarActionLabel =
+        if (translationItem.isUntranslated())
+            null
+        else
+            stringResource(R.string.switch_to_original)
+
     LaunchedEffect(key1 = showTranslationSnackbar) {
         if (showTranslationSnackbar) {
             val result = translationSnackBarState.showSnackbar(
-                message = context.getString(
-                    if (translationItem.isUntranslated())
-                        R.string.translation_snackbar_text_for_untranslated_device_language
-                    else
-                        R.string.translation_snackbar_text,
-                    translationItem.displayLanguage,
-                    translationItem.translator
-                ),
-                actionLabel =
-                if (translationItem.isUntranslated())
-                    null
-                else
-                    context.getString(R.string.switch_to_original),
+                message = snackbarMessage,
+                actionLabel = snackbarActionLabel,
                 withDismissAction = true,
             )
             when (result) {

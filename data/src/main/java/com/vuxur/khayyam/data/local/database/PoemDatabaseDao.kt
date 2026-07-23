@@ -88,7 +88,7 @@ interface PoemDatabaseDao {
                 PoemEntity.id = :id
     """
     )
-    suspend fun getPoemById(id: Int): PoemWithTranslationEntity
+    suspend fun getPoemById(id: Int): PoemWithTranslationEntity?
 
     @Query(
         """

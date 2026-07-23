@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -130,20 +130,14 @@ fun KSearchBar(
                             onClick = onPreviousResult,
                             enabled = isTherePreviousResult,
                             contentDescription = stringResource(R.string.previous_result),
-                            icon = if (LocalLayoutDirection.current == LayoutDirection.Rtl)
-                                Icons.Filled.KeyboardArrowRight
-                            else
-                                Icons.Filled.KeyboardArrowLeft
+                            icon = Icons.AutoMirrored.Filled.KeyboardArrowLeft
                         )
 
                         NavigationIconButton(
                             onClick = onNextResult,
                             enabled = isThereNextResult,
                             contentDescription = stringResource(R.string.next_result),
-                            icon = if (LocalLayoutDirection.current == LayoutDirection.Rtl)
-                                Icons.Filled.KeyboardArrowLeft
-                            else
-                                Icons.Filled.KeyboardArrowRight
+                            icon = Icons.AutoMirrored.Filled.KeyboardArrowRight
                         )
                     }
                 }

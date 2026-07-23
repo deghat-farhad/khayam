@@ -1,13 +1,16 @@
 package com.vuxur.khayyam.device.notification
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.vuxur.khayyam.device.R
 import com.vuxur.khayyam.device.model.PoemDeviceModel
@@ -15,7 +18,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class PoemNotificationManager @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
 ) {
     private val channelId = "daily_poem_channel"
     private val channelName = context.getString(R.string.daily_khayyam_poem)
@@ -62,8 +65,17 @@ class PoemNotificationManager @Inject constructor(
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 
-        NotificationManagerCompat.from(context)
-            .notify(poemDeviceModel.id.hashCode(), builder.build())
+        val notificationPermissionGranted =
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+
+        if (notificationPermissionGranted) {
+            NotificationManagerCompat.from(context)
+                .notify(poemDeviceModel.id.hashCode(), builder.build())
+        }
     }
 
     private fun assemblePoem(poemDeviceModel: PoemDeviceModel): String {

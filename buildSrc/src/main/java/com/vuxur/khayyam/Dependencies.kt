@@ -1,10 +1,10 @@
 import Versions.hiltVersion
 
 object Versions {
-    const val kspVersion = "2.0.0-1.0.22"
-    const val hiltVersion = "2.51.1"
-    const val androidGradlePluginVersion = "8.5.0"
-    const val kotlinVersion = "2.0.0"
+    const val kspVersion = "2.2.20-2.0.3"
+    const val hiltVersion = "2.57.2"
+    const val androidGradlePluginVersion = "8.13.2"
+    const val kotlinVersion = "2.2.20"
     const val googleServiceVersion = "4.4.2"
     const val crashlyticsVersion = "3.0.1"
 }
@@ -46,13 +46,13 @@ object Libs {
             "androidx.datastore:datastore-preferences:$datastorePreferencesVersion"
 
         object Room {
-            private const val roomVersion = "2.6.1"
+            private const val roomVersion = "2.7.2"
             const val RoomKtx = "androidx.room:room-ktx:$roomVersion"
             const val RoomCompiler = "androidx.room:room-compiler:$roomVersion"
         }
 
         object Compose {
-            private const val composeBomVersion = "2024.06.00"
+            private const val composeBomVersion = "2026.06.00"
 
             const val Bom = "androidx.compose:compose-bom:$composeBomVersion"
             const val Material3 = "androidx.compose.material3:material3"
@@ -75,10 +75,13 @@ object Libs {
     }
 
     object Test {
-        private const val junit5Version = "5.11.0-M2"
+        private const val junit5Version = "5.11.4"
+        private const val junitPlatformVersion = "1.11.4"
         private const val mockkVersion = "1.13.11"
 
         const val junit5 = "org.junit.jupiter:junit-jupiter-engine:$junit5Version"
+        const val junitPlatformLauncher =
+            "org.junit.platform:junit-platform-launcher:$junitPlatformVersion"
         const val mockk = "io.mockk:mockk:$mockkVersion"
     }
 

@@ -3,8 +3,6 @@ package com.vuxur.khayyam.ui.pages.poemList.view.viewModel
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -45,7 +43,7 @@ class PoemListViewModel @Inject constructor(
     private val setLastVisitedPoem: SetLastVisitedPoem,
     private val getLastVisitedPoem: GetLastVisitedPoem,
     private val imageFileOutputStreamProvider: ImageFileOutputStreamProvider,
-    @Named(UtilityModule.DI_NAME_IMAGE_FILE)
+    @param:Named(UtilityModule.DI_NAME_IMAGE_FILE)
     private val imageFile: File,
     private val shareIntentProvider: ShareIntentProvider,
     private val useMatchSystemLanguageTranslation: UseMatchSystemLanguageTranslation,
@@ -209,11 +207,11 @@ class PoemListViewModel @Inject constructor(
         }
     }
 
-    fun copyPoem(clipboard: ClipboardManager) {
-        (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
+    fun copyPoem(): String? {
+        return (uiState.value as? UiState.Loaded)?.let { uiStateSnapshot ->
             val poemText = assemblePoem(poemList[uiStateSnapshot.currentItemIndex])
-            clipboard.setText(AnnotatedString(poemText))
             consumeEvent(Event.CopyPoemText(poemText))
+            poemText
         }
     }
 

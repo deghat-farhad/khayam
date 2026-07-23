@@ -1,5 +1,6 @@
 package com.vuxur.khayyam.ui.pages.poemList.view.poem_list
 
+import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
@@ -8,13 +9,16 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat.startActivity
+import androidx.compose.ui.platform.LocalResources
 import androidx.core.content.FileProvider
 import com.vuxur.khayyam.ui.pages.poemList.view.viewModel.PoemListViewModel
 import com.vuxur.khayyam.utils.getCurrentLocale
 import java.io.File
+import kotlinx.coroutines.launch
 
 @Composable
 fun PoemListRoute(
@@ -22,11 +26,13 @@ fun PoemListRoute(
     navigateToSetting: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val clipboardManager = LocalClipboardManager.current
+    val clipboard = LocalClipboard.current
+    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+    val currentLocale = getCurrentLocale(LocalResources.current)
 
-    LaunchedEffect(key1 = true) {
-        viewModel.viewIsReady(getCurrentLocale(context.resources))
+    LaunchedEffect(currentLocale) {
+        viewModel.viewIsReady(currentLocale)
     }
 
     DisposableEffect(uiState) {
@@ -47,10 +53,8 @@ fun PoemListRoute(
                     }
 
                     is PoemListViewModel.Event.SharePoemText -> {
-                        startActivity(
-                            context,
-                            Intent.createChooser(event.shareIntent, "choose an app"),
-                            null
+                        context.startActivity(
+                            Intent.createChooser(event.shareIntent, "choose an app")
                         )
                     }
 
@@ -58,10 +62,6 @@ fun PoemListRoute(
                 }
                 viewModel.onEventConsumed(event)
             }
-        }
-        val uiStateSnapshot = uiState
-        if (uiStateSnapshot is PoemListViewModel.UiState.Loaded) {
-
         }
         onDispose { }
     }
@@ -80,7 +80,15 @@ fun PoemListRoute(
                 state.searchState.hasNext,
                 state.searchState.hasPrevious,
                 onCopyPoemText = {
-                    viewModel.copyPoem(clipboardManager)
+                    viewModel.copyPoem()?.let { poemText ->
+                        coroutineScope.launch {
+                            clipboard.setClipEntry(
+                                ClipEntry(
+                                    ClipData.newPlainText("Khayyam poem", poemText)
+                                )
+                            )
+                        }
+                    }
                 },
                 onSharePoemText = viewModel::sharePoemText,
                 onSharePoemImage = { bitmap ->

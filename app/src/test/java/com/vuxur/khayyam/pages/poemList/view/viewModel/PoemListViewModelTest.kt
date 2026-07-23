@@ -3,8 +3,6 @@ package com.vuxur.khayyam.pages.poemList.view.viewModel
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.SavedStateHandle
 import com.vuxur.khayyam.domain.model.Poem
 import com.vuxur.khayyam.domain.model.Translation
@@ -565,9 +563,6 @@ class PoemListViewModelTest {
         // Call the function under test
         viewModel.viewIsReady(deviceLocale)
 
-        //mock
-        val mockedClipboard: ClipboardManager = mockk(relaxed = true)
-        every { mockedClipboard.setText(any()) } just Runs
         val mockedPoemText = String.format(
             "%s\n%s\n%s\n%s",
             poemItems.first().hemistich1,
@@ -576,10 +571,10 @@ class PoemListViewModelTest {
             poemItems.first().hemistich4
         )
 
-        viewModel.copyPoem(mockedClipboard)
+        val copiedPoem = viewModel.copyPoem()
         val uiState = viewModel.uiState.value as PoemListViewModel.UiState.Loaded
 
-        verify { mockedClipboard.setText(AnnotatedString(mockedPoemText)) }
+        assertEquals(mockedPoemText, copiedPoem)
 
         assertEquals(
             mockedPoemText,
@@ -673,10 +668,7 @@ class PoemListViewModelTest {
 
         viewModel.viewIsReady(deviceLocale)
 
-        val mockedClipboard: ClipboardManager = mockk(relaxed = true)
-        every { mockedClipboard.setText(any()) } just Runs
-
-        viewModel.copyPoem(mockedClipboard)
+        viewModel.copyPoem()
         val consumedEvent =
             (viewModel.uiState.value as PoemListViewModel.UiState.Loaded).events.first()
         viewModel.onEventConsumed(consumedEvent)

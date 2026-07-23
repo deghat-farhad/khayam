@@ -37,7 +37,7 @@ abstract class PoemDatabase : RoomDatabase() {
                         DATABASE_NAME
                     )
                         .createFromAsset("database/$DATABASE_NAME.db")
-                        .fallbackToDestructiveMigration()
+                        .fallbackToDestructiveMigration(dropAllTables = true)
                         .build()
                     INSTANCE = instance
                 }

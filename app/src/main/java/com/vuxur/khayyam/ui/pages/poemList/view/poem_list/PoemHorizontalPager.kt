@@ -84,7 +84,7 @@ fun PoemHorizontalPager(
                 .fillMaxSize(),
             currentPageIndex = pagerState.currentPage,
             thisPageIndex = page,
-            currentPageOffsetFraction = pagerState.currentPageOffsetFraction,
+            currentPageOffsetFraction = { pagerState.currentPageOffsetFraction },
             scalingFactor = .9f,
             capture = cardCapture,
         ) {
@@ -107,7 +107,7 @@ fun PoemHorizontalPager(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     currentPageIndex = pagerState.currentPage,
                     thisPageIndex = page,
-                    currentPageOffsetFraction = pagerState.currentPageOffsetFraction,
+                    currentPageOffsetFraction = { pagerState.currentPageOffsetFraction },
                     poemItem = poemList[page],
                     translationItem = translationItem,
                     highlightPhrase = highlightPhrase,
@@ -124,7 +124,7 @@ private fun AnimatedPoemView(
     poemItem: PoemItem,
     currentPageIndex: Int,
     thisPageIndex: Int,
-    currentPageOffsetFraction: Float,
+    currentPageOffsetFraction: () -> Float,
     translationItem: TranslationItem,
     highlightPhrase: String?,
     showHighlights: Boolean,
@@ -133,7 +133,8 @@ private fun AnimatedPoemView(
     PoemView(
         modifier = modifier
             .graphicsLayer {
-                val pageOffset = currentPageIndex - thisPageIndex + currentPageOffsetFraction
+                val pageOffset =
+                    currentPageIndex - thisPageIndex + currentPageOffsetFraction()
                 val translationFactor = size.width / 2
                 translationX = translationFactor * lerp(
                     start = 0f,
@@ -158,7 +159,7 @@ private fun AnimatedCaptureableCard(
     modifier: Modifier = Modifier,
     currentPageIndex: Int,
     thisPageIndex: Int,
-    currentPageOffsetFraction: Float,
+    currentPageOffsetFraction: () -> Float,
     scalingFactor: Float,
     capture: ((Bitmap) -> Unit)?,
     content: @Composable () -> Unit,
@@ -174,7 +175,8 @@ private fun AnimatedCaptureableCard(
         modifier = modifier
             .capturable(captureController)
             .graphicsLayer {
-                val pageOffset = currentPageIndex - thisPageIndex + currentPageOffsetFraction
+                val pageOffset =
+                    currentPageIndex - thisPageIndex + currentPageOffsetFraction()
                 val scale = lerp(1f, scalingFactor, pageOffset.absoluteValue.coerceIn(0f, 1f))
                 val translationFactor = size.width * (1 - scalingFactor) / 2
                 val translationX = translationFactor * lerp(

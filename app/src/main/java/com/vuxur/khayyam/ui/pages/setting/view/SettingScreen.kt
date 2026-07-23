@@ -80,11 +80,13 @@ fun SettingScreen(
     val context = LocalContext.current
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val notificationPermissionDenialMessage =
+        stringResource(R.string.random_poem_permission_denial_message)
 
     LaunchedEffect(showNotificationPermissionDenialMessage) {
         if (showNotificationPermissionDenialMessage)
             snackbarHostState.showSnackbar(
-                message = context.getString(R.string.random_poem_permission_denial_message)
+                message = notificationPermissionDenialMessage
             )
     }
 

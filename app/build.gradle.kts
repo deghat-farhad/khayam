@@ -95,6 +95,7 @@ dependencies {
     implementation(Libs.Firebase.crashlytics)
 
     testImplementation(Libs.Test.junit5)
+    testRuntimeOnly(Libs.Test.junitPlatformLauncher)
     testImplementation(Libs.Test.mockk)
     testImplementation(Libs.Coroutines.kotlinxCoroutinesTest)
 

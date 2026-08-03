@@ -14,10 +14,6 @@ class TranslationRepositoryImp @Inject constructor(
         return translationEntityMapper.mapToDomain(local.getAvailableTranslations())
     }
 
-    override suspend fun getTranslationsWithLanguageTag(languageTag: String): List<Translation> {
-        return translationEntityMapper.mapToDomain(local.getTranslationsWithLanguageTag(languageTag))
-    }
-
     override suspend fun getTranslationWithId(translationId: Int): Translation {
         return translationEntityMapper.mapToDomain(local.getTranslationWithId(translationId))
     }

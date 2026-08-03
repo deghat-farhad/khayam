@@ -11,6 +11,13 @@ kotlin {
     jvmToolchain(ConfigurationData.javaVersionInt)
 }
 
+tasks.test {
+    useJUnitPlatform()
+}
+
 dependencies {
     implementation(Libs.Coroutines.kotlinxCoroutinesCore)
+
+    testImplementation(Libs.Test.junit5)
+    testRuntimeOnly(Libs.Test.junitPlatformLauncher)
 }

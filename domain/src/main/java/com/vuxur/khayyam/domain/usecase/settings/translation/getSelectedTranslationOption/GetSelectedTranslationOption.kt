@@ -20,16 +20,15 @@ class GetSelectedTranslationOption(
         return settingRepository.translationPreferences.map { translationPreferences ->
             when (translationPreferences) {
                 TranslationPreferences.MatchDeviceLanguageTranslation -> {
-                    val systemLanguageTag =
-                        params.deviceLocale.toLanguageTag()
-                    translationRepository.getTranslationsWithLanguageTag(systemLanguageTag)
-                        .firstOrNull()?.let { availableMatchDeviceLanguageTranslation ->
+                    val translations = translationRepository.getAvailableTranslations()
+                    translations.findBestMatchFor(params.deviceLocale)
+                        ?.let { availableMatchDeviceLanguageTranslation ->
                             TranslationOptions.MatchDeviceLanguage.Available(
-                                availableMatchDeviceLanguageTranslation
+                                availableMatchDeviceLanguageTranslation,
                             )
                         } ?: TranslationOptions.MatchDeviceLanguage.Unavailable(
-                        getFallBackTranslation(),
-                    )
+                            getFallbackTranslation(translations),
+                        )
                 }
 
                 TranslationPreferences.None ->
@@ -46,8 +45,7 @@ class GetSelectedTranslationOption(
         }
     }
 
-    private suspend fun getFallBackTranslation(): Translation {
-        val translations = translationRepository.getAvailableTranslations()
+    private fun getFallbackTranslation(translations: List<Translation>): Translation {
         return translations.firstOrNull { it.languageTag == FALLBACK_LANGUAGE_TAG }
             ?: throw FallbackTranslationNotFoundException("Fallback translation not found.")
     }
@@ -55,7 +53,7 @@ class GetSelectedTranslationOption(
     private suspend fun getUntranslatedTranslation(): Translation {
         val translations = translationRepository.getAvailableTranslations()
         return translations.firstOrNull { it.languageTag == UNTRANSLATED_LANGUAGE_TAG }
-            ?: throw UntranslatedTranslationNotFoundException("Untranslated translation          not found.")
+            ?: throw UntranslatedTranslationNotFoundException("Untranslated translation not found.")
     }
 }
 

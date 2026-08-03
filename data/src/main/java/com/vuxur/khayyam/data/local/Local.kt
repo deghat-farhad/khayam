@@ -67,10 +67,6 @@ class Local @Inject constructor(
         preferencesDataSource.setLastVisitedPoem(poemWithTranslationEntity)
     }
 
-    suspend fun getTranslationsWithLanguageTag(languageTag: String): List<TranslationEntity> {
-        return database.getTranslationsWithLanguageTag(languageTag)
-    }
-
     suspend fun getTranslationWithId(translationId: Int): TranslationEntity {
         return database.getTranslationsWithId(translationId)
     }

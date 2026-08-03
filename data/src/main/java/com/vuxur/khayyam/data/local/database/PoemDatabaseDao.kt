@@ -61,18 +61,6 @@ interface PoemDatabaseDao {
 
     @Query(
         """
-        SELECT 
-            * 
-        FROM 
-            TranslationEntity
-        WHERE
-            languageTag = :translationLanguageTag
-        """
-    )
-    suspend fun getTranslationsWithLanguageTag(translationLanguageTag: String): List<TranslationEntity>
-
-    @Query(
-        """
             SELECT
                 PoemEntity.id,
                 PoemEntity.`index`,
